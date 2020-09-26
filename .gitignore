@@ -1,0 +1,10 @@
+.vs/
+packages/
+**/bin/
+**/obj/
+**/text_cache/
+src/TestResults/
+
+*.user
+*.dbmdl
+*.jfm

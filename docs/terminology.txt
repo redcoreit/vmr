@@ -1,0 +1,2 @@
+vmr = validation module runtime
+vmil = validation module intermadiet language
