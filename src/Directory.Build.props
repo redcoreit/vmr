@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <CodeAnalysisRuleSet>..\SolutionItems\Vmr.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\Vmr.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <CodeAnalysisRuleSet>..\SolutionItems\Vmr.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\Vmr.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
     
   <ItemGroup>

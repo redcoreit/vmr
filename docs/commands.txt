@@ -1,0 +1,7 @@
+nop
+call [method name]
+rcall [action name]
+.maxstack [number]
+
+add
+
