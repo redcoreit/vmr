@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Vmr.Instructions
 {
-    public enum InstructionCode
+    public enum InstructionCode : byte
     {
         Add = 0x58,
         Ldc = 0x0F,

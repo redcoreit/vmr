@@ -9,6 +9,9 @@ namespace Vmr.Instructions
 {
     public static class InstructionFacts
     {
+        public const byte StringInitializer = (byte)'\'';
+        public const byte StringTerminator = (byte)'\0';
+
         public static bool TryGetInstructionCode(object value, [NotNullWhen(true)] out InstructionCode? instructionCode)
         {
             instructionCode = null;
