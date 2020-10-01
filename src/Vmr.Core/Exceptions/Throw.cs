@@ -11,8 +11,8 @@ namespace Vmr.Core.Exceptions
     internal static class Throw
     {
         [DoesNotReturn]
-        public static void MissingInstructionArgument(InstructionCode instructionCode)
-            => throw new VmExecutionException($"Required instruction argument missing. InstructionCode: {InstructionFacts.Format(instructionCode)}");
+        public static void MissingInstructionArgument(int instructionIndex)
+            => throw new VmExecutionException($"Required instruction argument missing. InstructionIndex: {instructionIndex}");
 
         [DoesNotReturn]
         internal static void OperationNotSupported(InstructionCode instructionCode)
@@ -23,7 +23,7 @@ namespace Vmr.Core.Exceptions
             => throw new VmExecutionException($"Operation is not supported. InstructionCode: {InstructionFacts.Format(instructionCode)} Args: '{string.Join(' ',args)}'.");
 
         [DoesNotReturn]
-        public static void StackUnderflowException(InstructionCode instructionCode)
-            => throw new VmExecutionException($"Stack underflow exception. InstructionCode: {InstructionFacts.Format(instructionCode)}");
+        public static void StackUnderflowException(int instructionIndex)
+            => throw new VmExecutionException($"Stack underflow exception. InstructionIndex: {instructionIndex}");
     }
 }

@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "Vmr.Cli": {
+      "commandName": "Project"
+    }
+  }
+}

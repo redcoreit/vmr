@@ -26,6 +26,6 @@ namespace Vmr.Core.Abstractions
             => Format((int)instructionCode);
 
         internal static string Format(int instructionCode)
-            => instructionCode.ToString("X8");
+            => instructionCode.ToString("X2");
     }
 }

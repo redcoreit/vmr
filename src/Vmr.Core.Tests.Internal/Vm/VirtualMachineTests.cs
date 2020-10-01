@@ -14,14 +14,21 @@ namespace Vmr.Core.Tests.Internal.Vm
         public void Ldc_load_number_from_arg()
         {
             var instructions = new object[] { (int)InstructionCode.Ldc, 0x01 };
-            ExecSingleResultTest(instructions, 0x01);
+            ExecNoDataSingleResultTest(instructions, 0x01);
         }
 
         [Fact]
         public void Ldc_load_string_from_arg()
         {
             var instructions = new object[] { (int)InstructionCode.Ldc, "test" };
-            ExecSingleResultTest(instructions, "test");
+            ExecNoDataSingleResultTest(instructions, "test");
+        }
+
+        [Fact]
+        public void Ldc_load_string_with_spaces_from_arg()
+        {
+            var instructions = new object[] { (int)InstructionCode.Ldc, "test test" };
+            ExecNoDataSingleResultTest(instructions, "test test");
         }
 
         [Fact]
@@ -34,7 +41,7 @@ namespace Vmr.Core.Tests.Internal.Vm
                 (int)InstructionCode.Add 
             };
 
-            ExecSingleResultTest(instructions, 3);
+            ExecNoDataSingleResultTest(instructions, 3);
         }
 
         [Fact]
@@ -53,7 +60,7 @@ namespace Vmr.Core.Tests.Internal.Vm
             Assert.Equal(0, actualResult.Count);
         }
 
-        private void ExecSingleResultTest<TResult>(IReadOnlyList<object> instructions, TResult expected)
+        private void ExecNoDataSingleResultTest<TResult>(IReadOnlyList<object> instructions, TResult expected)
         {
             // Assert
             var data = Enumerable.Empty<object>();

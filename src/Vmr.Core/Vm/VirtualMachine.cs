@@ -14,47 +14,49 @@ namespace Vmr.Core
         private readonly Stack<object> _stack;
         private readonly IReadOnlyList<object> _instructions;
 
-        internal VirtualMachine(IEnumerable<object> instructions)
+        public VirtualMachine(IReadOnlyList<object> instructions)
         {
             _stack = new Stack<object>();
             _instructions = instructions.ToList();
         }
 
-        internal void Execute(IEnumerable<object> data)
+        public void Execute(IEnumerable<object> data)
         {
             using var enumerator = _instructions.GetEnumerator();
+            int instructionIndex = 0;
 
-            while(enumerator.MoveNext())
+            while (enumerator.MoveNext())
             {
-                if(!InstructionFacts.TryGetInstructionCode(enumerator.Current, out var instruction))
+                if (!InstructionFacts.TryGetInstructionCode(enumerator.Current, out var instruction))
                 {
                     throw new VmExecutionException($"Unexpected value found: '{enumerator.Current}'.");
                 }
 
-                DispatchInstruction(instruction.Value, enumerator);
+                DispatchInstruction(instructionIndex, instruction.Value, enumerator);
+                instructionIndex++;
             }
-            
+
         }
 
         public Stack<object> GetStack() => new Stack<object>(_stack);
 
-        private void DispatchInstruction(InstructionCode instruction, IEnumerator<object> enumerator)
+        private void DispatchInstruction(int instructionIndex, InstructionCode instruction, IEnumerator<object> enumerator)
         {
             switch (instruction)
             {
                 case InstructionCode.Add:
                     {
-                        Add(instruction, enumerator);
+                        Add(instructionIndex, instruction, enumerator);
                         break;
                     }
                 case InstructionCode.Ldc:
                     {
-                        Ldc(instruction, enumerator);
+                        Ldc(instructionIndex, instruction, enumerator);
                         break;
                     }
                 case InstructionCode.Pop:
                     {
-                        Pop(instruction, enumerator);
+                        Pop(instructionIndex, instruction, enumerator);
                         break;
                     }
                 default:
@@ -62,18 +64,18 @@ namespace Vmr.Core
             }
         }
 
-        private void Add(InstructionCode instruction, IEnumerator<object> enumerator)
+        private void Add(int instructionIndex, InstructionCode instruction, IEnumerator<object> enumerator)
         {
             if (_stack.Count == 0)
             {
-                Throw.StackUnderflowException(instruction);
+                Throw.StackUnderflowException(instructionIndex);
             }
 
             var op1 = _stack.Pop();
 
             if (_stack.Count == 0)
             {
-                Throw.StackUnderflowException(instruction);
+                Throw.StackUnderflowException(instructionIndex);
             }
 
             var op2 = _stack.Pop();
@@ -94,17 +96,17 @@ namespace Vmr.Core
             _stack.Push(result);
         }
 
-        private void Ldc(InstructionCode instruction, IEnumerator<object> enumerator)
+        private void Ldc(int instructionIndex, InstructionCode instruction, IEnumerator<object> enumerator)
         {
-            if(!enumerator.MoveNext())
+            if (!enumerator.MoveNext())
             {
-                Throw.MissingInstructionArgument(instruction);
+                Throw.MissingInstructionArgument(instructionIndex);
             }
 
             _stack.Push(enumerator.Current);
         }
 
-        private void Pop(InstructionCode instruction, IEnumerator<object> enumerator)
+        private void Pop(int instructionIndex, InstructionCode instruction, IEnumerator<object> enumerator)
         {
             _stack.Pop();
         }

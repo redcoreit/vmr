@@ -4,6 +4,7 @@ packages/
 **/obj/
 **/text_cache/
 src/TestResults/
+scripts/
 
 *.user
 *.dbmdl

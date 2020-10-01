@@ -9,15 +9,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vmr.Interop", "Vmr.Interop\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vmr.Cli", "Vmr.Cli\Vmr.Cli.csproj", "{3916E146-6524-4602-BE90-EFED402BA217}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vmr.Core.Tests", "Vmr.Core.Tests\Vmr.Core.Tests.csproj", "{43E9528B-3F28-4A15-BE4C-A38511789466}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vmr.Core.Tests", "Vmr.Core.Tests\Vmr.Core.Tests.csproj", "{43E9528B-3F28-4A15-BE4C-A38511789466}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vmr.Core.Tests.Internal", "Vmr.Core.Tests.Internal\Vmr.Core.Tests.Internal.csproj", "{AD421C74-B474-4A87-8025-F0961D1607C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vmr.Core.Tests.Internal", "Vmr.Core.Tests.Internal\Vmr.Core.Tests.Internal.csproj", "{AD421C74-B474-4A87-8025-F0961D1607C5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{782B6CDA-3CC2-43C5-8025-897D3AA5BE93}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		Vmr.ruleset = Vmr.ruleset
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vmr.Assembler", "Vmr.Assembler\Vmr.Assembler.csproj", "{9FEDDCB5-9A25-423A-AB9B-1D9103F91749}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vmr.Assembler.Tests", "Vmr.Assembler.Tests\Vmr.Assembler.Tests.csproj", "{E2776A0E-B5CD-48B5-86F0-132E84F75057}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +49,14 @@ Global
 		{AD421C74-B474-4A87-8025-F0961D1607C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD421C74-B474-4A87-8025-F0961D1607C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD421C74-B474-4A87-8025-F0961D1607C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FEDDCB5-9A25-423A-AB9B-1D9103F91749}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FEDDCB5-9A25-423A-AB9B-1D9103F91749}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FEDDCB5-9A25-423A-AB9B-1D9103F91749}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FEDDCB5-9A25-423A-AB9B-1D9103F91749}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2776A0E-B5CD-48B5-86F0-132E84F75057}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2776A0E-B5CD-48B5-86F0-132E84F75057}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2776A0E-B5CD-48B5-86F0-132E84F75057}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2776A0E-B5CD-48B5-86F0-132E84F75057}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
