@@ -6,10 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
-using Vmr.Assembler.Exceptions;
-using Vmr.Core.Abstractions;
+using Vmr.Cli.Exceptions;
+using Vmr.Instructions;
 
-namespace Vmr.Assembler
+namespace Vmr.Cli.Helpers
 {
     // TODO (RH -): Simple something that works. Will be replaced by proper lexer.
     public sealed class SimpleHumanReadableFileProcessor
@@ -35,10 +35,10 @@ namespace Vmr.Assembler
         private IReadOnlyList<object> LoadFile(Stream stream)
         {
             var result = new List<object>();
-            StreamReader sr = new StreamReader(stream, Encoding.UTF8);
+            var sr = new StreamReader(stream, Encoding.UTF8);
 
             string? line;
-            int lineIndex = 0;
+            var lineIndex = 0;
 
             while ((line = sr.ReadLine()) is not null)
             {
@@ -65,14 +65,10 @@ namespace Vmr.Assembler
                 var instruction = (string?)words[0];
 
                 if (instruction is null)
-                {
                     throw new InvalidOperationException(nameof(instruction)); // this is not expected
-                }
 
                 if (instruction.StartsWith(";;"))
-                {
                     yield break; // comment begins, we stop processing the rest of the line
-                }
 
                 yield return LoadInstruction(instruction);
                 yield return LoadArgument(string.Join(' ', words.Skip(1)));
@@ -85,14 +81,10 @@ namespace Vmr.Assembler
                     var word = (string?)words[i];
 
                     if (word is null)
-                    {
                         throw new InvalidOperationException(nameof(word)); // this is not expected
-                    }
 
                     if (word.Equals(";;"))
-                    {
                         yield break; // comment begins, we stop processing the rest of the line
-                    }
 
                     yield return i == 0
                         ? LoadInstruction(word)
@@ -104,9 +96,7 @@ namespace Vmr.Assembler
         private int LoadInstruction(string word)
         {
             if (!Enum.TryParse<InstructionCode>(word, out var instructionCode))
-            {
-                throw new AssemblerException("First code of the line must be an instruction.");
-            }
+                throw new CliException("First code of the line must be an instruction.");
 
             return (int)instructionCode;
         }
@@ -116,10 +106,8 @@ namespace Vmr.Assembler
             var span = word.AsSpan();
 
             if (span[0] == '"')
-            {
                 return word.Trim('"');
-            }
-            else if(word.StartsWith("0x") && int.TryParse(span.Slice(2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var number))
+            else if (word.StartsWith("0x") && int.TryParse(span.Slice(2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var number))
             {
                 return number;
             }
@@ -128,7 +116,7 @@ namespace Vmr.Assembler
                 return number;
             }
 
-            throw new AssemblerException($"Not supported argument: '{word}'"); 
+            throw new CliException($"Not supported argument: '{word}'");
         }
     }
 }

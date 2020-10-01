@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Configuration;
-using Vmr.Assembler.Exceptions;
+using Vmr.Cli.Exceptions;
 using Vmr.Cli.Options;
 
 namespace Vmr.Cli.Commands
@@ -21,7 +21,7 @@ namespace Vmr.Cli.Commands
             {
                 // TODO (RH -): implement
             }
-            catch (AssemblerException ex)
+            catch (CliException ex)
             {
                 Console.WriteLine(ex.Message);
             }

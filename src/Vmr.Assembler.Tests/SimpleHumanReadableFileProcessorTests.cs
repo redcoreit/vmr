@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Vmr.Core;
 using Xunit;
 
 namespace Vmr.Assembler.Tests
@@ -15,6 +14,7 @@ namespace Vmr.Assembler.Tests
         public void Ldc_load_number_from_arg()
         {
             // Arrange
+            var expected = new object[] { InstructionCode.Ldc, 0x01 }.ToHashSet();
             var fileContent =
                 "Ldc 0x01"
                 ;

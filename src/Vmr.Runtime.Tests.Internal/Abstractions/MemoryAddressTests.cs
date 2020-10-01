@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Vmr.Core.Abstractions;
+using Vmr.Runtime.Abstractions;
 using Xunit;
 
-namespace Vmr.Core.Tests.Internal.Abstractions
+namespace Vmr.Runtime.Tests.Internal.Abstractions
 {
     public class MemoryAddressTests
     {

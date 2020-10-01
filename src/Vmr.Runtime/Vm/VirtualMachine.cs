@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
-using Vmr.Core.Abstractions;
-using Vmr.Core.Exceptions;
+using Vmr.Instructions;
+using Vmr.Runtime.Exceptions;
 
-namespace Vmr.Core
+namespace Vmr.Runtime.Vm
 {
     public sealed class VirtualMachine
     {
@@ -23,14 +23,12 @@ namespace Vmr.Core
         public void Execute(IEnumerable<object> data)
         {
             using var enumerator = _instructions.GetEnumerator();
-            int instructionIndex = 0;
+            var instructionIndex = 0;
 
             while (enumerator.MoveNext())
             {
                 if (!InstructionFacts.TryGetInstructionCode(enumerator.Current, out var instruction))
-                {
                     throw new VmExecutionException($"Unexpected value found: '{enumerator.Current}'.");
-                }
 
                 DispatchInstruction(instructionIndex, instruction.Value, enumerator);
                 instructionIndex++;
@@ -67,16 +65,12 @@ namespace Vmr.Core
         private void Add(int instructionIndex, InstructionCode instruction, IEnumerator<object> enumerator)
         {
             if (_stack.Count == 0)
-            {
                 Throw.StackUnderflowException(instructionIndex);
-            }
 
             var op1 = _stack.Pop();
 
             if (_stack.Count == 0)
-            {
                 Throw.StackUnderflowException(instructionIndex);
-            }
 
             var op2 = _stack.Pop();
 
@@ -99,9 +93,7 @@ namespace Vmr.Core
         private void Ldc(int instructionIndex, InstructionCode instruction, IEnumerator<object> enumerator)
         {
             if (!enumerator.MoveNext())
-            {
                 Throw.MissingInstructionArgument(instructionIndex);
-            }
 
             _stack.Push(enumerator.Current);
         }

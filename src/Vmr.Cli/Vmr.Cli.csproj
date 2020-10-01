@@ -15,8 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Vmr.Core\Vmr.Core.csproj" />
-    <ProjectReference Include="..\Vmr.Assembler\Vmr.Assembler.csproj" />
+    <ProjectReference Include="..\Vmr.Instructions\Vmr.Instructions.csproj" />
+    <ProjectReference Include="..\Vmr.Runtime\Vmr.Runtime.csproj" />
   </ItemGroup>
 
 </Project>

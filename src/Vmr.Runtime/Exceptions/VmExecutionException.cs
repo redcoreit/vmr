@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Vmr.Core.Exceptions
+namespace Vmr.Runtime.Exceptions
 {
     public sealed class VmExecutionException : Exception
     {

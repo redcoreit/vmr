@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Vmr.Core.Tests.Internal\Vmr.Core.Tests.Internal.csproj" />
+    <ProjectReference Include="..\Vmr.Instructions\Vmr.Instructions.csproj" />
   </ItemGroup>
 
 </Project>

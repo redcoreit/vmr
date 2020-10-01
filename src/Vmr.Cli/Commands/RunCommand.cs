@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using Microsoft.Extensions.Configuration;
-using Vmr.Assembler;
-using Vmr.Assembler.Exceptions;
+using Vmr.Cli.Exceptions;
+using Vmr.Cli.Helpers;
 using Vmr.Cli.Options;
-using Vmr.Core;
-using Vmr.Core.Exceptions;
+using Vmr.Runtime.Exceptions;
+using Vmr.Runtime.Vm;
 
 namespace Vmr.Cli.Commands
 {
@@ -47,7 +47,7 @@ namespace Vmr.Cli.Commands
                     Console.WriteLine("Execution finished without result value.");
                 }
             }
-            catch (AssemblerException ex)
+            catch (CliException ex)
             {
                 Console.WriteLine(ex.Message);
             }

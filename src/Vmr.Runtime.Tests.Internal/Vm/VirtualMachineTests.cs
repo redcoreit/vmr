@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Vmr.Core.Abstractions;
+using Vmr.Instructions;
+using Vmr.Runtime.Vm;
 using Xunit;
 
-namespace Vmr.Core.Tests.Internal.Vm
+namespace Vmr.Runtime.Tests.Internal.Vm
 {
     public class VirtualMachineTests
     {
@@ -34,11 +35,11 @@ namespace Vmr.Core.Tests.Internal.Vm
         [Fact]
         public void Add_load_two_numbers_then_sum()
         {
-            var instructions = new object[] 
-            { 
-                (int)InstructionCode.Ldc, 0x01, 
-                (int)InstructionCode.Ldc, 0x02, 
-                (int)InstructionCode.Add 
+            var instructions = new object[]
+            {
+                (int)InstructionCode.Ldc, 0x01,
+                (int)InstructionCode.Ldc, 0x02,
+                (int)InstructionCode.Add
             };
 
             ExecNoDataSingleResultTest(instructions, 3);

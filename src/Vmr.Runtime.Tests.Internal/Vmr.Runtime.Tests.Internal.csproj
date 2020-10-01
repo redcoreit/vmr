@@ -14,11 +14,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Vmr.Core\Vmr.Core.csproj" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Helpers\" />
+    <ProjectReference Include="..\Vmr.Instructions\Vmr.Instructions.csproj" />
+    <ProjectReference Include="..\Vmr.Runtime\Vmr.Runtime.csproj" />
   </ItemGroup>
 
 </Project>

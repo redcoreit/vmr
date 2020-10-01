@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Vmr.Core.Abstractions
+namespace Vmr.Runtime.Abstractions
 {
     internal readonly struct MemoryAddress : IEquatable<MemoryAddress>
     {
@@ -21,19 +21,19 @@ namespace Vmr.Core.Abstractions
         public static implicit operator int(MemoryAddress memoryAddress)
             => memoryAddress._address;
 
-        public static bool operator ==(MemoryAddress left, MemoryAddress right) 
+        public static bool operator ==(MemoryAddress left, MemoryAddress right)
             => left.Equals(right);
 
-        public static bool operator !=(MemoryAddress left, MemoryAddress right) 
+        public static bool operator !=(MemoryAddress left, MemoryAddress right)
             => !(left == right);
 
-        public override bool Equals(object? obj) 
+        public override bool Equals(object? obj)
             => obj is MemoryAddress address && Equals(address);
-        
-        public bool Equals(MemoryAddress other) 
+
+        public bool Equals(MemoryAddress other)
             => _isConstructed == other._isConstructed && _address == other._address;
-        
-        public override int GetHashCode() 
+
+        public override int GetHashCode()
             => HashCode.Combine(_isConstructed, _address);
 
         public override string ToString() => _address.ToString("X8");

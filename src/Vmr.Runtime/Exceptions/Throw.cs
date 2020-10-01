@@ -4,9 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Vmr.Core.Abstractions;
+using Vmr.Instructions;
 
-namespace Vmr.Core.Exceptions
+namespace Vmr.Runtime.Exceptions
 {
     internal static class Throw
     {
@@ -20,7 +20,7 @@ namespace Vmr.Core.Exceptions
 
         [DoesNotReturn]
         internal static void OperationNotSupported(InstructionCode instructionCode, params object[] args)
-            => throw new VmExecutionException($"Operation is not supported. InstructionCode: {InstructionFacts.Format(instructionCode)} Args: '{string.Join(' ',args)}'.");
+            => throw new VmExecutionException($"Operation is not supported. InstructionCode: {InstructionFacts.Format(instructionCode)} Args: '{string.Join(' ', args)}'.");
 
         [DoesNotReturn]
         public static void StackUnderflowException(int instructionIndex)
