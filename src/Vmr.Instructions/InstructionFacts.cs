@@ -16,15 +16,15 @@ namespace Vmr.Instructions
         {
             var result = value switch
             {
-                InstructionCode code => Cast(code, out instructionCode),
-                int code => Cast((InstructionCode)code, out instructionCode),
+                InstructionCode code => Check(code, out instructionCode),
+                int code => Check((InstructionCode)code, out instructionCode),
                 null => throw new ArgumentNullException(nameof(value)),
                 _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
             };
 
             return result;
 
-            static bool Cast(InstructionCode instructionCode, out InstructionCode? result)
+            static bool Check(InstructionCode instructionCode, out InstructionCode? result)
             {
                 result = Enum.IsDefined(typeof(InstructionCode), instructionCode)
                     ? (InstructionCode?)instructionCode

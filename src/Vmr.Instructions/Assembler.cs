@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Vmr.Instructions
 {
-    internal class Assembler
+    public class Assembler
     {
-        public IReadOnlyList<byte> Emit(IReadOnlyList<object> instructions)
+        public byte[] Emit(IReadOnlyList<object> instructions)
         {
             var binaryCode = new List<byte>();
 
@@ -17,7 +17,7 @@ namespace Vmr.Instructions
                 binaryCode.AddRange(code);
             }
 
-            return binaryCode;
+            return binaryCode.ToArray();
         }
 
         private IEnumerable<byte> EmitObject(object obj)

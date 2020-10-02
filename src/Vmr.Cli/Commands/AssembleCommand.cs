@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Vmr.Cli.Exceptions;
+using Vmr.Cli.Helpers;
 using Vmr.Cli.Options;
+using Vmr.Instructions;
 
 namespace Vmr.Cli.Commands
 {
@@ -19,12 +24,36 @@ namespace Vmr.Cli.Commands
         {
             try
             {
-                // TODO (RH -): implement
+                var file = new FileInfo(opts.FilePath);
+
+                if (!file.Exists)
+                {
+                    throw new FileNotFoundException(opts.FilePath);
+                }
+
+                var program = SimpleHumanReadableFileProcessor.Process(file);
+                var assembler = new Assembler();
+                var binary = assembler.Emit(program);
+                WriteBinaryFile(file, binary);
             }
             catch (CliException ex)
             {
                 Console.WriteLine(ex.Message);
             }
+            catch (FileNotFoundException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void WriteBinaryFile(FileInfo file, byte[] binary)
+        {
+            var binFileName = $"{Path.GetFileNameWithoutExtension(file.FullName)}.bin";
+            var binFilePath = Path.Combine(file.DirectoryName!, binFileName);
+
+            using var fs = new FileStream(binFilePath, FileMode.Create, FileAccess.Write);
+            using var writer = new BinaryWriter(fs);
+            writer.Write(binary);
         }
     }
 }
