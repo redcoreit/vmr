@@ -27,8 +27,8 @@ namespace Vmr.Runtime.Vm
 
             while (enumerator.MoveNext())
             {
-                if (!InstructionFacts.TryGetInstructionCode(enumerator.Current, out var instruction))
-                    throw new VmExecutionException($"Unexpected value found: '{enumerator.Current}'.");
+                if (!InstructionFacts.TryCastInstructionCode(enumerator.Current, out var instruction))
+                    throw new VmExecutionException($"Unexpected code found: '{enumerator.Current}'.");
 
                 DispatchInstruction(instructionIndex, instruction.Value, enumerator);
                 instructionIndex++;

@@ -93,12 +93,12 @@ namespace Vmr.Cli.Helpers
             }
         }
 
-        private int LoadInstruction(string word)
+        private InstructionCode LoadInstruction(string word)
         {
             if (!Enum.TryParse<InstructionCode>(word, out var instructionCode))
                 throw new CliException("First code of the line must be an instruction.");
 
-            return (int)instructionCode;
+            return instructionCode;
         }
 
         private object LoadArgument(string word)

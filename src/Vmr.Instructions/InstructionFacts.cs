@@ -12,15 +12,26 @@ namespace Vmr.Instructions
         public const byte StringInitializer = (byte)'\'';
         public const byte StringTerminator = (byte)'\0';
 
-        public static bool TryGetInstructionCode(object value, [NotNullWhen(true)] out InstructionCode? instructionCode)
+        public static bool TryCastInstructionCode(object value, [NotNullWhen(true)] out InstructionCode? instructionCode)
         {
-            instructionCode = null;
+            var result = value switch
+            {
+                InstructionCode code => Cast(code, out instructionCode),
+                int code => Cast((InstructionCode)code, out instructionCode),
+                null => throw new ArgumentNullException(nameof(value)),
+                _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+            };
 
-            if (!(value is int code))
-                return false;
+            return result;
 
-            instructionCode = (InstructionCode)code;
-            return Enum.IsDefined(typeof(InstructionCode), instructionCode.Value);
+            static bool Cast(InstructionCode instructionCode, out InstructionCode? result)
+            {
+                result = Enum.IsDefined(typeof(InstructionCode), instructionCode)
+                    ? (InstructionCode?)instructionCode
+                    : null;
+
+                return result.HasValue;
+            }
         }
 
         public static string Format(InstructionCode instructionCode)

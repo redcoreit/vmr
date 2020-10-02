@@ -39,9 +39,10 @@ namespace Vmr.Instructions.Tests.Instructions
 
             // Assert
             Assert.Equal(3 + expectedTextBytes.Length, actual.Count);
-            var actualTextBytes = actual.ToArray().AsSpan(2..^1).ToArray();
-
             Assert.Equal((byte)InstructionCode.Ldc, actual[0]);
+
+            // test test
+            var actualTextBytes = actual.ToArray().AsSpan(2..^1).ToArray();
             Assert.Equal(InstructionFacts.StringInitializer, actual[1]);
             Assert.True(Enumerable.SequenceEqual(expectedTextBytes, actualTextBytes));
             Assert.Equal(InstructionFacts.StringTerminator, actual.Last());
