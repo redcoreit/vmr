@@ -20,7 +20,7 @@ namespace Vmr.Instructions.Tests.Instructions
             var actual = builder.Assemble();
 
             // Assert
-            Assert.Equal(3, actual.Count);
+            Assert.Equal(3, actual.Length);
             Assert.Equal((byte)InstructionCode.Ldc, actual[0]);
             Assert.Equal(InstructionFacts.StringInitializer, actual[1]);
             Assert.Equal(InstructionFacts.StringTerminator, actual[2]);
@@ -38,7 +38,7 @@ namespace Vmr.Instructions.Tests.Instructions
             var actual = builder.Assemble();
 
             // Assert
-            Assert.Equal(3 + expectedTextBytes.Length, actual.Count);
+            Assert.Equal(3 + expectedTextBytes.Length, actual.Length);
             Assert.Equal((byte)InstructionCode.Ldc, actual[0]);
 
             // test test
@@ -61,7 +61,7 @@ namespace Vmr.Instructions.Tests.Instructions
             var actual = builder.Assemble();
 
             // Assert
-            Assert.Equal(11, actual.Count);
+            Assert.Equal(11, actual.Length);
             Assert.Equal((byte)InstructionCode.Ldc, actual[0]);
             
             // 0x01

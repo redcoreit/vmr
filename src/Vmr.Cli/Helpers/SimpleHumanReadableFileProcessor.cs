@@ -11,7 +11,7 @@ using Vmr.Instructions;
 
 namespace Vmr.Cli.Helpers
 {
-    // TODO (RH -): Simple something that works. Will be replaced by proper lexer.
+    // TODO (RH -): Simple something that works. Will be replaced by proper lexer and CodeBuilder.
     public sealed class SimpleHumanReadableFileProcessor
     {
         private SimpleHumanReadableFileProcessor()

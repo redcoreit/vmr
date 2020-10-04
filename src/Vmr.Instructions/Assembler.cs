@@ -20,39 +20,17 @@ namespace Vmr.Instructions
             return binaryCode.ToArray();
         }
 
-        private IEnumerable<byte> EmitObject(object obj)
+        private byte[] EmitObject(object obj)
         {
             var code = obj switch
             {
-                InstructionCode instruction => EmitInstruction(instruction),
-                string text => EmitString(text),
-                int value => EmitInt32(value),
+                InstructionCode instruction => BinaryConvert.GetBytes(instruction),
+                string text => BinaryConvert.GetBytes(text),
+                int value => BinaryConvert.GetBytes(value),
                 _ => throw new ArgumentOutOfRangeException(nameof(obj), obj.GetType().Name, null)
             };
 
             return code;
-        }
-
-        private IEnumerable<byte> EmitInstruction(InstructionCode instruction)
-            => new[] { (byte)instruction };
-
-        private IEnumerable<byte> EmitString(string text)
-        {
-            var result = Encoding.UTF8.GetBytes(text).ToList();
-            result.Insert(0, InstructionFacts.StringInitializer);
-            result.Add(InstructionFacts.StringTerminator);
-
-            return result;
-        }
-
-        private IEnumerable<byte> EmitInt32(int value)
-        {
-            byte[] result = BitConverter.GetBytes(value);
-            
-            if (BitConverter.IsLittleEndian)
-                Array.Reverse(result);
-
-            return result;
         }
     }
 }

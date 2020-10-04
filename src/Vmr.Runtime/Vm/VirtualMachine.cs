@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using Vmr.Instructions;
@@ -12,49 +12,60 @@ namespace Vmr.Runtime.Vm
     public sealed class VirtualMachine
     {
         private readonly Stack<object> _stack;
-        private readonly IReadOnlyList<object> _instructions;
 
-        public VirtualMachine(IReadOnlyList<object> instructions)
+        public VirtualMachine()
         {
             _stack = new Stack<object>();
-            _instructions = instructions.ToList();
         }
 
-        public void Execute(IEnumerable<object> data)
+        public void Execute(byte[] instructions, IEnumerable<object> data)
         {
-            using var enumerator = _instructions.GetEnumerator();
-            var instructionIndex = 0;
+            _stack.Clear();
+
+            using var enumerator = instructions.AsEnumerable().GetEnumerator();
+            var ilIndex = 0;
 
             while (enumerator.MoveNext())
             {
-                if (!InstructionFacts.TryCastInstructionCode(enumerator.Current, out var instruction))
-                    throw new VmExecutionException($"Unexpected code found: '{enumerator.Current}'.");
+                var instruction = GetInstruction(ilIndex, enumerator.Current);
 
-                DispatchInstruction(instructionIndex, instruction.Value, enumerator);
-                instructionIndex++;
+                DispatchInstruction(ilIndex, instruction, enumerator);
+                ilIndex++;
             }
-
         }
 
         public Stack<object> GetStack() => new Stack<object>(_stack);
 
-        private void DispatchInstruction(int instructionIndex, InstructionCode instruction, IEnumerator<object> enumerator)
+        private InstructionCode GetInstruction(IlRef ilRef, byte current)
+        {
+            try
+            {
+                return BinaryConvert.GetInstructionCode(current);
+            }
+            catch (InvalidOperationException)
+            {
+                Throw.NotSupportedInstruction(ilRef);
+                throw; // can't happen
+            }
+        }
+
+        private void DispatchInstruction(IlRef ilRef, InstructionCode instruction, IEnumerator<byte> enumerator)
         {
             switch (instruction)
             {
                 case InstructionCode.Add:
                     {
-                        Add(instructionIndex, instruction, enumerator);
+                        Add(ilRef, instruction, enumerator);
                         break;
                     }
                 case InstructionCode.Ldc:
                     {
-                        Ldc(instructionIndex, instruction, enumerator);
+                        Ldc(ilRef, instruction, enumerator);
                         break;
                     }
                 case InstructionCode.Pop:
                     {
-                        Pop(instructionIndex, instruction, enumerator);
+                        Pop(ilRef, instruction, enumerator);
                         break;
                     }
                 default:
@@ -62,15 +73,15 @@ namespace Vmr.Runtime.Vm
             }
         }
 
-        private void Add(int instructionIndex, InstructionCode instruction, IEnumerator<object> enumerator)
+        private void Add(IlRef ilRef, InstructionCode instruction, IEnumerator<byte> enumerator)
         {
             if (_stack.Count == 0)
-                Throw.StackUnderflowException(instructionIndex);
+                Throw.StackUnderflowException(ilRef);
 
             var op1 = _stack.Pop();
 
             if (_stack.Count == 0)
-                Throw.StackUnderflowException(instructionIndex);
+                Throw.StackUnderflowException(ilRef);
 
             var op2 = _stack.Pop();
 
@@ -90,15 +101,24 @@ namespace Vmr.Runtime.Vm
             _stack.Push(result);
         }
 
-        private void Ldc(int instructionIndex, InstructionCode instruction, IEnumerator<object> enumerator)
+        private void Ldc(IlRef ilRef, InstructionCode instruction, IEnumerator<byte> enumerator)
         {
             if (!enumerator.MoveNext())
-                Throw.MissingInstructionArgument(instructionIndex);
+                Throw.MissingInstructionArgument(ilRef);
 
-            _stack.Push(enumerator.Current);
+            if(enumerator.Current == InstructionFacts.StringInitializer)
+            {
+                var value = BinaryConvert.GetString(enumerator);
+                _stack.Push(value);
+            }
+            else
+            {
+                var value = BinaryConvert.GetInt32(enumerator);
+                _stack.Push(value);
+            }
         }
 
-        private void Pop(int instructionIndex, InstructionCode instruction, IEnumerator<object> enumerator)
+        private void Pop(IlRef ilRef, InstructionCode instruction, IEnumerator<byte> enumerator)
         {
             _stack.Pop();
         }

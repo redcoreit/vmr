@@ -16,7 +16,7 @@ namespace Vmr.Instructions
             _code = new List<object>();
         }
 
-        public IReadOnlyList<byte> Assemble()
+        public byte[] Assemble()
         {
             var emitter = new Assembler();
             var binaryCode = emitter.Emit(GetInstructions());
