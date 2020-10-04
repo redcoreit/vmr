@@ -58,9 +58,14 @@ namespace Vmr.Runtime.Vm
                         Add(ilRef, instruction, enumerator);
                         break;
                     }
-                case InstructionCode.Ldc:
+                case InstructionCode.Ldc_i4:
                     {
                         Ldc(ilRef, instruction, enumerator);
+                        break;
+                    }
+                case InstructionCode.Ldstr:
+                    {
+                        Ldstr(ilRef, instruction, enumerator);
                         break;
                     }
                 case InstructionCode.Pop:
@@ -106,16 +111,17 @@ namespace Vmr.Runtime.Vm
             if (!enumerator.MoveNext())
                 Throw.MissingInstructionArgument(ilRef);
 
-            if(enumerator.Current == InstructionFacts.StringInitializer)
-            {
-                var value = BinaryConvert.GetString(enumerator);
-                _stack.Push(value);
-            }
-            else
-            {
-                var value = BinaryConvert.GetInt32(enumerator);
-                _stack.Push(value);
-            }
+            var value = BinaryConvert.GetInt32(enumerator);
+            _stack.Push(value);
+        }
+
+        private void Ldstr(IlRef ilRef, InstructionCode instruction, IEnumerator<byte> enumerator)
+        {
+            if (!enumerator.MoveNext())
+                Throw.MissingInstructionArgument(ilRef);
+
+            var value = BinaryConvert.GetString(enumerator);
+            _stack.Push(value);
         }
 
         private void Pop(IlRef ilRef, InstructionCode instruction, IEnumerator<byte> enumerator)

@@ -14,7 +14,6 @@ namespace Vmr.Instructions
         public static byte[] GetBytes(string text)
         {
             var result = Encoding.UTF8.GetBytes(text).ToList();
-            result.Insert(0, InstructionFacts.StringInitializer);
             result.Add(InstructionFacts.StringTerminator);
 
             return result.ToArray();
@@ -32,15 +31,17 @@ namespace Vmr.Instructions
 
         public static string GetString(IEnumerator<byte> enumerator)
         {
+            if(enumerator.Current == InstructionFacts.StringTerminator)
+            {
+                return string.Empty;
+            }
+
             var result = new List<byte>();
 
-            if (enumerator.Current != InstructionFacts.StringInitializer)
-                throw new InvalidOperationException("String initialzer is missing!");
-
-            while (enumerator.MoveNext() && enumerator.Current != InstructionFacts.StringTerminator)
+            do
             {
                 result.Add(enumerator.Current);
-            }
+            } while (enumerator.MoveNext() && enumerator.Current != InstructionFacts.StringTerminator);
 
             if (enumerator.Current != InstructionFacts.StringTerminator)
                 throw new InvalidOperationException("Missing string terminator.");

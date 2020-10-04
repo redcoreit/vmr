@@ -12,7 +12,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
     public class VirtualMachineTests
     {
         [Fact]
-        public void Ldc_load_number_from_arg()
+        public void Ldc_i4_load_number_from_arg()
         {
             var builder = new CodeBuilder();
             builder.Ldc(1);
@@ -22,20 +22,20 @@ namespace Vmr.Runtime.Tests.Internal.Vm
         }
 
         [Fact]
-        public void Ldc_load_string_from_arg()
+        public void Ldstr_load_string_from_arg()
         {
             var builder = new CodeBuilder();
-            builder.Ldc("test");
+            builder.Ldstr("test");
             var instructions = builder.Assemble();
 
             ExecNoDataSingleResultTest(instructions, "test");
         }
 
         [Fact]
-        public void Ldc_load_string_with_spaces_from_arg()
+        public void Ldcstr_load_string_with_spaces_from_arg()
         {
             var builder = new CodeBuilder();
-            builder.Ldc("test test");
+            builder.Ldstr("test test");
             var instructions = builder.Assemble();
 
             ExecNoDataSingleResultTest(instructions, "test test");

@@ -14,7 +14,7 @@ namespace Vmr.Core.Tests.Instructions
         public void Ldc_load_number_from_arg()
         {
             // Arrange
-            var expected = new object[] { InstructionCode.Ldc, 0x01 }.ToHashSet();
+            var expected = new object[] { InstructionCode.Ldc_i4, 0x01 }.ToHashSet();
             var builder = new CodeBuilder();
             builder.Ldc(0x01);
 
@@ -30,9 +30,9 @@ namespace Vmr.Core.Tests.Instructions
         public void Ldc_load_string_with_spaces_from_arg()
         {
             // Arrange
-            var expected = new object[] { InstructionCode.Ldc, "test test" }.ToHashSet();
+            var expected = new object[] { InstructionCode.Ldstr, "test test" }.ToHashSet();
             var builder = new CodeBuilder();
-            builder.Ldc("test test");
+            builder.Ldstr("test test");
 
             // Act
             var actual = builder.GetInstructions().ToHashSet();
@@ -46,7 +46,7 @@ namespace Vmr.Core.Tests.Instructions
         public void Add_load_two_numbers_then_sum()
         {
             // Arrange
-            var expected = new object[] { InstructionCode.Ldc, 0x01, InstructionCode.Ldc, 2, InstructionCode.Add }.ToHashSet();
+            var expected = new object[] { InstructionCode.Ldc_i4, 0x01, InstructionCode.Ldc_i4, 2, InstructionCode.Add }.ToHashSet();
             var builder = new CodeBuilder();
             builder.Ldc(0x01);
             builder.Ldc(2);

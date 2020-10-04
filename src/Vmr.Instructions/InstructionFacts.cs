@@ -9,7 +9,6 @@ namespace Vmr.Instructions
 {
     public static class InstructionFacts
     {
-        public const byte StringInitializer = (byte)'\'';
         public const byte StringTerminator = (byte)'\0';
 
         public static string Format(InstructionCode instructionCode)

@@ -95,6 +95,8 @@ namespace Vmr.Cli.Helpers
 
         private InstructionCode LoadInstruction(string word)
         {
+            word = word.Replace('.', '_');
+
             if (!Enum.TryParse<InstructionCode>(word, out var instructionCode))
                 throw new CliException("First code of the line must be an instruction.");
 
