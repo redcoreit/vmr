@@ -18,7 +18,7 @@ namespace Vmr.Runtime.Vm
             _stack = new Stack<object>();
         }
 
-        public void Execute(byte[] instructions, IEnumerable<object> data)
+        public void Execute(byte[] instructions)
         {
             _stack.Clear();
 

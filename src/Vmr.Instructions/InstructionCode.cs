@@ -12,6 +12,9 @@ namespace Vmr.Instructions
         Ldc_i4 = 0x0F,
         Ldstr = 0x7F,
         Pop = 0x60,
+        //_Locals = 
+        //ldloc_s <int> = 0x09,
+        //stloc_s <int> = 0x0D,
         //Ldfld <field> = 0x8F,
         //Ldflda <field> = 0x7B,
     }

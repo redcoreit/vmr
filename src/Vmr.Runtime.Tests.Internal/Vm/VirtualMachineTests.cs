@@ -62,11 +62,10 @@ namespace Vmr.Runtime.Tests.Internal.Vm
             builder.Pop();
             var instructions = builder.Assemble();
 
-            var data = Enumerable.Empty<object>();
             var vm = new VirtualMachine();
 
             // Act
-            vm.Execute(instructions, data);
+            vm.Execute(instructions);
             var actualResult = vm.GetStack();
 
             // Assert
@@ -76,11 +75,10 @@ namespace Vmr.Runtime.Tests.Internal.Vm
         private void ExecNoDataSingleResultTest<TResult>(byte[] instructions, TResult expected)
         {
             // Assert
-            var data = Enumerable.Empty<object>();
             var vm = new VirtualMachine();
 
             // Act
-            vm.Execute(instructions, data);
+            vm.Execute(instructions);
             var actualResult = vm.GetStack();
 
             // Assert

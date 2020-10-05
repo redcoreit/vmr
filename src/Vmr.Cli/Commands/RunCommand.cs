@@ -38,7 +38,7 @@ namespace Vmr.Cli.Commands
                 var assembler = new Assembler();
                 var instructions = assembler.Emit(program);
                 var vm = new VirtualMachine();
-                vm.Execute(instructions, Enumerable.Empty<object>());
+                vm.Execute(instructions);
                 var result = vm.GetStack().SingleOrDefault();
 
                 if (result is not null)
