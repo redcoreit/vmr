@@ -6,13 +6,13 @@ namespace Vmr.Instructions
 {
     public static class Linker
     {
-        public static void LinkLabels(List<object> code, IReadOnlyDictionary<int, string> labelCallSites, IReadOnlyDictionary<string, int> labelTargets)
+        public static void LinkLabels(List<object> code, LableInfo lableInfo)
         {
             for (int i = 0; i < code.Count; i++)
             {
-                if(labelCallSites.TryGetValue(i, out var label))
+                if(lableInfo.TryGetCallSite(i, out var label))
                 {
-                    code[i] = labelTargets[label];
+                    code[i] = lableInfo.GetTarget(label).Value;
                 }
             }
         }

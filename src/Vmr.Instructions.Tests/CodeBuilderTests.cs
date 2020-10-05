@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Vmr.Instructions;
 using Xunit;
 
-namespace Vmr.Core.Tests.Instructions
+namespace Vmr.Instructions.Tests
 {
     public class CodeBuilderTests
     {
@@ -25,7 +25,7 @@ namespace Vmr.Core.Tests.Instructions
             Assert.Subset(expected, actual);
             Assert.Superset(expected, actual);
         }
-        
+
         [Fact]
         public void Ldc_load_string_with_spaces_from_arg()
         {

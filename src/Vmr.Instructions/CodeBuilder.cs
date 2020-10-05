@@ -13,24 +13,22 @@ namespace Vmr.Instructions
         private const int SizeOfOpCode = sizeof(InstructionCode);
         private const int SizeOfEos = sizeof(Char);
         private readonly List<object> _code;
-        private readonly Dictionary<int, string> _labelCallSites;
-        private readonly Dictionary<string, int> _labelTargets;
-
+        private readonly LableInfoBuilder _lableInfoBuilder;
 
         private int _ilRef;
 
         public CodeBuilder()
         {
             _code = new List<object>();
-            _labelCallSites = new Dictionary<int, string>();
-            _labelTargets = new Dictionary<string, int>();
+            _lableInfoBuilder = new LableInfoBuilder();
         }
 
         public IlRef IlRef => _ilRef;
 
         public byte[] Compile()
         {
-            Linker.LinkLabels(_code, _labelCallSites, _labelTargets);
+            var labelInfo = _lableInfoBuilder.Build();
+            Linker.LinkLabels(_code, labelInfo);
 
             var assmebler = new Assembler();
             var binaryCode = assmebler.Emit(GetInstructions());
@@ -38,8 +36,11 @@ namespace Vmr.Instructions
             return binaryCode;
         }
 
-        public IReadOnlyList<object> GetInstructions()
-            => _code.ToArray();
+        public List<object> GetInstructions()
+            => _code.ToList();
+
+        public LableInfo GetLabelInfo()
+            => _lableInfoBuilder.Build();
 
         public void Ldc_i4(int value)
         {
@@ -83,16 +84,15 @@ namespace Vmr.Instructions
         public void Br(string label)
         {
             _code.Add(InstructionCode.Br);
-            _ilRef += SizeOfOpCode;
-
             _code.Add(0); // placeholder
-            _labelCallSites[_code.Count - 1] = label;
-            _ilRef += sizeof(int);
+
+            _lableInfoBuilder.AddCallSite(_code.Count - 1, label);
+            _ilRef += SizeOfOpCode + sizeof(int);
         }
 
         public void Label(string label)
         {
-            _labelTargets[label] = _ilRef;
+            _lableInfoBuilder.AddTarget(label, _ilRef);
         }
 
         public void Nop()

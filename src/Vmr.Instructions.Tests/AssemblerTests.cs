@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Vmr.Instructions.Tests.Instructions
+namespace Vmr.Instructions.Tests
 {
     public class AssemblerTests
     {
@@ -42,7 +42,7 @@ namespace Vmr.Instructions.Tests.Instructions
 
             // test test
             var actualTextBytes = actual.ToArray().AsSpan(1..^1).ToArray();
-            Assert.True(Enumerable.SequenceEqual(expectedTextBytes, actualTextBytes));
+            Assert.True(expectedTextBytes.SequenceEqual(actualTextBytes));
             Assert.Equal(InstructionFacts.StringTerminator, actual.Last());
         }
 
@@ -61,7 +61,7 @@ namespace Vmr.Instructions.Tests.Instructions
             // Assert
             Assert.Equal(11, actual.Length);
             Assert.Equal((byte)InstructionCode.Ldc_i4, actual[0]);
-            
+
             // 0x01
             Assert.Equal((byte)0, actual[1]);
             Assert.Equal((byte)0, actual[2]);
