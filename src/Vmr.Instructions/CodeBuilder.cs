@@ -93,8 +93,6 @@ namespace Vmr.Instructions
         public void Label(string label)
         {
             _labelTargets[label] = _ilRef;
-
-            Nop();
         }
 
         public void Nop()
