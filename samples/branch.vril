@@ -1,0 +1,15 @@
+    Br "start"
+
+Remove:
+    Pop 
+    Br "end"
+
+Start:
+    Ldc_i4 0
+    Ldc_i4 1
+    Ldc_i4 2
+    Add 
+    Br "pop"
+
+End:
+    Nop 

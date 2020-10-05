@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vmr.Runtime.Tests.Internal"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vmr.Cli", "Vmr.Cli\Vmr.Cli.csproj", "{2E19C381-86FE-4C87-8DF4-3CB33B1A7D26}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vmr.Cli.Tests.Internal", "Vmr.Cli.Tests\Vmr.Cli.Tests.Internal.csproj", "{0E365590-A399-418A-87D2-10AB765654F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{2E19C381-86FE-4C87-8DF4-3CB33B1A7D26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E19C381-86FE-4C87-8DF4-3CB33B1A7D26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E19C381-86FE-4C87-8DF4-3CB33B1A7D26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E365590-A399-418A-87D2-10AB765654F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E365590-A399-418A-87D2-10AB765654F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E365590-A399-418A-87D2-10AB765654F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E365590-A399-418A-87D2-10AB765654F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

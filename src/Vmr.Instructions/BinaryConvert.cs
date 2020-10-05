@@ -53,7 +53,7 @@ namespace Vmr.Instructions
         {
             var binary = new byte[sizeof(int)];
             binary[0] = instructions[_pointer];
-
+            // TODO (RH -): do-while
             for (var i = 1; i < sizeof(int); i++)
             {
                 _pointer++;
