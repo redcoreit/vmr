@@ -13,6 +13,8 @@ namespace Vmr.Runtime.Vm
     {
         private readonly Stack<object> _stack;
 
+        private int _pointer = 0;
+
         public VirtualMachine()
         {
             _stack = new Stack<object>();
@@ -21,22 +23,18 @@ namespace Vmr.Runtime.Vm
         public void Execute(byte[] instructions)
         {
             _stack.Clear();
+            var span = instructions.AsSpan();
 
-            using var enumerator = instructions.AsEnumerable().GetEnumerator();
-            var ilIndex = 0;
-
-            while (enumerator.MoveNext())
+            while (_pointer < span.Length)
             {
-                var instruction = GetInstruction(ilIndex, enumerator.Current);
-
-                DispatchInstruction(ilIndex, instruction, enumerator);
-                ilIndex++;
+                var instruction = GetInstruction(span[_pointer]);
+                DispatchInstruction(instruction, span);
             }
         }
 
         public Stack<object> GetStack() => new Stack<object>(_stack);
 
-        private InstructionCode GetInstruction(IlRef ilRef, byte current)
+        private InstructionCode GetInstruction(byte current)
         {
             try
             {
@@ -44,33 +42,33 @@ namespace Vmr.Runtime.Vm
             }
             catch (InvalidOperationException)
             {
-                Throw.NotSupportedInstruction(ilRef);
+                Throw.NotSupportedInstruction(_pointer);
                 throw; // can't happen
             }
         }
 
-        private void DispatchInstruction(IlRef ilRef, InstructionCode instruction, IEnumerator<byte> enumerator)
+        private void DispatchInstruction(InstructionCode instruction, ReadOnlySpan<byte> instructions)
         {
             switch (instruction)
             {
                 case InstructionCode.Add:
                     {
-                        Add(ilRef, instruction, enumerator);
+                        Add(instruction, instructions);
                         break;
                     }
                 case InstructionCode.Ldc_i4:
                     {
-                        Ldc(ilRef, instruction, enumerator);
+                        Ldc(instruction, instructions);
                         break;
                     }
                 case InstructionCode.Ldstr:
                     {
-                        Ldstr(ilRef, instruction, enumerator);
+                        Ldstr(instruction, instructions);
                         break;
                     }
                 case InstructionCode.Pop:
                     {
-                        Pop(ilRef, instruction, enumerator);
+                        Pop(instruction, instructions);
                         break;
                     }
                 default:
@@ -78,15 +76,15 @@ namespace Vmr.Runtime.Vm
             }
         }
 
-        private void Add(IlRef ilRef, InstructionCode instruction, IEnumerator<byte> enumerator)
+        private void Add(InstructionCode instruction, ReadOnlySpan<byte> instructions)
         {
             if (_stack.Count == 0)
-                Throw.StackUnderflowException(ilRef);
+                Throw.StackUnderflowException(_pointer);
 
             var op1 = _stack.Pop();
 
             if (_stack.Count == 0)
-                Throw.StackUnderflowException(ilRef);
+                Throw.StackUnderflowException(_pointer);
 
             var op2 = _stack.Pop();
 
@@ -104,29 +102,37 @@ namespace Vmr.Runtime.Vm
 
             var result = num1 + num2;
             _stack.Push(result);
+            
+            _pointer++;
         }
 
-        private void Ldc(IlRef ilRef, InstructionCode instruction, IEnumerator<byte> enumerator)
+        private void Ldc(InstructionCode instruction, ReadOnlySpan<byte> instructions)
         {
-            if (!enumerator.MoveNext())
-                Throw.MissingInstructionArgument(ilRef);
+            if (_pointer++ >= instructions.Length)
+                Throw.MissingInstructionArgument(_pointer);
 
-            var value = BinaryConvert.GetInt32(enumerator);
+            var value = BinaryConvert.GetInt32(ref _pointer, instructions);
             _stack.Push(value);
+
+            _pointer++;
         }
 
-        private void Ldstr(IlRef ilRef, InstructionCode instruction, IEnumerator<byte> enumerator)
+        private void Ldstr(InstructionCode instruction, ReadOnlySpan<byte> instructions)
         {
-            if (!enumerator.MoveNext())
-                Throw.MissingInstructionArgument(ilRef);
+            if (_pointer++ >= instructions.Length)
+                Throw.MissingInstructionArgument(_pointer);
 
-            var value = BinaryConvert.GetString(enumerator);
+            var value = BinaryConvert.GetString(ref _pointer, instructions);
             _stack.Push(value);
+
+            _pointer++;
         }
 
-        private void Pop(IlRef ilRef, InstructionCode instruction, IEnumerator<byte> enumerator)
+        private void Pop(InstructionCode instruction, ReadOnlySpan<byte> instructions)
         {
             _stack.Pop();
+
+            _pointer++;
         }
     }
 }

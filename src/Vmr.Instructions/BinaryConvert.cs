@@ -29,9 +29,9 @@ namespace Vmr.Instructions
             return result;
         }
 
-        public static string GetString(IEnumerator<byte> enumerator)
+        public static string GetString(ref int _pointer, ReadOnlySpan<byte> instructions)
         {
-            if(enumerator.Current == InstructionFacts.StringTerminator)
+            if (instructions[_pointer] == InstructionFacts.StringTerminator)
             {
                 return string.Empty;
             }
@@ -40,24 +40,24 @@ namespace Vmr.Instructions
 
             do
             {
-                result.Add(enumerator.Current);
-            } while (enumerator.MoveNext() && enumerator.Current != InstructionFacts.StringTerminator);
+                result.Add(instructions[_pointer]);
+            } while (_pointer++ < instructions.Length && instructions[_pointer] != InstructionFacts.StringTerminator);
 
-            if (enumerator.Current != InstructionFacts.StringTerminator)
+            if (instructions[_pointer] != InstructionFacts.StringTerminator)
                 throw new InvalidOperationException("Missing string terminator.");
 
             return Encoding.UTF8.GetString(result.ToArray());
         }
 
-        public static int GetInt32(IEnumerator<byte> enumerator)
+        public static int GetInt32(ref int _pointer, ReadOnlySpan<byte> instructions)
         {
             var binary = new byte[sizeof(int)];
-            binary[0] = enumerator.Current;
+            binary[0] = instructions[_pointer];
 
             for (var i = 1; i < sizeof(int); i++)
             {
-                enumerator.MoveNext();
-                binary[i] = enumerator.Current;
+                _pointer++;
+                binary[i] = instructions[_pointer];
             }
 
             if (BitConverter.IsLittleEndian)
@@ -71,7 +71,7 @@ namespace Vmr.Instructions
         {
             var code = (InstructionCode)value;
 
-            if(!Enum.IsDefined(typeof(InstructionCode), code))
+            if (!Enum.IsDefined(typeof(InstructionCode), code))
             {
                 throw new InvalidOperationException("Not an instruction.");
             }
