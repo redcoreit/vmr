@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Dynamic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Transactions;
 using Vmr.Instructions;
@@ -58,7 +61,7 @@ namespace Vmr.Runtime.Vm
                     }
                 case InstructionCode.Ldc_i4:
                     {
-                        Ldc(instruction, instructions);
+                        Ldc_i4(instruction, instructions);
                         break;
                     }
                 case InstructionCode.Ldstr:
@@ -69,6 +72,16 @@ namespace Vmr.Runtime.Vm
                 case InstructionCode.Pop:
                     {
                         Pop(instruction, instructions);
+                        break;
+                    }
+                case InstructionCode.Br:
+                    {
+                        Br(instruction, instructions);
+                        break;
+                    }
+                case InstructionCode.Nop:
+                    {
+                        _pointer++;
                         break;
                     }
                 default:
@@ -102,11 +115,11 @@ namespace Vmr.Runtime.Vm
 
             var result = num1 + num2;
             _stack.Push(result);
-            
+
             _pointer++;
         }
 
-        private void Ldc(InstructionCode instruction, ReadOnlySpan<byte> instructions)
+        private void Ldc_i4(InstructionCode instruction, ReadOnlySpan<byte> instructions)
         {
             if (_pointer++ >= instructions.Length)
                 Throw.MissingInstructionArgument(_pointer);
@@ -133,6 +146,22 @@ namespace Vmr.Runtime.Vm
             _stack.Pop();
 
             _pointer++;
+        }
+
+        private void Br(InstructionCode instruction, ReadOnlySpan<byte> instructions)
+        {
+            if (_pointer++ >= instructions.Length)
+                Throw.MissingInstructionArgument(_pointer);
+
+            var target = BinaryConvert.GetInt32(ref _pointer, instructions);
+
+            if (target >= instructions.Length)
+            {
+                Throw.InvalidInstructionArgument(_pointer);
+                return;
+            }
+
+            _pointer = target;
         }
     }
 }

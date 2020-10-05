@@ -17,7 +17,7 @@ namespace Vmr.Instructions.Tests.Instructions
             builder.Ldstr("");
 
             // Act
-            var actual = builder.Assemble();
+            var actual = builder.Compile();
 
             // Assert
             Assert.Equal(2, actual.Length);
@@ -34,7 +34,7 @@ namespace Vmr.Instructions.Tests.Instructions
             builder.Ldstr("test test");
 
             // Act
-            var actual = builder.Assemble();
+            var actual = builder.Compile();
 
             // Assert
             Assert.Equal(2 + expectedTextBytes.Length, actual.Length);
@@ -51,12 +51,12 @@ namespace Vmr.Instructions.Tests.Instructions
         {
             // Arrange
             var builder = new CodeBuilder();
-            builder.Ldc(0x01);
-            builder.Ldc(2);
+            builder.Ldc_i4(0x01);
+            builder.Ldc_i4(2);
             builder.Add();
 
             // Act
-            var actual = builder.Assemble();
+            var actual = builder.Compile();
 
             // Assert
             Assert.Equal(11, actual.Length);

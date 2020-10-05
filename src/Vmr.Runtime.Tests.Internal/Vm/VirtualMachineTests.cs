@@ -12,55 +12,13 @@ namespace Vmr.Runtime.Tests.Internal.Vm
     public class VirtualMachineTests
     {
         [Fact]
-        public void Ldc_i4_load_number_from_arg()
-        {
-            var builder = new CodeBuilder();
-            builder.Ldc(1);
-            var instructions = builder.Assemble();
-
-            ExecNoDataSingleResultTest(instructions, 0x01);
-        }
-
-        [Fact]
-        public void Ldstr_load_string_from_arg()
-        {
-            var builder = new CodeBuilder();
-            builder.Ldstr("test");
-            var instructions = builder.Assemble();
-
-            ExecNoDataSingleResultTest(instructions, "test");
-        }
-
-        [Fact]
-        public void Ldcstr_load_string_with_spaces_from_arg()
-        {
-            var builder = new CodeBuilder();
-            builder.Ldstr("test test");
-            var instructions = builder.Assemble();
-
-            ExecNoDataSingleResultTest(instructions, "test test");
-        }
-
-        [Fact]
-        public void Add_load_two_numbers_then_sum()
-        {
-            var builder = new CodeBuilder();
-            builder.Ldc(1);
-            builder.Ldc(2);
-            builder.Add();
-            var instructions = builder.Assemble();
-
-            ExecNoDataSingleResultTest(instructions, 3);
-        }
-
-        [Fact]
         public void Pop_remove_data_from_stack()
         {
             // Assert
             var builder = new CodeBuilder();
-            builder.Ldc(1);
+            builder.Ldc_i4(1);
             builder.Pop();
-            var instructions = builder.Assemble();
+            var instructions = builder.Compile();
 
             var vm = new VirtualMachine();
 
@@ -70,6 +28,82 @@ namespace Vmr.Runtime.Tests.Internal.Vm
 
             // Assert
             Assert.Empty(actualResult);
+        }
+
+        [Fact]
+        public void Ldc_i4_load_number_from_arg()
+        {
+            var builder = new CodeBuilder();
+            builder.Ldc_i4(1);
+            var instructions = builder.Compile();
+
+            ExecNoDataSingleResultTest(instructions, 0x01);
+        }
+
+        [Fact]
+        public void Ldstr_load_string_from_arg()
+        {
+            var builder = new CodeBuilder();
+            builder.Ldstr("test");
+            var instructions = builder.Compile();
+
+            ExecNoDataSingleResultTest(instructions, "test");
+        }
+
+        [Fact]
+        public void Ldcstr_load_string_with_spaces_from_arg()
+        {
+            var builder = new CodeBuilder();
+            builder.Ldstr("test test");
+            var instructions = builder.Compile();
+
+            ExecNoDataSingleResultTest(instructions, "test test");
+        }
+
+        [Fact]
+        public void Add_load_two_numbers_then_sum()
+        {
+            var builder = new CodeBuilder();
+            builder.Ldc_i4(1);
+            builder.Ldc_i4(2);
+            builder.Add();
+            var instructions = builder.Compile();
+
+            ExecNoDataSingleResultTest(instructions, 3);
+        }
+
+        [Fact]
+        public void Br_branch_with_one_jump()
+        {
+            var builder = new CodeBuilder();
+            builder.Br("start");
+            builder.Pop();
+            builder.Label("start");
+            builder.Ldc_i4(1);
+            var instructions = builder.Compile();
+
+            ExecNoDataSingleResultTest(instructions, 1);
+        }
+
+        [Fact]
+        public void Br_branch_with_two_jump()
+        {
+            var builder = new CodeBuilder();
+            builder.Br("start");
+            builder.Label("pop");
+            builder.Pop();
+            builder.Br("end");
+            builder.Label("start");
+            builder.Ldc_i4(0);
+            builder.Ldc_i4(1);
+            builder.Ldc_i4(2);
+            builder.Add();
+            builder.Br("pop");
+            builder.Label("end");
+            builder.Nop();
+            var instructions = builder.Compile();
+
+            ExecNoDataSingleResultTest(instructions, 0);
         }
 
         private void ExecNoDataSingleResultTest<TResult>(byte[] instructions, TResult expected)

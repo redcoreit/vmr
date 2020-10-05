@@ -8,22 +8,22 @@ namespace Vmr.Instructions
     public readonly ref struct IlRef
     {
         private readonly bool _initialized;
-        private readonly int _address;
+        private readonly int _value;
 
-        public IlRef(int address)
+        public IlRef(int ilRef)
         {
-            _address = address;
+            _value = ilRef;
             _initialized = true;
         }
 
-        public int Address => _address;
+        public int Value => _value;
 
         public override bool Equals(object? obj) => false;
 
         public bool Equals(IlRef other)
-            => other._initialized == _initialized && other._address == _address;
+            => other._initialized == _initialized && other._value == _value;
 
-        public override int GetHashCode() => HashCode.Combine(_address);
+        public override int GetHashCode() => HashCode.Combine(_value);
 
         public static bool operator ==(IlRef left, IlRef right) 
             => left.Equals(right);
@@ -32,7 +32,7 @@ namespace Vmr.Instructions
             => !(left == right);
 
         public override string ToString() 
-            => $"IL_{_address.ToString("D4")}";
+            => $"IL_{_value.ToString("D4")}";
 
         public static implicit operator IlRef(int ilRef)
             => new IlRef(ilRef);

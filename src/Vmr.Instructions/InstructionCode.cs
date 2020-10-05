@@ -12,6 +12,8 @@ namespace Vmr.Instructions
         Ldc_i4 = 0x0F,
         Ldstr = 0x7F,
         Pop = 0x60,
+        Br = 0x38,
+        Nop = 0xff, // Nop has no value, we made one.
         //_Locals = 
         //ldloc_s <int> = 0x09,
         //stloc_s <int> = 0x0D,

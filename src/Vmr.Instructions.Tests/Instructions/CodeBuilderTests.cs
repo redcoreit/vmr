@@ -16,7 +16,7 @@ namespace Vmr.Core.Tests.Instructions
             // Arrange
             var expected = new object[] { InstructionCode.Ldc_i4, 0x01 }.ToHashSet();
             var builder = new CodeBuilder();
-            builder.Ldc(0x01);
+            builder.Ldc_i4(0x01);
 
             // Act
             var actual = builder.GetInstructions().ToHashSet();
@@ -48,8 +48,8 @@ namespace Vmr.Core.Tests.Instructions
             // Arrange
             var expected = new object[] { InstructionCode.Ldc_i4, 0x01, InstructionCode.Ldc_i4, 2, InstructionCode.Add }.ToHashSet();
             var builder = new CodeBuilder();
-            builder.Ldc(0x01);
-            builder.Ldc(2);
+            builder.Ldc_i4(0x01);
+            builder.Ldc_i4(2);
             builder.Add();
 
             // Act

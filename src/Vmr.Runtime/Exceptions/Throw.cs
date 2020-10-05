@@ -11,12 +11,16 @@ namespace Vmr.Runtime.Exceptions
     internal static class Throw
     {
         [DoesNotReturn]
+        public static void InvalidInstructionArgument(IlRef ilRef)
+            => throw new VmExecutionException($"Invalid instruction argument. IlRef: {ilRef.ToString()}");
+
+        [DoesNotReturn]
         public static void MissingInstructionArgument(IlRef ilRef)
-            => throw new VmExecutionException($"Required instruction argument missing. InstructionIndex: {ilRef.ToString()}");
+            => throw new VmExecutionException($"Required instruction argument missing. IlRef: {ilRef.ToString()}");
 
         [DoesNotReturn]
         public static void NotSupportedInstruction(IlRef ilRef)
-            => throw new VmExecutionException($"Required instruction argument missing. InstructionIndex: {ilRef.ToString()}");
+            => throw new VmExecutionException($"Not supported instruction. IlRef: {ilRef.ToString()}");
 
         [DoesNotReturn]
         internal static void OperationNotSupported(InstructionCode instructionCode)
