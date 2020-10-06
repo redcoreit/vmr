@@ -167,7 +167,7 @@ namespace Vmr.Cli.Syntax
             do
             {
                 MoveNext();
-            } while (!char.IsWhiteSpace(Current));
+            } while (!char.IsWhiteSpace(Current) && Current != '\0');
 
             var literals = SliceText(Start, Position - Start).ToLowerInvariant();
 
@@ -186,7 +186,8 @@ namespace Vmr.Cli.Syntax
 
             if(Kind == SyntaxKind.LiteralToken && literals.AsSpan()[^1] == ':')
             {
-                Kind = SyntaxKind.LabelToken;
+                Kind = SyntaxKind.LabelDeclarationToken;
+                Value = literals.TrimEnd(':');
             }
 
             bool Match(params string[] words)

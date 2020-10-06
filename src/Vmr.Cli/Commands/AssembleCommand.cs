@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Vmr.Cli.Exceptions;
 using Vmr.Cli.Helpers;
 using Vmr.Cli.Options;
+using Vmr.Cli.Syntax;
 using Vmr.Instructions;
 
 namespace Vmr.Cli.Commands
@@ -31,10 +32,11 @@ namespace Vmr.Cli.Commands
                     throw new FileNotFoundException(opts.FilePath);
                 }
 
-                var program = SimpleHumanReadableFileProcessor.Process(file);
-                var assembler = new Assembler();
-                var binary = assembler.Emit(program);
-                WriteBinaryFile(file, binary);
+                var content = file.GetContent();                
+                var parser = new IlParser(content);
+                var codeBuilder = parser.Parse();
+                var program = codeBuilder.Compile();
+                WriteBinaryFile(file, program);
             }
             catch (CliException ex)
             {

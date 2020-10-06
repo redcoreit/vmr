@@ -12,19 +12,36 @@ namespace Vmr.Cli.Tests.Internal.Syntax
 {
     public class IlLexerTests
     {
-        [Theory]
-        [MemberData(nameof(ReadTestFiles))]
-        public void Lex_sample_files_and_regenerate(string filename, string contnet)
+        [Fact]
+        public void Lex_nop_without_newline_at_end()
         {
             // Arrange
-            var lexer = new IlLexer(contnet);
+            var content = "nop";
+            var lexer = new IlLexer(content);
+
+            // Act
+            var tokens = lexer.LexAll().ToList();
+
+            // Assert
+            Assert.Equal(2, tokens.Count);
+            Assert.Equal(SyntaxKind.OpCode_Nop, tokens[0].Kind);
+            Assert.Equal(SyntaxKind.EndOfFileToken, tokens[1].Kind);
+        }
+
+
+        [Theory]
+        [MemberData(nameof(ReadTestFiles))]
+        public void Lex_sample_files_and_regenerate(string filename, string content)
+        {
+            // Arrange
+            var lexer = new IlLexer(content);
 
             // Act
             var tokens = lexer.LexAll().ToList();
             var actual = ReconstructText(tokens);
 
             // Assert
-            Assert.Equal(contnet, actual);
+            Assert.Equal(content, actual);
         }
 
         public static IEnumerable<object[]> ReadTestFiles()
@@ -57,7 +74,7 @@ namespace Vmr.Cli.Tests.Internal.Syntax
 
                 if(builder.Length != 0)
                 {
-                    if (SyntaxFacts.IsInstruction(current.Kind) || current.Kind == SyntaxKind.LabelToken)
+                    if (SyntaxFacts.IsInstruction(current.Kind) || current.Kind == SyntaxKind.LabelDeclarationToken)
                     {
                         builder.AppendLine();
                     }

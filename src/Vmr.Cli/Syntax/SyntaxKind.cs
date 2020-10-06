@@ -8,7 +8,7 @@ namespace Vmr.Cli.Syntax
         BadToken = 1,
         EndOfFileToken,
         LiteralToken,
-        LabelToken,
+        LabelDeclarationToken,
         StringToken,
         CommentToken,
         Int32Token,

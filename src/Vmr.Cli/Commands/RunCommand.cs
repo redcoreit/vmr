@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Vmr.Cli.Exceptions;
 using Vmr.Cli.Helpers;
 using Vmr.Cli.Options;
+using Vmr.Cli.Syntax;
 using Vmr.Instructions;
 using Vmr.Runtime.Exceptions;
 using Vmr.Runtime.Vm;
@@ -34,11 +35,12 @@ namespace Vmr.Cli.Commands
                     throw new FileNotFoundException(opts.FilePath);
                 }
 
-                var program = SimpleHumanReadableFileProcessor.Process(file);
-                var assembler = new Assembler();
-                var instructions = assembler.Emit(program);
+                var content = file.GetContent();
+                var parser = new IlParser(content);
+                var codeBuilder = parser.Parse();
+                var program = codeBuilder.Compile();
                 var vm = new VirtualMachine();
-                vm.Execute(instructions);
+                vm.Execute(program);
                 var result = vm.GetStack().SingleOrDefault();
 
                 if (result is not null)

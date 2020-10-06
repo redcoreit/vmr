@@ -29,7 +29,7 @@ namespace Vmr.Instructions
         {
             if (_targets.ContainsKey(label))
             {
-                throw new InvalidOperationException("Label target already exsists.");
+                throw new InvalidOperationException($"Label '{label}' target already exsists.");
             }
 
             _targets[label] = argument.Value;
