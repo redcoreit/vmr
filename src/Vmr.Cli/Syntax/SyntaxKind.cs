@@ -21,5 +21,6 @@ namespace Vmr.Cli.Syntax
         OpCode_Pop,
         OpCode_Br,
         OpCode_Nop,
+        OpCode_Ceq,
     }
 }

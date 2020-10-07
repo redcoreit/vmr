@@ -59,5 +59,23 @@ namespace Vmr.Instructions.Tests
             Assert.Subset(expected, actual);
             Assert.Superset(expected, actual);
         }
+
+        [Fact]
+        public void Ceq_load_two_numbers_then_compare()
+        {
+            // Arrange
+            var expected = new object[] { InstructionCode.Ldc_i4, 0x01, InstructionCode.Ldc_i4, 2, InstructionCode.Ceq }.ToHashSet();
+            var builder = new CodeBuilder();
+            builder.Ldc_i4(0x01);
+            builder.Ldc_i4(2);
+            builder.Ceq();
+
+            // Act
+            var actual = builder.GetInstructions().ToHashSet();
+
+            // Assert
+            Assert.Subset(expected, actual);
+            Assert.Superset(expected, actual);
+        }
     }
 }

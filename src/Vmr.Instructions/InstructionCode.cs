@@ -14,6 +14,7 @@ namespace Vmr.Instructions
         Pop = 0x60,
         Br = 0x38,
         Nop = 0xff, // Nop has no value, we made one.
+        Ceq = 0x74,
         //_Locals = 
         //ldloc_s <int> = 0x09,
         //stloc_s <int> = 0x0D,

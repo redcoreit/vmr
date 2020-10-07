@@ -90,6 +90,12 @@ namespace Vmr.Instructions
             _ilRef += SizeOfOpCode + sizeof(int);
         }
 
+        public void Ceq()
+        {
+            _code.Add(InstructionCode.Ceq);
+            _ilRef += SizeOfOpCode;
+        }
+
         public void Label(string label)
         {
             _lableInfoBuilder.AddTarget(label, _ilRef);

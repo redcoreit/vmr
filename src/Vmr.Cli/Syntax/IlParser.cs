@@ -73,6 +73,11 @@ namespace Vmr.Cli.Syntax
                         ParseBr();
                         break;
                     }
+                case SyntaxKind.OpCode_Ceq:
+                    {
+                        ParseCeq();
+                        break;
+                    }
                 case SyntaxKind.OpCode_Nop:
                 default:
                     {
@@ -119,6 +124,12 @@ namespace Vmr.Cli.Syntax
         {
             var op = ExpectToken(SyntaxKind.OpCode_Nop);
             _codeBuilder.Nop();
+        }
+
+        private void ParseCeq()
+        {
+            var op = ExpectToken(SyntaxKind.OpCode_Ceq);
+            _codeBuilder.Ceq();
         }
     }
 }

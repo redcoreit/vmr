@@ -16,13 +16,19 @@ namespace Vmr.Cli.Helpers
             stream.CopyTo(memoryStream);
         }
 
-        public static string GetContent(this FileInfo fileInfo)
+        public static byte[] GetBinaryContent(this FileInfo fileInfo)
         {
             using var ms = new MemoryStream();
 
             fileInfo.ReadToMemory(ms);
             var array = ms.ToArray();
 
+            return array;
+        }
+
+        public static string GetTextContent(this FileInfo fileInfo)
+        {
+            var array = GetBinaryContent(fileInfo);
             return Encoding.UTF8.GetString(array);
         }
     }

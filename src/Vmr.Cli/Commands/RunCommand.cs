@@ -35,10 +35,7 @@ namespace Vmr.Cli.Commands
                     throw new FileNotFoundException(opts.FilePath);
                 }
 
-                var content = file.GetContent();
-                var parser = new IlParser(content);
-                var codeBuilder = parser.Parse();
-                var program = codeBuilder.Compile();
+                var program = file.GetBinaryContent();
                 var vm = new VirtualMachine();
                 vm.Execute(program);
                 var result = vm.GetStack().SingleOrDefault();

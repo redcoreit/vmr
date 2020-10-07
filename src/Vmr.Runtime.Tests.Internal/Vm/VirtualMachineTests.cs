@@ -106,6 +106,18 @@ namespace Vmr.Runtime.Tests.Internal.Vm
             ExecNoDataSingleResultTest(instructions, 0);
         }
 
+        [Fact]
+        public void Ceq_compare_two_numbers()
+        {
+            var builder = new CodeBuilder();
+            builder.Ldc_i4(2);
+            builder.Ldc_i4(2);
+            builder.Ceq();
+            var instructions = builder.Compile();
+
+            ExecNoDataSingleResultTest(instructions, 1);
+        }
+
         private void ExecNoDataSingleResultTest<TResult>(byte[] instructions, TResult expected)
         {
             // Assert

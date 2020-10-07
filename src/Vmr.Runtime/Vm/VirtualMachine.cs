@@ -79,6 +79,11 @@ namespace Vmr.Runtime.Vm
                         Br(instruction, instructions);
                         break;
                     }
+                case InstructionCode.Ceq:
+                    {
+                        Ceq(instruction, instructions);
+                        break;
+                    }
                 case InstructionCode.Nop:
                     {
                         _pointer++;
@@ -162,6 +167,20 @@ namespace Vmr.Runtime.Vm
             }
 
             _pointer = target;
+        }
+
+        private void Ceq(InstructionCode instruction, ReadOnlySpan<byte> instructions)
+        {
+            if (_pointer++ >= instructions.Length)
+                Throw.MissingInstructionArgument(_pointer);
+
+            var op2 = _stack.Pop();
+            var op1 = _stack.Pop();
+
+            var result = Equals(op1, op2);
+            
+            _stack.Push(result ? 1 : 0);
+            _pointer++;
         }
     }
 }
