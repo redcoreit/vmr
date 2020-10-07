@@ -19,8 +19,8 @@ namespace Vmr.Runtime.Exceptions
             => throw new VmExecutionException($"Required instruction argument missing. IlRef: {ilRef.ToString()}");
 
         [DoesNotReturn]
-        public static void NotSupportedInstruction(IlRef ilRef)
-            => throw new VmExecutionException($"Not supported instruction. IlRef: {ilRef.ToString()}");
+        public static void NotSupportedInstruction(IlRef ilRef, byte code)
+            => throw new VmExecutionException($"Not supported instruction. IlRef: {ilRef.ToString()} Code: 0x{code.ToString("X2")}");
 
         [DoesNotReturn]
         internal static void OperationNotSupported(InstructionCode instructionCode)

@@ -58,7 +58,7 @@ namespace Vmr.Instructions
             // TODO (RH perf): find an efficient way to determine UTF8 string size.
             var sizeofValue = BinaryConvert.GetBytes(value).Length;
 
-            _ilRef += SizeOfOpCode + sizeofValue + SizeOfEos;
+            _ilRef += SizeOfOpCode + sizeofValue;
         }
 
         public void Add()
@@ -105,6 +105,24 @@ namespace Vmr.Instructions
         {
             _code.Add(InstructionCode.Nop);
             _ilRef += SizeOfOpCode;
+        }
+
+        public void Brtrue(string label)
+        {
+            _code.Add(InstructionCode.Brtrue);
+            _code.Add(0); // placeholder
+
+            _lableInfoBuilder.AddCallSite(_code.Count - 1, label);
+            _ilRef += SizeOfOpCode + sizeof(int);
+        }
+
+        public void Brfalse(string label)
+        {
+            _code.Add(InstructionCode.Brfalse);
+            _code.Add(0); // placeholder
+
+            _lableInfoBuilder.AddCallSite(_code.Count - 1, label);
+            _ilRef += SizeOfOpCode + sizeof(int);
         }
     }
 }

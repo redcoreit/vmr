@@ -17,6 +17,8 @@ namespace Vmr.Cli.Syntax
                 SyntaxKind.OpCode_Pop => "pop",
                 SyntaxKind.OpCode_Nop => "nop",
                 SyntaxKind.OpCode_Ceq => "ceq",
+                SyntaxKind.OpCode_Brfalse => "brfalse",
+                SyntaxKind.OpCode_Brtrue => "brtrue",
                 _ => null, // Dynamic 
             };
 
@@ -47,6 +49,8 @@ namespace Vmr.Cli.Syntax
                 SyntaxKind.OpCode_Pop => true,
                 SyntaxKind.OpCode_Nop => true,
                 SyntaxKind.OpCode_Ceq => true,
+                SyntaxKind.OpCode_Brfalse => true,
+                SyntaxKind.OpCode_Brtrue => true,
                 _ => false,
             };
     }

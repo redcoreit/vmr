@@ -32,7 +32,7 @@ namespace Vmr.Cli.Commands
                     throw new FileNotFoundException(opts.FilePath);
                 }
 
-                var content = file.GetTextContent();                
+                var content = file.GetTextContent();                            
                 var parser = new IlParser(content);
                 var codeBuilder = parser.Parse();
                 var program = codeBuilder.Compile();

@@ -73,6 +73,16 @@ namespace Vmr.Cli.Syntax
                         ParseBr();
                         break;
                     }
+                case SyntaxKind.OpCode_Brtrue:
+                    {
+                        ParseBrtrue();
+                        break;
+                    }
+                case SyntaxKind.OpCode_Brfalse:
+                    {
+                        ParseBrfalse();
+                        break;
+                    }
                 case SyntaxKind.OpCode_Ceq:
                     {
                         ParseCeq();
@@ -130,6 +140,20 @@ namespace Vmr.Cli.Syntax
         {
             var op = ExpectToken(SyntaxKind.OpCode_Ceq);
             _codeBuilder.Ceq();
+        }
+
+        private void ParseBrfalse()
+        {
+            var op = ExpectToken(SyntaxKind.OpCode_Brfalse);
+            var arg = ExpectToken(SyntaxKind.StringToken);
+            _codeBuilder.Brfalse(arg.Value!.ToString()!);
+        }
+
+        private void ParseBrtrue()
+        {
+            var op = ExpectToken(SyntaxKind.OpCode_Brtrue);
+            var arg = ExpectToken(SyntaxKind.StringToken);
+            _codeBuilder.Brtrue(arg.Value!.ToString()!);
         }
     }
 }

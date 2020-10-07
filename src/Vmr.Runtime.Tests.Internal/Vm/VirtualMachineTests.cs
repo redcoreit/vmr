@@ -118,6 +118,26 @@ namespace Vmr.Runtime.Tests.Internal.Vm
             ExecNoDataSingleResultTest(instructions, 1);
         }
 
+        [Fact]
+        public void Brfalse_compare_and_write_equality()
+        {
+            var builder = new CodeBuilder();
+            builder.Ldc_i4(0);
+            builder.Ldc_i4(1);
+            builder.Ceq();
+            builder.Brfalse("false");
+            builder.Ldstr("Equals");
+            builder.Br("halt");
+            builder.Label("false");
+            builder.Ldstr("Not equals");
+            builder.Label("halt");
+            builder.Nop();
+
+            var instructions = builder.Compile();
+
+            ExecNoDataSingleResultTest(instructions, "Not equals");
+        }
+
         private void ExecNoDataSingleResultTest<TResult>(byte[] instructions, TResult expected)
         {
             // Assert

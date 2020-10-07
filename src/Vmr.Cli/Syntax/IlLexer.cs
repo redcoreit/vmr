@@ -175,6 +175,8 @@ namespace Vmr.Cli.Syntax
             // The order of cases is important because the way the LALR parsing works.
             Kind = true switch
             {
+                true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Brfalse)) => SyntaxKind.OpCode_Brfalse,
+                true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Brtrue)) => SyntaxKind.OpCode_Brtrue,
                 true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Add)) => SyntaxKind.OpCode_Add,
                 true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Br)) => SyntaxKind.OpCode_Br,
                 true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Ldc_i4)) => SyntaxKind.OpCode_Ldc_i4,

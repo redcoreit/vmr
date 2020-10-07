@@ -22,5 +22,7 @@ namespace Vmr.Cli.Syntax
         OpCode_Br,
         OpCode_Nop,
         OpCode_Ceq,
+        OpCode_Brfalse,
+        OpCode_Brtrue,
     }
 }

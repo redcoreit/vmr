@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\IlLexerTests\brfalse.vril" />
     <None Remove="Resources\IlLexerTests\Ceq.vril" />
   </ItemGroup>
 
