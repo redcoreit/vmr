@@ -28,7 +28,7 @@ namespace Vmr.Runtime.Exceptions
 
         [DoesNotReturn]
         internal static void OperationNotSupported(InstructionCode instructionCode, params object[] args)
-            => throw new VmExecutionException($"Operation is not supported. InstructionCode: {InstructionFacts.Format(instructionCode)} Args: '{string.Join(' ', args)}'.");
+            => throw new VmExecutionException($"Operation is not supported. InstructionCode: {InstructionFacts.Format(instructionCode)} Args: '{string.Join(", ", args)}'.");
 
         [DoesNotReturn]
         public static void StackUnderflowException(IlRef ilRef)

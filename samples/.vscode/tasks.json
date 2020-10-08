@@ -1,0 +1,75 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "asm",
+            "type": "shell",
+            "command": "cd ${workspaceRoot}; vmr asm .\\${fileBasenameNoExtension}.vril",
+            "presentation": {
+                "reveal": "silent",
+                "revealProblems": "onProblem",
+                "panel": "shared",
+                "clear": true,
+                "echo": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "dasm",
+            "type": "shell",
+            "command": "cd ${workspaceRoot}; vmr dasm .\\${fileBasenameNoExtension}.bin --target .\\dasm\\${fileBasenameNoExtension}.bin.vril",
+            "presentation": {
+                "reveal": "silent",
+                "revealProblems": "onProblem",
+                "panel": "shared",
+                "clear": true,
+                "echo": false
+            }
+        },
+        {
+            "label": "run",
+            "type": "shell",
+            "command": "cd ${workspaceRoot}; vmr run .\\${fileBasenameNoExtension}.bin",
+            "presentation": {
+                "reveal": "always",
+                "revealProblems": "onProblem",
+                "panel": "shared",
+                "clear": true,
+                "echo": false
+            }
+        },
+        {
+            "label": "dbg",
+            "type": "shell",
+            "command": "cd ${workspaceRoot}; vmr dbg ${input:dbg-ilrefs}",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared",
+                "clear": true,
+                "echo": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "format",
+            "type": "shell",
+            "command": "cd ${workspaceRoot}; vmr format .\\${fileBasenameNoExtension}.vril",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared",
+                "clear": true,
+                "echo": false
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "dbg-ilrefs",
+            "description": "Type instructions IL reference (just numbers) where debugger should be stopped.",
+            "default": "",
+            "type": "promptString"
+        }
+    ]
+}

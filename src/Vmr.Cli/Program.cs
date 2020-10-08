@@ -25,7 +25,7 @@ try
 }
 catch (Exception fallback)
 {
-    Console.WriteLine("Create Crash dump failed:");
+    Console.WriteLine("Create crash dump failed:");
     Console.WriteLine(fallback.Message);
 }
 
