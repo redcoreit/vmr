@@ -15,6 +15,30 @@ namespace Vmr.Instructions
             => Format((int)instructionCode);
 
         public static string Format(int instructionCode)
-            => instructionCode.ToString("X2");
+            => $"0x{instructionCode.ToString("X2")}";
+
+        public static int GetArgumentsCount(InstructionCode instructionCode)
+            => instructionCode switch
+            {
+                InstructionCode.Add => 0,
+                InstructionCode.Ldc_i4 => 1,
+                InstructionCode.Ldstr => 1,
+                InstructionCode.Pop => 0,
+                InstructionCode.Br => 1,
+                InstructionCode.Nop => 0,
+                InstructionCode.Ceq => 0,
+                InstructionCode.Brfalse => 1,
+                InstructionCode.Brtrue => 1,
+                _ => throw new ArgumentOutOfRangeException(nameof(instructionCode), instructionCode, null)
+            };
+
+        public static bool IsBranchingInstruction(InstructionCode instructionCode)
+            => instructionCode switch
+            {
+                InstructionCode.Br => true,
+                InstructionCode.Brfalse => true,
+                InstructionCode.Brtrue => true,
+                _ => false,
+            };
     }
 }

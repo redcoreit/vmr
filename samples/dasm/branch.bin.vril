@@ -1,0 +1,12 @@
+﻿IL_0000:  br IL_0011
+
+IL_0005:  pop
+IL_0006:  br IL_0032
+
+IL_0011:  ldc.i4 0
+IL_0016:  ldc.i4 1
+IL_0021:  ldc.i4 2
+IL_0026:  add
+IL_0027:  br IL_0005
+
+IL_0032:  nop

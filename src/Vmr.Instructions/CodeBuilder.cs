@@ -30,8 +30,7 @@ namespace Vmr.Instructions
             var labelInfo = _lableInfoBuilder.Build();
             Linker.LinkLabels(_code, labelInfo);
 
-            var assmebler = new Assembler();
-            var binaryCode = assmebler.Emit(GetInstructions());
+            var binaryCode = Assembler.Emit(GetInstructions());
 
             return binaryCode;
         }

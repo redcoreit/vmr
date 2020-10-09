@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Linq;
@@ -45,6 +46,7 @@ namespace Vmr.Runtime.Vm
             }
             catch (InvalidOperationException ex)
             {
+                Debug.WriteLine(ex.Message);
                 Throw.NotSupportedInstruction(_pointer, current);
                 throw; // can't happen
             }

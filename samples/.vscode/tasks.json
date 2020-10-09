@@ -26,7 +26,8 @@
                 "panel": "shared",
                 "clear": true,
                 "echo": false
-            }
+            },
+            "problemMatcher": []
         },
         {
             "label": "run",
@@ -51,17 +52,6 @@
                 "echo": false
             },
             "problemMatcher": []
-        },
-        {
-            "label": "format",
-            "type": "shell",
-            "command": "cd ${workspaceRoot}; vmr format .\\${fileBasenameNoExtension}.vril",
-            "presentation": {
-                "reveal": "silent",
-                "panel": "shared",
-                "clear": true,
-                "echo": false
-            }
         }
     ],
     "inputs": [
