@@ -68,6 +68,8 @@ namespace Vmr.Cli.Helpers
                         _pointer++;
                         break;
                     }
+                case InstructionCode.Ldloc:
+                case InstructionCode.Stloc:
                 case InstructionCode.Ldc_i4:
                     {
                         var arg = BinaryConvert.GetInt32(ref _pointer, program);

@@ -17,10 +17,7 @@ namespace Vmr.Instructions
         Ceq = 0x74,
         Brfalse = 0x39,
         Brtrue = 0x3A,
-        //_Locals = 
-        //ldloc_s <int> = 0x09,
-        //stloc_s <int> = 0x0D,
-        //Ldfld <field> = 0x8F,
-        //Ldflda <field> = 0x7B,
+        Ldloc = 0x8E,
+        Stloc = 0x51,
     }
 }

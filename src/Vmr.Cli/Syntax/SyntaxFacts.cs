@@ -19,6 +19,8 @@ namespace Vmr.Cli.Syntax
                 SyntaxKind.OpCode_Ceq => "ceq",
                 SyntaxKind.OpCode_Brfalse => "brfalse",
                 SyntaxKind.OpCode_Brtrue => "brtrue",
+                SyntaxKind.OpCode_Ldloc => "ldloc",
+                SyntaxKind.OpCode_Stloc => "stloc",
                 _ => null, // Dynamic 
             };
 
@@ -51,6 +53,8 @@ namespace Vmr.Cli.Syntax
                 SyntaxKind.OpCode_Ceq => true,
                 SyntaxKind.OpCode_Brfalse => true,
                 SyntaxKind.OpCode_Brtrue => true,
+                SyntaxKind.OpCode_Ldloc => true,
+                SyntaxKind.OpCode_Stloc => true,
                 _ => false,
             };
     }

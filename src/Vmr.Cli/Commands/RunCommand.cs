@@ -38,11 +38,14 @@ namespace Vmr.Cli.Commands
                 var program = file.GetBinaryContent();
                 var vm = new VirtualMachine();
                 vm.Execute(program);
-                var result = vm.GetStack().SingleOrDefault();
+                var stack = vm.GetStack();
 
-                if (result is not null)
+                if (stack.Any())
                 {
-                    Console.WriteLine(result);
+                    foreach (var item in stack)
+                    {
+                        Console.WriteLine(item);
+                    }
                 }
                 else
                 {

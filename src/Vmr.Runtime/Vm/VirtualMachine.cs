@@ -15,13 +15,15 @@ namespace Vmr.Runtime.Vm
 {
     public sealed class VirtualMachine
     {
+        private readonly Dictionary<int, object> _locals;
         private readonly Stack<object> _stack;
 
         private int _pointer = 0;
 
         public VirtualMachine()
         {
-            _stack = new Stack<object>();
+            _locals = new();
+            _stack = new();
         }
 
         public void Execute(byte[] program)
@@ -99,6 +101,16 @@ namespace Vmr.Runtime.Vm
                 case InstructionCode.Nop:
                     {
                         _pointer++;
+                        break;
+                    }
+                case InstructionCode.Ldloc:
+                    {
+                        Ldloc(instruction, program);
+                        break;
+                    }
+                case InstructionCode.Stloc:
+                    {
+                        Stloc(instruction, program);
                         break;
                     }
                 default:
@@ -228,6 +240,36 @@ namespace Vmr.Runtime.Vm
             _pointer = isTrue == expectedCondition
                 ? target
                 : (_pointer + 1);
+        }
+
+        private void Ldloc(InstructionCode instruction, ReadOnlySpan<byte> program)
+        {
+            if (_pointer++ >= program.Length)
+                Throw.MissingInstructionArgument(_pointer);
+
+            var index = BinaryConvert.GetInt32(ref _pointer, program);
+
+            if (!_locals.TryGetValue(index, out var value))
+            {
+                Throw.LocalVariableNotSet(_pointer);
+            }
+
+            _stack.Push(value);
+
+            _pointer++;
+        }
+
+        private void Stloc(InstructionCode instruction, ReadOnlySpan<byte> program)
+        {
+            if (_pointer++ >= program.Length)
+                Throw.MissingInstructionArgument(_pointer);
+
+            var index = BinaryConvert.GetInt32(ref _pointer, program);
+
+            var value = _stack.Pop();
+            _locals[index] = value;
+
+            _pointer++;
         }
     }
 }

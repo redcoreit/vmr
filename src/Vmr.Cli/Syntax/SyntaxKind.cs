@@ -24,5 +24,7 @@ namespace Vmr.Cli.Syntax
         OpCode_Ceq,
         OpCode_Brfalse,
         OpCode_Brtrue,
+        OpCode_Ldloc,
+        OpCode_Stloc,
     }
 }

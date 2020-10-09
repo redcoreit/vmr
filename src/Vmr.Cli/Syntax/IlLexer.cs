@@ -184,6 +184,8 @@ namespace Vmr.Cli.Syntax
                 true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Nop)) => SyntaxKind.OpCode_Nop,
                 true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Pop)) => SyntaxKind.OpCode_Pop,
                 true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Ceq)) => SyntaxKind.OpCode_Ceq,
+                true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Ldloc)) => SyntaxKind.OpCode_Ldloc,
+                true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Stloc)) => SyntaxKind.OpCode_Stloc,
                 _ => SyntaxKind.LiteralToken,
             };
 

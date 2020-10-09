@@ -33,5 +33,9 @@ namespace Vmr.Runtime.Exceptions
         [DoesNotReturn]
         public static void StackUnderflowException(IlRef ilRef)
             => throw new VmExecutionException($"Stack underflow exception. IlRef: {ilRef.ToString()}");
+        
+        [DoesNotReturn]
+        public static void LocalVariableNotSet(IlRef ilRef)
+            => throw new VmExecutionException($"Local variable not set. IlRef: {ilRef.ToString()}");
     }
 }

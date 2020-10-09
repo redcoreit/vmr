@@ -29,6 +29,8 @@ namespace Vmr.Instructions
                 InstructionCode.Ceq => 0,
                 InstructionCode.Brfalse => 1,
                 InstructionCode.Brtrue => 1,
+                InstructionCode.Ldloc => 1,
+                InstructionCode.Stloc => 1,
                 _ => throw new ArgumentOutOfRangeException(nameof(instructionCode), instructionCode, null)
             };
 

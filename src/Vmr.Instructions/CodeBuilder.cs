@@ -123,5 +123,21 @@ namespace Vmr.Instructions
             _lableInfoBuilder.AddCallSite(_code.Count - 1, label);
             _ilRef += SizeOfOpCode + sizeof(int);
         }
+
+        public void Ldloc(int index)
+        {
+            _code.Add(InstructionCode.Ldloc);
+            _code.Add(index);
+
+            _ilRef += SizeOfOpCode + sizeof(int);
+        }
+
+        public void Stloc(int index)
+        {
+            _code.Add(InstructionCode.Stloc);
+            _code.Add(index);
+
+            _ilRef += SizeOfOpCode + sizeof(int);
+        }
     }
 }

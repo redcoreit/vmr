@@ -88,6 +88,16 @@ namespace Vmr.Cli.Syntax
                         ParseCeq();
                         break;
                     }
+                case SyntaxKind.OpCode_Ldloc:
+                    {
+                        ParseLdloc();
+                        break;
+                    }
+                case SyntaxKind.OpCode_Stloc:
+                    {
+                        ParseStloc();
+                        break;
+                    }
                 case SyntaxKind.OpCode_Nop:
                 default:
                     {
@@ -154,6 +164,20 @@ namespace Vmr.Cli.Syntax
             var op = ExpectToken(SyntaxKind.OpCode_Brtrue);
             var arg = ExpectToken(SyntaxKind.LiteralToken);
             _codeBuilder.Brtrue(arg.Value!.ToString()!);
+        }
+
+        private void ParseLdloc()
+        {
+            var op = ExpectToken(SyntaxKind.OpCode_Ldloc);
+            var arg = ExpectToken(SyntaxKind.Int32Token);
+            _codeBuilder.Ldloc((int)arg.Value!);
+        }
+
+        private void ParseStloc()
+        {
+            var op = ExpectToken(SyntaxKind.OpCode_Stloc);
+            var arg = ExpectToken(SyntaxKind.Int32Token);
+            _codeBuilder.Stloc((int)arg.Value!);
         }
     }
 }
