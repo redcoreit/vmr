@@ -1,10 +1,10 @@
 ﻿IL_0000:  ldc.i4 0
 IL_0005:  ldc.i4 1
-IL_0010:  ceq
-IL_0011:  brfalse IL_0029
-IL_0016:  ldstr "Equals"
-IL_0024:  br IL_0041
+IL_000A:  ceq
+IL_000B:  brfalse IL_001D
+IL_0010:  ldstr "Equals"
+IL_0018:  br IL_0029
 
-IL_0029:  ldstr "Not equals"
+IL_001D:  ldstr "Not equals"
 
-IL_0041:  nop
+IL_0029:  nop

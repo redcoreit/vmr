@@ -32,7 +32,7 @@ namespace Vmr.Instructions
             => !(left == right);
 
         public override string ToString() 
-            => $"IL_{_value.ToString("D4")}";
+            => $"IL_{_value.ToString("X4")}";
 
         public static implicit operator IlRef(int ilRef)
             => new IlRef(ilRef);
