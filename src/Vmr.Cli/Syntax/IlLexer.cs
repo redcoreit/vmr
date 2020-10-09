@@ -65,7 +65,7 @@ namespace Vmr.Cli.Syntax
                     }
                 default:
                     {
-                        if (char.IsLetter(Current))
+                        if (char.IsLetter(Current) || Current == '_')
                         {
                             ReadLiteralToken();
                         }
@@ -187,10 +187,17 @@ namespace Vmr.Cli.Syntax
                 _ => SyntaxKind.LiteralToken,
             };
 
-            if(Kind == SyntaxKind.LiteralToken && literals.AsSpan()[^1] == ':')
+            if(Kind == SyntaxKind.LiteralToken)
             {
-                Kind = SyntaxKind.LabelDeclarationToken;
-                Value = literals.TrimEnd(':');
+                if(literals.AsSpan()[^1] == ':')
+                {
+                    Kind = SyntaxKind.LabelDeclarationToken;
+                    Value = literals.TrimEnd(':');
+                }
+                else
+                {
+                    Value = literals;
+                }
             }
 
             bool Match(params string[] words)

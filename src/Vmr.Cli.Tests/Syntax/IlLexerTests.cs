@@ -24,6 +24,7 @@ namespace Vmr.Cli.Tests.Internal.Syntax
 
             // Assert
             Assert.Equal(2, tokens.Count);
+            Assert.Empty(tokens.Where(m => m.Kind == SyntaxKind.BadToken));
             Assert.Equal(SyntaxKind.OpCode_Nop, tokens[0].Kind);
             Assert.Equal(SyntaxKind.EndOfFileToken, tokens[1].Kind);
         }
@@ -41,6 +42,7 @@ namespace Vmr.Cli.Tests.Internal.Syntax
             var actual = ReconstructText(tokens);
 
             // Assert
+            Assert.Empty(tokens.Where(m => m.Kind == SyntaxKind.BadToken));
             Assert.Equal(content, actual);
         }
 

@@ -126,7 +126,7 @@ namespace Vmr.Cli.Syntax
         private void ParseBr()
         {
             var op = ExpectToken(SyntaxKind.OpCode_Br);
-            var arg = ExpectToken(SyntaxKind.StringToken);
+            var arg = ExpectToken(SyntaxKind.LiteralToken);
             _codeBuilder.Br(arg.Value!.ToString()!);
         }
 
@@ -145,14 +145,14 @@ namespace Vmr.Cli.Syntax
         private void ParseBrfalse()
         {
             var op = ExpectToken(SyntaxKind.OpCode_Brfalse);
-            var arg = ExpectToken(SyntaxKind.StringToken);
+            var arg = ExpectToken(SyntaxKind.LiteralToken);
             _codeBuilder.Brfalse(arg.Value!.ToString()!);
         }
 
         private void ParseBrtrue()
         {
             var op = ExpectToken(SyntaxKind.OpCode_Brtrue);
-            var arg = ExpectToken(SyntaxKind.StringToken);
+            var arg = ExpectToken(SyntaxKind.LiteralToken);
             _codeBuilder.Brtrue(arg.Value!.ToString()!);
         }
     }

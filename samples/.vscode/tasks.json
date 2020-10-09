@@ -4,6 +4,19 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "build all",
+            "type": "shell",
+            "command": "cd ${workspaceRoot}; Get-ChildItem . -Filter *.vril | Foreach-Object { vmr asm $_.FullName; vmr dasm \".\\$($_.BaseName).bin\" --target \".\\dasm\\$($_.BaseName).bin.vmil\" }",
+            "presentation": {
+                "reveal": "always",
+                "revealProblems": "onProblem",
+                "panel": "shared",
+                "clear": true,
+                "echo": false
+            },
+            "problemMatcher": []
+        },
+        {
             "label": "asm",
             "type": "shell",
             "command": "cd ${workspaceRoot}; vmr asm .\\${fileBasenameNoExtension}.vril",

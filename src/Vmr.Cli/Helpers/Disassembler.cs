@@ -93,7 +93,7 @@ namespace Vmr.Cli.Helpers
                         break;
                     }
                 default:
-                    throw new CliException($"Not supported instruction. IlRef: {new IlRef(_pointer).ToString()} Code: {InstructionFacts.Format(current)}");
+                    throw new CliException($"Not supported instruction. IlRef: {new IlRef(_pointer).ToString()} Code: {InstructionFacts.Format(instruction)}");
             }
         }
     }
