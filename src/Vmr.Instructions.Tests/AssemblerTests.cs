@@ -63,18 +63,18 @@ namespace Vmr.Instructions.Tests
             Assert.Equal((byte)InstructionCode.Ldc_i4, actual[0]);
 
             // 0x01
-            Assert.Equal((byte)0, actual[1]);
+            Assert.Equal((byte)1, actual[1]);
             Assert.Equal((byte)0, actual[2]);
             Assert.Equal((byte)0, actual[3]);
-            Assert.Equal((byte)1, actual[4]);
+            Assert.Equal((byte)0, actual[4]);
 
             Assert.Equal((byte)InstructionCode.Ldc_i4, actual[5]);
 
             // 2
-            Assert.Equal((byte)0, actual[6]);
+            Assert.Equal((byte)2, actual[6]);
             Assert.Equal((byte)0, actual[7]);
             Assert.Equal((byte)0, actual[8]);
-            Assert.Equal((byte)2, actual[9]);
+            Assert.Equal((byte)0, actual[9]);
 
             Assert.Equal((byte)InstructionCode.Add, actual[10]);
         }

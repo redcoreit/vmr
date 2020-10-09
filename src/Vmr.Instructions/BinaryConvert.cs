@@ -23,7 +23,7 @@ namespace Vmr.Instructions
         {
             var result = BitConverter.GetBytes(value);
 
-            if (BitConverter.IsLittleEndian)
+            if (!BitConverter.IsLittleEndian)
                 Array.Reverse(result);
 
             return result;
@@ -60,7 +60,7 @@ namespace Vmr.Instructions
                 binary[i] = instructions[_pointer];
             }
 
-            if (BitConverter.IsLittleEndian)
+            if (!BitConverter.IsLittleEndian)
                 Array.Reverse(binary);
 
             var value = BitConverter.ToInt32(binary);
