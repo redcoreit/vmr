@@ -18,10 +18,9 @@ namespace Vmr.Common.Tests
             // Arrange
             var builder = new CodeBuilder();
             builder.Label("start");
-            var instructions = builder.GetInstructions().ToList();
 
             // Act
-            Linker.LinkLabels(instructions, builder.GetLabelInfo());
+            var instructions = builder.GetIlProgram().IlObjects.Select(m => m.Obj).ToArray();
 
             // Assert
             Assert.Empty(instructions);
@@ -34,13 +33,12 @@ namespace Vmr.Common.Tests
             var builder = new CodeBuilder();
             builder.Br("start");
             builder.Label("start");
-            var instructions = builder.GetInstructions().ToList();
 
             // Act
-            Linker.LinkLabels(instructions, builder.GetLabelInfo());
+            var instructions = builder.GetIlProgram().IlObjects.Select(m => m.Obj).ToArray();
 
             // Assert
-            Assert.Equal(2, instructions.Count);
+            Assert.Equal(2, instructions.Length);
             Assert.Equal(InstructionCode.Br, instructions[0]);
             Assert.Equal(sizeof(InstructionCode) + sizeof(int), instructions[1]);
         }
@@ -53,13 +51,12 @@ namespace Vmr.Common.Tests
             builder.Br("start");
             builder.Label("start");
             builder.Nop();
-            var instructions = builder.GetInstructions().ToList();
 
             // Act
-            Linker.LinkLabels(instructions, builder.GetLabelInfo());
+            var instructions = builder.GetIlProgram().IlObjects.Select(m => m.Obj).ToArray();
 
             // Assert
-            Assert.Equal(3, instructions.Count);
+            Assert.Equal(3, instructions.Length);
             Assert.Equal(InstructionCode.Br, instructions[0]);
             Assert.Equal(sizeof(InstructionCode) + sizeof(int), instructions[1]);
             Assert.Equal(InstructionCode.Nop, instructions[2]);

@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Vmr.Common.Instructions;
+using Vmr.Common.Primitives;
 
 namespace Vmr.Common.Assemble
 {
     public static class Assembler
     {
-        public static byte[] Emit(IReadOnlyList<object> instructions)
+        public static byte[] Emit(IlProgram program)
         {
             var binaryCode = new List<byte>();
 
-            foreach (var obj in instructions)
+            foreach (var ilObj in program.IlObjects)
             {
-                var code = EmitObject(obj);
+                var code = EmitObject(ilObj.Obj);
                 binaryCode.AddRange(code);
             }
 

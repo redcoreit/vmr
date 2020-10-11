@@ -19,7 +19,7 @@ namespace Vmr.Common.Tests
             builder.Ldstr("");
 
             // Act
-            var actual = builder.Compile();
+            var actual = builder.GetBinaryProgram();
 
             // Assert
             Assert.Equal(2, actual.Length);
@@ -36,7 +36,7 @@ namespace Vmr.Common.Tests
             builder.Ldstr("test test");
 
             // Act
-            var actual = builder.Compile();
+            var actual = builder.GetBinaryProgram();
 
             // Assert
             Assert.Equal(2 + expectedTextBytes.Length, actual.Length);
@@ -58,7 +58,7 @@ namespace Vmr.Common.Tests
             builder.Add();
 
             // Act
-            var actual = builder.Compile();
+            var actual = builder.GetBinaryProgram();
 
             // Assert
             Assert.Equal(11, actual.Length);

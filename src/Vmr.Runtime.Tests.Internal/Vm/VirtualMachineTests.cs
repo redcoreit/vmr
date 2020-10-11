@@ -18,7 +18,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
             var builder = new CodeBuilder();
             builder.Ldc_i4(1);
             builder.Pop();
-            var instructions = builder.Compile();
+            var instructions = builder.GetBinaryProgram();
 
             var vm = new VirtualMachine();
 
@@ -35,7 +35,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
         {
             var builder = new CodeBuilder();
             builder.Ldc_i4(1);
-            var instructions = builder.Compile();
+            var instructions = builder.GetBinaryProgram();
 
             ExecNoDataSingleResultTest(instructions, 0x01);
         }
@@ -45,7 +45,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
         {
             var builder = new CodeBuilder();
             builder.Ldstr("test");
-            var instructions = builder.Compile();
+            var instructions = builder.GetBinaryProgram();
 
             ExecNoDataSingleResultTest(instructions, "test");
         }
@@ -55,7 +55,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
         {
             var builder = new CodeBuilder();
             builder.Ldstr("test test");
-            var instructions = builder.Compile();
+            var instructions = builder.GetBinaryProgram();
 
             ExecNoDataSingleResultTest(instructions, "test test");
         }
@@ -67,7 +67,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
             builder.Ldc_i4(1);
             builder.Ldc_i4(2);
             builder.Add();
-            var instructions = builder.Compile();
+            var instructions = builder.GetBinaryProgram();
 
             ExecNoDataSingleResultTest(instructions, 3);
         }
@@ -80,7 +80,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
             builder.Pop();
             builder.Label("start");
             builder.Ldc_i4(1);
-            var instructions = builder.Compile();
+            var instructions = builder.GetBinaryProgram();
 
             ExecNoDataSingleResultTest(instructions, 1);
         }
@@ -101,7 +101,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
             builder.Br("pop");
             builder.Label("end");
             builder.Nop();
-            var instructions = builder.Compile();
+            var instructions = builder.GetBinaryProgram();
 
             ExecNoDataSingleResultTest(instructions, 0);
         }
@@ -113,7 +113,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
             builder.Ldc_i4(2);
             builder.Ldc_i4(2);
             builder.Ceq();
-            var instructions = builder.Compile();
+            var instructions = builder.GetBinaryProgram();
 
             ExecNoDataSingleResultTest(instructions, 1);
         }
@@ -133,7 +133,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
             builder.Label("halt");
             builder.Nop();
 
-            var instructions = builder.Compile();
+            var instructions = builder.GetBinaryProgram();
 
             ExecNoDataSingleResultTest(instructions, "Not equals");
         }

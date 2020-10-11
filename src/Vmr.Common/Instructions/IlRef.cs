@@ -10,6 +10,7 @@ namespace Vmr.Common.Instructions
         private readonly bool _initialized;
         private readonly int _value;
 
+        // TODO (RH Bug): change type to uint.
         public IlRef(int ilRef)
         {
             _value = ilRef;

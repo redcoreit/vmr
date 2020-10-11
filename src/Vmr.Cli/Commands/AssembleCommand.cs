@@ -34,7 +34,7 @@ namespace Vmr.Cli.Commands
                 var content = file.GetTextContent();                            
                 var parser = new IlParser(content);
                 var codeBuilder = parser.Parse();
-                var program = codeBuilder.Compile();
+                var program = codeBuilder.GetBinaryProgram();
                 WriteBinaryFile(file, program);
             }
             catch (CliException ex)

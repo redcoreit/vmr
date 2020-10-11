@@ -10,6 +10,7 @@ using Vmr.Cli.Exceptions;
 using Vmr.Cli.Helpers;
 using Vmr.Cli.Options;
 using Vmr.Cli.Syntax;
+using Vmr.Common.Disassemble;
 
 namespace Vmr.Cli.Commands
 {
@@ -35,7 +36,7 @@ namespace Vmr.Cli.Commands
                 }
 
                 var content = file.GetBinaryContent();
-                var program = Disassembler.Emit(content);
+                var program = Disassembler.GetProgram(content);
                 var formatted = CodeFormatter.Format(program);
 
                 WriteFileUtf8(file, formatted, opts.TargetFilePath);

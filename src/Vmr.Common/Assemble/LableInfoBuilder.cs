@@ -7,32 +7,32 @@ namespace Vmr.Common.Assemble
 {
     internal sealed class LableInfoBuilder
     {
-        private readonly Dictionary<int, string> _callSites;
+        private readonly Dictionary<int, string> _labelReferences;
         private readonly Dictionary<string, int> _targets;
 
         public LableInfoBuilder()
         {
-            _callSites = new Dictionary<int, string>();
+            _labelReferences = new Dictionary<int, string>();
             _targets = new Dictionary<string, int>();
         }
 
-        public void AddCallSite(int placeholderArgIndex, string label)
+        public void AddReferenceIlRef(IlRef labelReference, string label)
         {
-            if (_callSites.ContainsKey(placeholderArgIndex))
+            if (_labelReferences.ContainsKey(labelReference.Value))
                 throw new InvalidOperationException("Label call site already exsists.");
 
-            _callSites[placeholderArgIndex] = label;
+            _labelReferences[labelReference.Value] = label;
         }
 
-        public void AddTarget(string label, IlRef argument)
+        public void AddTarget(string label, IlRef target)
         {
             if (_targets.ContainsKey(label))
                 throw new InvalidOperationException($"Label '{label}' target already exsists.");
 
-            _targets[label] = argument.Value;
+            _targets[label] = target.Value;
         }
 
         public LableInfo Build()
-            => new LableInfo(_callSites, _targets);
+            => new LableInfo(_labelReferences, _targets);
     }
 }

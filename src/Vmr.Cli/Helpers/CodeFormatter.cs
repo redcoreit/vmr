@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Vmr.Cli.Exceptions;
 using Vmr.Cli.Syntax;
 using Vmr.Common.Instructions;
+using Vmr.Common.Primitives;
 
 namespace Vmr.Cli.Helpers
 {
@@ -22,10 +23,10 @@ namespace Vmr.Cli.Helpers
             _builder = new StringBuilder();
         }
 
-        public static string Format(DasmProgram dasmProgram)
+        public static string Format(IlProgram program)
         {
             var instance = new CodeFormatter();
-            instance.Format(dasmProgram.IlObjects, dasmProgram.LabelTargetIlRefs);
+            instance.Format(program.IlObjects.ToList(), program.LabelTargetIlRefs);
 
             return instance._builder.ToString();
         }

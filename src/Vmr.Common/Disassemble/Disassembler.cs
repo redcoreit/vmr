@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Transactions;
-using Vmr.Cli.Exceptions;
 using Vmr.Common;
+using Vmr.Common.Exeptions;
 using Vmr.Common.Instructions;
+using Vmr.Common.Primitives;
 
-namespace Vmr.Cli.Helpers
+namespace Vmr.Common.Disassemble
 {
-    internal class Disassembler
+    public class Disassembler
     {
         private readonly List<IlObject> _ilObjects;
         private readonly HashSet<int> _labelTargetIlRefs;
@@ -23,26 +24,26 @@ namespace Vmr.Cli.Helpers
             _labelTargetIlRefs = new HashSet<int>();
         }
 
-        public static DasmProgram Emit(byte[] program)
+        public static IlProgram GetProgram(byte[] program)
         {
             var instance = new Disassembler();
             var span = program.AsSpan();
-            return instance.Emit(span);
+            return instance.GetProgram(span);
         }
 
-        private DasmProgram Emit(ReadOnlySpan<byte> program)
+        private IlProgram GetProgram(ReadOnlySpan<byte> program)
         {
             while (_pointer < program.Length)
             {
                 var instruction = GetInstruction(program[_pointer]);
-                
+
                 _ilObjects.Add(new IlObject(_pointer, instruction));
                 _pointer++;
 
                 ReadArguments(instruction, program);
             }
 
-            return new DasmProgram(_ilObjects, _labelTargetIlRefs);
+            return new IlProgram(_ilObjects, _labelTargetIlRefs);
         }
 
         private InstructionCode GetInstruction(byte current)
@@ -54,7 +55,7 @@ namespace Vmr.Cli.Helpers
             catch (InvalidOperationException ex)
             {
                 Debug.WriteLine(ex.Message);
-                throw new CliException($"Not supported instruction. IlRef: {new IlRef(_pointer).ToString()} Code: {InstructionFacts.Format(current)}");
+                throw new VmrException($"Not supported instruction. IlRef: {new IlRef(_pointer).ToString()} Code: {InstructionFacts.Format(current)}");
             }
         }
 
@@ -96,7 +97,7 @@ namespace Vmr.Cli.Helpers
                         break;
                     }
                 default:
-                    throw new CliException($"Not supported instruction. IlRef: {new IlRef(_pointer).ToString()} Code: {InstructionFacts.Format(instruction)}");
+                    throw new VmrException($"Not supported instruction. IlRef: {new IlRef(_pointer).ToString()} Code: {InstructionFacts.Format(instruction)}");
             }
         }
     }

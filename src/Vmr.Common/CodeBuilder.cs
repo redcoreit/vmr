@@ -7,92 +7,81 @@ using System.Text;
 using System.Threading.Tasks;
 using Vmr.Common.Assemble;
 using Vmr.Common.Instructions;
+using Vmr.Common.Primitives;
 
 namespace Vmr.Common
 {
     public sealed class CodeBuilder
     {
-        private readonly List<object> _code;
+        private readonly List<IlObject> _program;
         private readonly LableInfoBuilder _lableInfoBuilder;
 
         private int _ilRef;
 
         public CodeBuilder()
         {
-            _code = new List<object>();
+            _program = new List<IlObject>();
             _lableInfoBuilder = new LableInfoBuilder();
         }
 
         public IlRef IlRef => _ilRef;
 
-        public byte[] Compile()
+        public byte[] GetBinaryProgram()
         {
-            var labelInfo = _lableInfoBuilder.Build();
-            Linker.LinkLabels(_code, labelInfo);
+            var ilProgram = GetIlProgram();
 
-            var binaryCode = Assembler.Emit(GetInstructions());
-
+            var binaryCode = Assembler.Emit(ilProgram);
             return binaryCode;
         }
 
-        public List<object> GetInstructions()
-            => _code.ToList();
+        public IlProgram GetIlProgram()
+        {
+            var labelInfo = _lableInfoBuilder.Build();
+            Linker.LinkLabels(_program, labelInfo);
 
-        public LableInfo GetLabelInfo()
-            => _lableInfoBuilder.Build();
+            return new IlProgram(_program, labelInfo.TargetIlRefs);
+        }
 
         public void Ldc_i4(int value)
         {
-            _code.Add(InstructionCode.Ldc_i4);
-            _code.Add(value);
-
-            _ilRef += InstructionFacts.SizeOfOpCode + sizeof(int);
+            Add(InstructionCode.Ldc_i4);
+            Add(value);
         }
 
         public void Ldstr(string value)
         {
-            _code.Add(InstructionCode.Ldstr);
-            _code.Add(value);
+            Add(InstructionCode.Ldstr);
 
             // TODO (RH perf): find an efficient way to determine UTF8 string size.
             var sizeofValue = BinaryConvert.GetBytes(value).Length;
-
-            _ilRef += InstructionFacts.SizeOfOpCode + sizeofValue;
+            Add(value, sizeofValue);
         }
 
         public void Add()
         {
-            _code.Add(InstructionCode.Add);
-            _ilRef += InstructionFacts.SizeOfOpCode;
+            Add(InstructionCode.Add);
         }
 
         public void Pop()
         {
-            _code.Add(InstructionCode.Pop);
-            _ilRef += InstructionFacts.SizeOfOpCode;
+            Add(InstructionCode.Pop);
         }
 
         public void Br(IlRef target)
         {
-            _code.Add(InstructionCode.Br);
-            _code.Add(target.Value);
-
-            _ilRef += InstructionFacts.SizeOfOpCode + sizeof(int);
+            Add(InstructionCode.Br);
+            Add(target.Value);
         }
 
         public void Br(string label)
         {
-            _code.Add(InstructionCode.Br);
-            _code.Add(0); // placeholder
-
-            _lableInfoBuilder.AddCallSite(_code.Count - 1, label);
-            _ilRef += InstructionFacts.SizeOfOpCode + sizeof(int);
+            Add(InstructionCode.Br);
+            Add(0, label); // placeholder
         }
 
         public void Ceq()
         {
-            _code.Add(InstructionCode.Ceq);
-            _ilRef += InstructionFacts.SizeOfOpCode;
+            Add(InstructionCode.Ceq);
         }
 
         public void Label(string label)
@@ -102,42 +91,54 @@ namespace Vmr.Common
 
         public void Nop()
         {
-            _code.Add(InstructionCode.Nop);
-            _ilRef += InstructionFacts.SizeOfOpCode;
+            Add(InstructionCode.Nop);
         }
 
         public void Brtrue(string label)
         {
-            _code.Add(InstructionCode.Brtrue);
-            _code.Add(0); // placeholder
-
-            _lableInfoBuilder.AddCallSite(_code.Count - 1, label);
-            _ilRef += InstructionFacts.SizeOfOpCode + sizeof(int);
+            Add(InstructionCode.Brtrue);            
+            Add(0, label); // placeholder            
         }
 
         public void Brfalse(string label)
         {
-            _code.Add(InstructionCode.Brfalse);
-            _code.Add(0); // placeholder
-
-            _lableInfoBuilder.AddCallSite(_code.Count - 1, label);
-            _ilRef += InstructionFacts.SizeOfOpCode + sizeof(int);
+            Add(InstructionCode.Brfalse);
+            Add(0, label); // placeholder
         }
 
         public void Ldloc(int index)
         {
-            _code.Add(InstructionCode.Ldloc);
-            _code.Add(index);
-
-            _ilRef += InstructionFacts.SizeOfOpCode + sizeof(int);
+            Add(InstructionCode.Ldloc);
+            Add(index);
         }
 
         public void Stloc(int index)
         {
-            _code.Add(InstructionCode.Stloc);
-            _code.Add(index);
+            Add(InstructionCode.Stloc);
+            Add(index);
+        }
 
-            _ilRef += InstructionFacts.SizeOfOpCode + sizeof(int);
+        private void Add(InstructionCode instruction)
+        {
+            _program.Add(new IlObject(_ilRef, instruction));
+            _ilRef += InstructionFacts.SizeOfOpCode;
+        }
+
+        private void Add(int value, string? labelReference = null)
+        {
+            if(labelReference is object)
+            {
+                _lableInfoBuilder.AddReferenceIlRef(_ilRef, labelReference);
+            }
+
+            _program.Add(new IlObject(_ilRef, value));
+            _ilRef += sizeof(int);
+        }
+
+        private void Add(object obj, int sizeOfObj)
+        {
+            _program.Add(new IlObject(_ilRef, obj));
+            _ilRef += sizeOfObj;
         }
     }
 }

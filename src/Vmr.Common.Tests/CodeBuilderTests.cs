@@ -20,7 +20,7 @@ namespace Vmr.Common.Tests
             builder.Ldc_i4(0x01);
 
             // Act
-            var actual = builder.GetInstructions().ToHashSet();
+            var actual = builder.GetIlProgram().IlObjects.Select(m => m.Obj).ToHashSet();
 
             // Assert
             Assert.Subset(expected, actual);
@@ -36,7 +36,7 @@ namespace Vmr.Common.Tests
             builder.Ldstr("test test");
 
             // Act
-            var actual = builder.GetInstructions().ToHashSet();
+            var actual = builder.GetIlProgram().IlObjects.Select(m => m.Obj).ToHashSet();
 
             // Assert
             Assert.Subset(expected, actual);
@@ -54,7 +54,7 @@ namespace Vmr.Common.Tests
             builder.Add();
 
             // Act
-            var actual = builder.GetInstructions().ToHashSet();
+            var actual = builder.GetIlProgram().IlObjects.Select(m => m.Obj).ToHashSet();
 
             // Assert
             Assert.Subset(expected, actual);
@@ -72,7 +72,7 @@ namespace Vmr.Common.Tests
             builder.Ceq();
 
             // Act
-            var actual = builder.GetInstructions().ToHashSet();
+            var actual = builder.GetIlProgram().IlObjects.Select(m => m.Obj).ToHashSet();
 
             // Assert
             Assert.Subset(expected, actual);
