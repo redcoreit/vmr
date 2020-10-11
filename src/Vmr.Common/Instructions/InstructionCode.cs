@@ -1,10 +1,12 @@
-﻿using System;
+﻿#pragma warning disable CA1707
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Vmr.Instructions
+namespace Vmr.Common.Instructions
 {
     public enum InstructionCode : byte
     {

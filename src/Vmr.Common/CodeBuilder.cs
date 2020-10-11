@@ -5,13 +5,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Vmr.Common.Assemble;
+using Vmr.Common.Instructions;
 
-namespace Vmr.Instructions
+namespace Vmr.Common
 {
     public sealed class CodeBuilder
     {
-        private const int SizeOfOpCode = sizeof(InstructionCode);
-        private const int SizeOfEos = sizeof(Char);
         private readonly List<object> _code;
         private readonly LableInfoBuilder _lableInfoBuilder;
 
@@ -46,7 +46,7 @@ namespace Vmr.Instructions
             _code.Add(InstructionCode.Ldc_i4);
             _code.Add(value);
 
-            _ilRef += SizeOfOpCode + sizeof(int);
+            _ilRef += InstructionFacts.SizeOfOpCode + sizeof(int);
         }
 
         public void Ldstr(string value)
@@ -57,19 +57,19 @@ namespace Vmr.Instructions
             // TODO (RH perf): find an efficient way to determine UTF8 string size.
             var sizeofValue = BinaryConvert.GetBytes(value).Length;
 
-            _ilRef += SizeOfOpCode + sizeofValue;
+            _ilRef += InstructionFacts.SizeOfOpCode + sizeofValue;
         }
 
         public void Add()
         {
             _code.Add(InstructionCode.Add);
-            _ilRef += SizeOfOpCode;
+            _ilRef += InstructionFacts.SizeOfOpCode;
         }
 
         public void Pop()
         {
             _code.Add(InstructionCode.Pop);
-            _ilRef += SizeOfOpCode;
+            _ilRef += InstructionFacts.SizeOfOpCode;
         }
 
         public void Br(IlRef target)
@@ -77,7 +77,7 @@ namespace Vmr.Instructions
             _code.Add(InstructionCode.Br);
             _code.Add(target.Value);
 
-            _ilRef += SizeOfOpCode + sizeof(int);
+            _ilRef += InstructionFacts.SizeOfOpCode + sizeof(int);
         }
 
         public void Br(string label)
@@ -86,13 +86,13 @@ namespace Vmr.Instructions
             _code.Add(0); // placeholder
 
             _lableInfoBuilder.AddCallSite(_code.Count - 1, label);
-            _ilRef += SizeOfOpCode + sizeof(int);
+            _ilRef += InstructionFacts.SizeOfOpCode + sizeof(int);
         }
 
         public void Ceq()
         {
             _code.Add(InstructionCode.Ceq);
-            _ilRef += SizeOfOpCode;
+            _ilRef += InstructionFacts.SizeOfOpCode;
         }
 
         public void Label(string label)
@@ -103,7 +103,7 @@ namespace Vmr.Instructions
         public void Nop()
         {
             _code.Add(InstructionCode.Nop);
-            _ilRef += SizeOfOpCode;
+            _ilRef += InstructionFacts.SizeOfOpCode;
         }
 
         public void Brtrue(string label)
@@ -112,7 +112,7 @@ namespace Vmr.Instructions
             _code.Add(0); // placeholder
 
             _lableInfoBuilder.AddCallSite(_code.Count - 1, label);
-            _ilRef += SizeOfOpCode + sizeof(int);
+            _ilRef += InstructionFacts.SizeOfOpCode + sizeof(int);
         }
 
         public void Brfalse(string label)
@@ -121,7 +121,7 @@ namespace Vmr.Instructions
             _code.Add(0); // placeholder
 
             _lableInfoBuilder.AddCallSite(_code.Count - 1, label);
-            _ilRef += SizeOfOpCode + sizeof(int);
+            _ilRef += InstructionFacts.SizeOfOpCode + sizeof(int);
         }
 
         public void Ldloc(int index)
@@ -129,7 +129,7 @@ namespace Vmr.Instructions
             _code.Add(InstructionCode.Ldloc);
             _code.Add(index);
 
-            _ilRef += SizeOfOpCode + sizeof(int);
+            _ilRef += InstructionFacts.SizeOfOpCode + sizeof(int);
         }
 
         public void Stloc(int index)
@@ -137,7 +137,7 @@ namespace Vmr.Instructions
             _code.Add(InstructionCode.Stloc);
             _code.Add(index);
 
-            _ilRef += SizeOfOpCode + sizeof(int);
+            _ilRef += InstructionFacts.SizeOfOpCode + sizeof(int);
         }
     }
 }

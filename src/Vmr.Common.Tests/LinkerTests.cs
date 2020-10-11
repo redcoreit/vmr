@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Vmr.Common;
+using Vmr.Common.Assemble;
+using Vmr.Common.Instructions;
 using Xunit;
 
-namespace Vmr.Instructions.Tests
+namespace Vmr.Common.Tests
 {
     public class LinkerTests
     {

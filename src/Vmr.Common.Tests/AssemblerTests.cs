@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Vmr.Common;
+using Vmr.Common.Instructions;
 using Xunit;
 
-namespace Vmr.Instructions.Tests
+namespace Vmr.Common.Tests
 {
     public class AssemblerTests
     {
@@ -22,7 +24,7 @@ namespace Vmr.Instructions.Tests
             // Assert
             Assert.Equal(2, actual.Length);
             Assert.Equal((byte)InstructionCode.Ldstr, actual[0]);
-            Assert.Equal(InstructionFacts.StringTerminator, actual[1]);
+            Assert.Equal(InstructionFacts.Eos, actual[1]);
         }
 
         [Fact]
@@ -43,7 +45,7 @@ namespace Vmr.Instructions.Tests
             // test test
             var actualTextBytes = actual.ToArray().AsSpan(1..^1).ToArray();
             Assert.True(expectedTextBytes.SequenceEqual(actualTextBytes));
-            Assert.Equal(InstructionFacts.StringTerminator, actual.Last());
+            Assert.Equal(InstructionFacts.Eos, actual.Last());
         }
 
         [Fact]

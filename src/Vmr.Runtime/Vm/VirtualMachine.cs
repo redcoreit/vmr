@@ -8,7 +8,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Transactions;
-using Vmr.Instructions;
+using Vmr.Common;
+using Vmr.Common.Instructions;
 using Vmr.Runtime.Exceptions;
 
 namespace Vmr.Runtime.Vm

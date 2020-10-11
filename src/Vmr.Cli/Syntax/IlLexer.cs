@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Vmr.Cli.Exceptions;
-using Vmr.Instructions;
 
 namespace Vmr.Cli.Syntax
 {

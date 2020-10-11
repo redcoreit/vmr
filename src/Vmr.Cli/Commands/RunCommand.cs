@@ -8,7 +8,6 @@ using Vmr.Cli.Exceptions;
 using Vmr.Cli.Helpers;
 using Vmr.Cli.Options;
 using Vmr.Cli.Syntax;
-using Vmr.Instructions;
 using Vmr.Runtime.Exceptions;
 using Vmr.Runtime.Vm;
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Vmr.Cli.Exceptions;
-using Vmr.Instructions;
+using Vmr.Common;
 
 namespace Vmr.Cli.Syntax
 {

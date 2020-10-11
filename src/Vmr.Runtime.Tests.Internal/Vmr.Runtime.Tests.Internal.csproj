@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Vmr.Instructions\Vmr.Instructions.csproj" />
+    <ProjectReference Include="..\Vmr.Common\Vmr.Common.csproj" />
     <ProjectReference Include="..\Vmr.Runtime\Vmr.Runtime.csproj" />
   </ItemGroup>
 

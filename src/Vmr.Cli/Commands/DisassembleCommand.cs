@@ -10,7 +10,6 @@ using Vmr.Cli.Exceptions;
 using Vmr.Cli.Helpers;
 using Vmr.Cli.Options;
 using Vmr.Cli.Syntax;
-using Vmr.Instructions;
 
 namespace Vmr.Cli.Commands
 {

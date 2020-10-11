@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Vmr.Common.Instructions;
 
-namespace Vmr.Instructions
+namespace Vmr.Common.Assemble
 {
     public static class Assembler
     {
@@ -22,6 +23,7 @@ namespace Vmr.Instructions
 
         private static byte[] EmitObject(object obj)
         {
+            // TODO (RH -): add decimal type handling
             var code = obj switch
             {
                 InstructionCode instruction => BinaryConvert.GetBytes(instruction),

@@ -10,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Vmr.ruleset = Vmr.ruleset
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vmr.Instructions", "Vmr.Instructions\Vmr.Instructions.csproj", "{5DA88351-9FB5-407C-BA7D-097A2DA153D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vmr.Common", "Vmr.Common\Vmr.Common.csproj", "{5DA88351-9FB5-407C-BA7D-097A2DA153D2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vmr.Instructions.Tests", "Vmr.Instructions.Tests\Vmr.Instructions.Tests.csproj", "{D34D6668-8441-4DCE-99C2-5F8055B4753A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vmr.Common.Tests", "Vmr.Common.Tests\Vmr.Common.Tests.csproj", "{D34D6668-8441-4DCE-99C2-5F8055B4753A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vmr.Runtime", "Vmr.Runtime\Vmr.Runtime.csproj", "{E314FCD3-8E07-434E-9B8F-08B65BA64105}"
 EndProject

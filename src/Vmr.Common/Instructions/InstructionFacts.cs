@@ -5,11 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Vmr.Instructions
+namespace Vmr.Common.Instructions
 {
     public static class InstructionFacts
     {
-        public const byte StringTerminator = (byte)'\0';
+        public const byte Eos = (byte)'\0';
+        public const int SizeOfEos = sizeof(char);
+        public const int SizeOfOpCode = sizeof(InstructionCode);
 
         public static string Format(InstructionCode instructionCode)
             => Format((int)instructionCode);

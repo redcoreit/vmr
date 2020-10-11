@@ -4,7 +4,8 @@ using System.Diagnostics;
 using System.Text;
 using System.Transactions;
 using Vmr.Cli.Exceptions;
-using Vmr.Instructions;
+using Vmr.Common;
+using Vmr.Common.Instructions;
 
 namespace Vmr.Cli.Helpers
 {

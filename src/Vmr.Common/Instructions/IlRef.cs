@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Transactions;
 
-namespace Vmr.Instructions
+namespace Vmr.Common.Instructions
 {
     public readonly ref struct IlRef
     {
@@ -25,13 +25,13 @@ namespace Vmr.Instructions
 
         public override int GetHashCode() => HashCode.Combine(_value);
 
-        public static bool operator ==(IlRef left, IlRef right) 
+        public static bool operator ==(IlRef left, IlRef right)
             => left.Equals(right);
 
-        public static bool operator !=(IlRef left, IlRef right) 
+        public static bool operator !=(IlRef left, IlRef right)
             => !(left == right);
 
-        public override string ToString() 
+        public override string ToString()
             => $"IL_{_value.ToString("X4")}";
 
         public static implicit operator IlRef(int ilRef)

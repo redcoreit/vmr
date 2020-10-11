@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Vmr.Cli.Exceptions;
 using Vmr.Cli.Syntax;
-using Vmr.Instructions;
+using Vmr.Common.Instructions;
 
 namespace Vmr.Cli.Helpers
 {

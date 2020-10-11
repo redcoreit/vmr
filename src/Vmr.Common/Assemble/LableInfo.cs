@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Vmr.Common.Instructions;
 
-namespace Vmr.Instructions
+namespace Vmr.Common.Assemble
 {
     public sealed class LableInfo
     {
         private readonly Dictionary<int, string> _callSites;
         private readonly Dictionary<string, int> _targets;
 
-        public LableInfo(Dictionary<int, string> callSites, Dictionary<string, int> targets)
+        internal LableInfo(Dictionary<int, string> callSites, Dictionary<string, int> targets)
         {
             _callSites = callSites;
             _targets = targets;

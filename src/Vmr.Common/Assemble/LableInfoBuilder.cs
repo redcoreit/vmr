@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Vmr.Common.Instructions;
 
-namespace Vmr.Instructions
+namespace Vmr.Common.Assemble
 {
-    public class LableInfoBuilder
+    internal sealed class LableInfoBuilder
     {
         private readonly Dictionary<int, string> _callSites;
         private readonly Dictionary<string, int> _targets;
@@ -17,10 +18,8 @@ namespace Vmr.Instructions
 
         public void AddCallSite(int placeholderArgIndex, string label)
         {
-            if(_callSites.ContainsKey(placeholderArgIndex))
-            {
+            if (_callSites.ContainsKey(placeholderArgIndex))
                 throw new InvalidOperationException("Label call site already exsists.");
-            }
 
             _callSites[placeholderArgIndex] = label;
         }
@@ -28,9 +27,7 @@ namespace Vmr.Instructions
         public void AddTarget(string label, IlRef argument)
         {
             if (_targets.ContainsKey(label))
-            {
                 throw new InvalidOperationException($"Label '{label}' target already exsists.");
-            }
 
             _targets[label] = argument.Value;
         }

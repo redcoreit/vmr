@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Vmr.Instructions\Vmr.Instructions.csproj" />
+    <ProjectReference Include="..\Vmr.Common\Vmr.Common.csproj" />
   </ItemGroup>
 
 </Project>
