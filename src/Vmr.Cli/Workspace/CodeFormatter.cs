@@ -8,65 +8,78 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using Vmr.Cli.Exceptions;
-using Vmr.Cli.Syntax;
+using Vmr.Cli.Workspace.Syntax;
 using Vmr.Common.Instructions;
 using Vmr.Common.Primitives;
 
-namespace Vmr.Cli.Helpers
+namespace Vmr.Cli.Workspace
 {
+    internal record CodeFormatSettings(bool UseIlRefPrefix = false, int IndentSize = 4);
+
     internal class CodeFormatter
     {
+        private static readonly CodeFormatSettings DefaultFormatSettings;
+
         private readonly StringBuilder _builder;
+
+        static CodeFormatter()
+        {
+            DefaultFormatSettings = new CodeFormatSettings();
+        }
 
         private CodeFormatter()
         {
             _builder = new StringBuilder();
         }
 
-        public static string Format(IlProgram program)
+        public static string Format(IlProgram program, CodeFormatSettings? formatSettings = null)
         {
             var instance = new CodeFormatter();
-            instance.Format(program.IlObjects.ToList(), program.LabelTargetIlRefs);
+            instance.Format(program.IlObjects.ToList(), program.LabelTargetIlRefs, formatSettings ?? DefaultFormatSettings);
 
             return instance._builder.ToString();
         }
 
-        private void Format(IReadOnlyList<IlObject> ilObjects, IReadOnlyCollection<int> labelTargetIlRefs)
+        private void Format(IReadOnlyList<IlObject> ilObjects, IReadOnlyCollection<int> labelTargetIlRefs, CodeFormatSettings formatSettings)
         {
-            for (int i = 0; i < ilObjects.Count;)
+            for (var idx = 0; idx < ilObjects.Count;)
             {
-                var current = ilObjects[i];
+                var current = ilObjects[idx];
 
                 if (labelTargetIlRefs.Contains(current.IlRef.Value))
-                {
                     _builder.AppendLine();
-                }
 
                 var instruction = (InstructionCode)current.Obj;
-                
-                FormatInstruction(ref i, current, instruction);
-                FormatArgs(ref i, ilObjects, instruction);
+
+                FormatInstruction(ref idx, current, instruction, formatSettings);
+                FormatArgs(ref idx, ilObjects, instruction, formatSettings);
             }
         }
 
-        private void FormatInstruction(ref int i, IlObject current, InstructionCode instruction)
+        private void FormatInstruction(ref int idx, IlObject current, InstructionCode instruction, CodeFormatSettings formatSettings)
         {
             var instructionText = GetInstructionText(instruction);
 
-            var part = $"{current.IlRef.ToString()}:{"  "}{instructionText}";
-            _builder.Append(part);
+            if(formatSettings.UseIlRefPrefix)
+            {
+                _builder.Append(current.IlRef.ToString());
+                _builder.Append(':');
+            }
 
-            i++;
+            _builder.Append(' ', formatSettings.IndentSize);
+            _builder.Append(instructionText);
+
+            idx++;
         }
 
-        private void FormatArgs(ref int i, IReadOnlyList<IlObject> ilObjects, InstructionCode instruction)
+        private void FormatArgs(ref int idx, IReadOnlyList<IlObject> ilObjects, InstructionCode instruction, CodeFormatSettings formatSettings)
         {
-            var start = i;
+            var start = idx;
             var argCount = InstructionFacts.GetArgumentsCount(instruction);
 
-            while (i < start + argCount)
+            while (idx < start + argCount)
             {
-                var arg = ilObjects[i];
+                var arg = ilObjects[idx];
                 var argText = InstructionFacts.IsBranchingInstruction(instruction)
                     ? GetTargetIlRefText(arg)
                     : GetArgumentText(arg);
@@ -74,7 +87,7 @@ namespace Vmr.Cli.Helpers
                 _builder.Append(" ");
                 _builder.Append(argText);
 
-                i++;
+                idx++;
             }
 
             _builder.AppendLine();
@@ -83,9 +96,7 @@ namespace Vmr.Cli.Helpers
         private static string GetInstructionText(InstructionCode instruction)
         {
             if (!Enum.TryParse<SyntaxKind>($"OpCode_{instruction}", out var kind))
-            {
                 throw new CliException($"Instruction '{instruction}' has no syntax kind.");
-            }
 
             var instructionText = SyntaxFacts.GetInstructionText(kind);
             return instructionText;
@@ -108,9 +119,7 @@ namespace Vmr.Cli.Helpers
         private static string GetTargetIlRefText(IlObject arg)
         {
             if (arg.Obj is not int num)
-            {
                 throw new ArgumentException($"Argument '{arg}' expected to be target il ref.");
-            }
 
             var targetIlRef = new IlRef(num);
             return targetIlRef.ToString();

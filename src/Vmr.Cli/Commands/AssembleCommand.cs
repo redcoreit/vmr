@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Vmr.Cli.Exceptions;
 using Vmr.Cli.Helpers;
 using Vmr.Cli.Options;
-using Vmr.Cli.Syntax;
+using Vmr.Cli.Workspace.Syntax;
 
 namespace Vmr.Cli.Commands
 {

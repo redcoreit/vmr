@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Vmr.Cli.Syntax;
 using Vmr.Cli.Tests.Internal.Helpers;
+using Vmr.Cli.Workspace.Syntax;
 using Xunit;
 
 namespace Vmr.Cli.Tests.Internal.Syntax

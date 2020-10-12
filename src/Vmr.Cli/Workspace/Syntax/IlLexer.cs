@@ -5,8 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Vmr.Cli.Exceptions;
+using Vmr.Cli.Workspace.Syntax.Abstraction;
 
-namespace Vmr.Cli.Syntax
+namespace Vmr.Cli.Workspace.Syntax
 {
     internal sealed class IlLexer : AbstractLexer
     {
@@ -37,7 +38,7 @@ namespace Vmr.Cli.Syntax
                         Kind = SyntaxKind.EndOfFileToken;
                         break;
                     }
-                case '/' when (Peek(1) == '/'):
+                case '/' when Peek(1) == '/':
                     {
                         ReadComment();
                         break;
@@ -65,9 +66,7 @@ namespace Vmr.Cli.Syntax
                 default:
                     {
                         if (char.IsLetter(Current) || Current == '_')
-                        {
                             ReadLiteralToken();
-                        }
                         else
                         {
                             ReportBadCharacter(Position, Current);
@@ -104,9 +103,7 @@ namespace Vmr.Cli.Syntax
                     case '\\':
                         {
                             if (Peek(1) == '"')
-                            {
                                 MoveNext();
-                            }
                             builder.Append(Current);
                             MoveNext();
                             break;
@@ -188,9 +185,9 @@ namespace Vmr.Cli.Syntax
                 _ => SyntaxKind.LiteralToken,
             };
 
-            if(Kind == SyntaxKind.LiteralToken)
+            if (Kind == SyntaxKind.LiteralToken)
             {
-                if(literals.AsSpan()[^1] == ':')
+                if (literals.AsSpan()[^1] == ':')
                 {
                     Kind = SyntaxKind.LabelDeclarationToken;
                     Value = literals.TrimEnd(':');
@@ -204,17 +201,13 @@ namespace Vmr.Cli.Syntax
             bool Match(params string[] words)
             {
                 if (words.Length == 0)
-                {
                     throw new CliException("Match method call must have at least one parameter.");
-                }
 
                 if (!string.Equals(literals, words[0]))
-                {
                     return false;
-                }
 
-                int nextLiteralStartIndex = 0;
-                for (int wordIndex = 1; wordIndex < words.Length; wordIndex++)
+                var nextLiteralStartIndex = 0;
+                for (var wordIndex = 1; wordIndex < words.Length; wordIndex++)
                 {
                     var word = words[wordIndex];
 
@@ -223,12 +216,10 @@ namespace Vmr.Cli.Syntax
                     while (char.IsWhiteSpace(Peek(nextLiteralStartIndex)))
                         nextLiteralStartIndex++;
 
-                    for (int i = 0; i < word.Length; i++)
+                    for (var i = 0; i < word.Length; i++)
                     {
-                        if (!char.Equals(Peek(nextLiteralStartIndex + i), word[i]))
-                        {
+                        if (!Equals(Peek(nextLiteralStartIndex + i), word[i]))
                             return false;
-                        }
                     }
 
                     // Adding length instead of length -1 we implicitly starts the next iteration from the correct (next unprocessed) char.
@@ -254,7 +245,7 @@ namespace Vmr.Cli.Syntax
                 }
             } while (char.IsDigit(Current));
 
-            Kind = decimalSeparatorFound 
+            Kind = decimalSeparatorFound
                 ? SyntaxKind.DecimalToken
                 : SyntaxKind.Int32Token;
 
@@ -267,10 +258,8 @@ namespace Vmr.Cli.Syntax
                 _ => throw new ArgumentOutOfRangeException(nameof(Kind), Kind, null)
             };
 
-            if(value is null)
-            {
+            if (value is null)
                 ReportInvalidNumber(new TextSpan(Start, Position - Start), text);
-            }
 
             Value = value;
         }
@@ -284,10 +273,10 @@ namespace Vmr.Cli.Syntax
             }
         }
 
-        private void ReportBadCharacter(int position, char current) 
+        private void ReportBadCharacter(int position, char current)
             => Console.WriteLine($"Bad character '{current}' in position {position}.");
 
-        private void ReportUnterminatedString(TextSpan span) 
+        private void ReportUnterminatedString(TextSpan span)
             => Console.WriteLine($"Unterminated string detected at position {span}.");
 
         private void ReportInvalidNumber(TextSpan span, string text)

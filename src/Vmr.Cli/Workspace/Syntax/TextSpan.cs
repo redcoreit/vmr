@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Vmr.Cli.Syntax
+namespace Vmr.Cli.Workspace.Syntax
 {
     public struct TextSpan : IEquatable<TextSpan>
     {

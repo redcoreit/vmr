@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Vmr.Cli.Syntax
+namespace Vmr.Cli.Workspace.Syntax
 {
     internal enum SyntaxKind
     {

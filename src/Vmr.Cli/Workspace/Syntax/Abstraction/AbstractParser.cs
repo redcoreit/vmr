@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Vmr.Cli.Syntax
+namespace Vmr.Cli.Workspace.Syntax.Abstraction
 {
     internal abstract class AbstractParser
     {
@@ -38,9 +38,7 @@ namespace Vmr.Cli.Syntax
         protected SyntaxToken ExpectToken(SyntaxKind kind)
         {
             if (Current.Kind == kind)
-            {
                 return ReadAndMoveNext();
-            }
 
             ReportUnexpectedToken(Current.Span, Current.Kind, kind);
             var fakeToken = new SyntaxToken(kind, TextSpan.FromBounds(_position, 0));
@@ -52,14 +50,10 @@ namespace Vmr.Cli.Syntax
         protected SyntaxToken ExpectToken(params SyntaxKind[] kinds)
         {
             if (!kinds.Any())
-            {
                 throw new InvalidOperationException("At least one parameter should be specified.");
-            }
 
             if (kinds.Contains(Current.Kind))
-            {
                 return ReadAndMoveNext();
-            }
 
             var primeTokenKind = kinds.First();
 
@@ -74,9 +68,7 @@ namespace Vmr.Cli.Syntax
         {
             var index = _position + offset;
             if (index < _tokens.Count)
-            {
                 return _tokens[index];
-            }
 
             return _tokens.Last();
         }
@@ -88,7 +80,7 @@ namespace Vmr.Cli.Syntax
             return current;
         }
 
-        private void ReportUnexpectedToken(TextSpan span, SyntaxKind actual, SyntaxKind expected) 
+        private void ReportUnexpectedToken(TextSpan span, SyntaxKind actual, SyntaxKind expected)
             => Console.Write($"Token '{expected}' expected but '{actual}' found.");
     }
 }

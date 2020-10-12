@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace Vmr.Cli.Syntax
+namespace Vmr.Cli.Workspace.Syntax
 {
     internal static class SyntaxFacts
     {
@@ -26,17 +26,13 @@ namespace Vmr.Cli.Syntax
 
         public static string GetInstructionText(SyntaxKind kind)
         {
-            if(!IsInstruction(kind))
-            {
+            if (!IsInstruction(kind))
                 throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
-            }
 
             var result = GetText(kind);
 
-            if(result is null)
-            {
+            if (result is null)
                 throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
-            }
 
             return result;
         }

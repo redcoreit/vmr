@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Vmr.Cli.Syntax
+namespace Vmr.Cli.Workspace.Syntax.Abstraction
 {
     internal abstract class AbstractLexer
     {

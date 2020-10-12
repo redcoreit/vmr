@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Vmr.Cli.Exceptions;
+using Vmr.Cli.Workspace.Syntax.Abstraction;
 using Vmr.Common;
 
-namespace Vmr.Cli.Syntax
+namespace Vmr.Cli.Workspace.Syntax
 {
     internal sealed class IlParser : AbstractParser
     {
