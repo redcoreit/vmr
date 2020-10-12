@@ -17,13 +17,17 @@ namespace Vmr.Common.Assemble
             _targets = targets;
         }
 
-        public IReadOnlyCollection<int> TargetIlRefs
-            => _targets.Values.ToHashSet();
-
         public IlRef GetTarget(string label)
             => _targets[label];
 
         public bool TryGetReference(int labelReferenceIlRef, out string label)
             => _labelReferences.TryGetValue(labelReferenceIlRef, out label);
+
+        public IReadOnlyCollection<int> GetTargetIlRefs() 
+            => _targets.Values.ToHashSet();
+
+        public IReadOnlyDictionary<int, string> GetLabelNames() 
+            => _targets.ToDictionary(m => m.Value, m => m.Key);
+
     }
 }

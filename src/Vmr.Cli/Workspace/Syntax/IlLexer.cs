@@ -266,6 +266,11 @@ namespace Vmr.Cli.Workspace.Syntax
 
         private void SkipWhitespaces()
         {
+            if (Position == 0 && Current == Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble())[0])
+            {
+                MoveNext(3);
+            }
+
             // Vml lexer intentionally does not emits whitespace tokens.
             while (char.IsWhiteSpace(Current))
             {

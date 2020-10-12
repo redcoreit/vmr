@@ -15,10 +15,11 @@ namespace Vmr.Cli
     internal class Application
     {
         public static int Execute(string[] args, IConfiguration config)
-            => Parser.Default.ParseArguments<RunOptions, AssembleOptions, DisassembleOptions>(args).MapResult(
+            => Parser.Default.ParseArguments<RunOptions, AssembleOptions, DisassembleOptions, FormatOptions>(args).MapResult(
                       (RunOptions opts) => RunCommand.Run(opts, config),
                       (AssembleOptions opts) => AssembleCommand.Run(opts, config),
                       (DisassembleOptions opts) => DisassembleCommand.Run(opts, config),
+                      (FormatOptions opts) => FormatCommand.Run(opts, config),
                       errs => 1);
 
         public static int ReportCrash(Exception ex)

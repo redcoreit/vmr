@@ -35,24 +35,45 @@ namespace Vmr.Cli.Workspace
         public static string Format(IlProgram program, CodeFormatSettings? formatSettings = null)
         {
             var instance = new CodeFormatter();
-            instance.Format(program.IlObjects.ToList(), program.LabelTargetIlRefs, formatSettings ?? DefaultFormatSettings);
+            instance.FormatInternal(program, formatSettings ?? DefaultFormatSettings);
 
             return instance._builder.ToString();
         }
 
-        private void Format(IReadOnlyList<IlObject> ilObjects, IReadOnlyCollection<int> labelTargetIlRefs, CodeFormatSettings formatSettings)
+        private void FormatInternal(IlProgram program, CodeFormatSettings formatSettings)
         {
-            for (var idx = 0; idx < ilObjects.Count;)
+            var idx = 0;
+            while (idx < program.IlObjects.Count)
             {
-                var current = ilObjects[idx];
-
-                if (labelTargetIlRefs.Contains(current.IlRef.Value))
-                    _builder.AppendLine();
-
+                var current = program.IlObjects[idx];
                 var instruction = (InstructionCode)current.Obj;
-
+                
+                FormatLabel(program, formatSettings, current);
                 FormatInstruction(ref idx, current, instruction, formatSettings);
-                FormatArgs(ref idx, ilObjects, instruction, formatSettings);
+                FormatArgs(ref idx, program, instruction, formatSettings);
+            }
+        }
+
+        private void FormatLabel(IlProgram program, CodeFormatSettings formatSettings, IlObject current)
+        {
+            if (program.LabelTargetIlRefs.Contains(current.IlRef.Value))
+            {
+                _builder.AppendLine();
+
+                if (formatSettings.UseIlRefPrefix)
+                {
+                    return;
+                }
+
+                if (!program.LabelNames.TryGetValue(current.IlRef.Value, out var name))
+                {
+                    name = current.IlRef.ToString();
+                }
+
+                
+                _builder.Append(name);
+                _builder.Append(':');
+                _builder.AppendLine();
             }
         }
 
@@ -60,7 +81,7 @@ namespace Vmr.Cli.Workspace
         {
             var instructionText = GetInstructionText(instruction);
 
-            if(formatSettings.UseIlRefPrefix)
+            if (formatSettings.UseIlRefPrefix)
             {
                 _builder.Append(current.IlRef.ToString());
                 _builder.Append(':');
@@ -72,16 +93,16 @@ namespace Vmr.Cli.Workspace
             idx++;
         }
 
-        private void FormatArgs(ref int idx, IReadOnlyList<IlObject> ilObjects, InstructionCode instruction, CodeFormatSettings formatSettings)
+        private void FormatArgs(ref int idx, IlProgram program, InstructionCode instruction, CodeFormatSettings formatSettings)
         {
             var start = idx;
             var argCount = InstructionFacts.GetArgumentsCount(instruction);
 
             while (idx < start + argCount)
             {
-                var arg = ilObjects[idx];
+                var arg = program.IlObjects[idx];
                 var argText = InstructionFacts.IsBranchingInstruction(instruction)
-                    ? GetTargetIlRefText(arg)
+                    ? GetTargetIlRefText(program, arg)
                     : GetArgumentText(arg);
 
                 _builder.Append(" ");
@@ -116,13 +137,18 @@ namespace Vmr.Cli.Workspace
             return text;
         }
 
-        private static string GetTargetIlRefText(IlObject arg)
+        private static string GetTargetIlRefText(IlProgram program, IlObject arg)
         {
             if (arg.Obj is not int num)
                 throw new ArgumentException($"Argument '{arg}' expected to be target il ref.");
 
-            var targetIlRef = new IlRef(num);
-            return targetIlRef.ToString();
+            if (!program.LabelNames.TryGetValue(num, out var name))
+            {
+                var targetIlRef = new IlRef(num);
+                name = targetIlRef.ToString();
+            }
+
+            return name;
         }
     }
 }

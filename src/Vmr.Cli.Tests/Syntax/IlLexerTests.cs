@@ -13,6 +13,24 @@ namespace Vmr.Cli.Tests.Internal.Syntax
     public class IlLexerTests
     {
         [Fact]
+        public void Lex_utf8_bom_and_nop()
+        {
+            // Arrange
+            var content = Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble());
+            content = $"{content}\r\nnop";
+            var lexer = new IlLexer(content);
+
+            // Act
+            var tokens = lexer.LexAll().ToList();
+
+            // Assert
+            Assert.Equal(2, tokens.Count);
+            Assert.Empty(tokens.Where(m => m.Kind == SyntaxKind.BadToken));
+            Assert.Equal(SyntaxKind.OpCode_Nop, tokens[0].Kind);
+            Assert.Equal(SyntaxKind.EndOfFileToken, tokens[1].Kind);
+        }
+
+        [Fact]
         public void Lex_nop_without_newline_at_end()
         {
             // Arrange

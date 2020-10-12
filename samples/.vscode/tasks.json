@@ -56,6 +56,19 @@
             "problemMatcher": []
         },
         {
+            "label": "format",
+            "type": "shell",
+            "command": "cd ${workspaceRoot}; vmr format .\\${fileBasenameNoExtension}.vril",
+            "presentation": {
+                "reveal": "silet",
+                "revealProblems": "onProblem",
+                "panel": "shared",
+                "clear": true,
+                "echo": false
+            },
+            "problemMatcher": []
+        },
+        {
             "label": "dbg",
             "type": "shell",
             "command": "cd ${workspaceRoot}; vmr dbg ${input:dbg-ilrefs}",

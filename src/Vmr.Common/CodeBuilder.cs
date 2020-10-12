@@ -39,7 +39,7 @@ namespace Vmr.Common
             var labelInfo = _lableInfoBuilder.Build();
             Linker.LinkLabels(_program, labelInfo);
 
-            return new IlProgram(_program, labelInfo.TargetIlRefs);
+            return new IlProgram(_program, labelInfo.GetTargetIlRefs(), labelInfo.GetLabelNames());
         }
 
         public void Ldc_i4(int value)
