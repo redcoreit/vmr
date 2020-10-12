@@ -8,7 +8,7 @@ using Vmr.Cli.Tests.Internal.Helpers;
 using Vmr.Cli.Workspace.Syntax;
 using Xunit;
 
-namespace Vmr.Cli.Tests.Internal.Syntax
+namespace Vmr.Cli.Tests.Internal.Workspace.Syntax
 {
     public class IlLexerTests
     {
@@ -87,29 +87,23 @@ namespace Vmr.Cli.Tests.Internal.Syntax
 
             foreach (var current in tokens)
             {
-                if(current.Kind == SyntaxKind.EndOfFileToken)
-                {
+                if (current.Kind == SyntaxKind.EndOfFileToken)
                     continue;
-                }
 
-                if(builder.Length != 0)
+                if (builder.Length != 0)
                 {
                     if (SyntaxFacts.IsInstruction(current.Kind) || current.Kind == SyntaxKind.LabelDeclarationToken)
-                    {
                         builder.AppendLine();
-                    }
                     else
                     {
                         builder.Append(" ");
                     }
                 }
-                
+
                 var text = SyntaxFacts.GetText(current.Kind);
 
-                if(text is null)
-                {
+                if (text is null)
                     text = current.Text;
-                }
 
                 builder.Append(text);
             }

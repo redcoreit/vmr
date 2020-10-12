@@ -26,4 +26,8 @@
     <ProjectReference Include="..\Vmr.Cli\Vmr.Cli.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resources\CanonicalTests\" />
+  </ItemGroup>
+
 </Project>

@@ -8,6 +8,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Vmr.Cli.Exceptions;
 using Vmr.Cli.Helpers;
+using Vmr.Cli.IO;
 using Vmr.Cli.Options;
 using Vmr.Cli.Workspace;
 using Vmr.Common.Disassemble;
@@ -16,30 +17,29 @@ namespace Vmr.Cli.Commands
 {
     internal class DisassembleCommand : BaseCommand<DisassembleOptions>
     {
-        private DisassembleCommand()
+        private readonly IFileReader _reader;
+        private readonly IFileWriter _writer;
+
+        private DisassembleCommand(IFileReader reader, IFileWriter writer)
         {
+            _reader = reader;
+            _writer = writer;
         }
 
         protected override string Name => "Disassemble";
 
-        internal static int Run(DisassembleOptions opts, IConfiguration config) => new DisassembleCommand().Execute(opts, config);
+        internal static int Run(DisassembleOptions opts, IFileReader reader, IFileWriter writer, IConfiguration config) 
+            => new DisassembleCommand(reader, writer).Execute(opts, config);
 
         protected override void ExecuteInternal(DisassembleOptions opts, IConfiguration config)
         {
             try
             {
-                var file = new FileInfo(opts.FilePath);
-
-                if (!file.Exists)
-                {
-                    throw new FileNotFoundException(opts.FilePath);
-                }
-
-                var content = file.GetBinaryContent();
+                var content = _reader.ReadBinaryContent(opts.FilePath);
                 var program = Disassembler.GetProgram(content);
                 var formatted = CodeFormatter.Format(program, new CodeFormatSettings(true, 2));
 
-                WriteFileUtf8(file, formatted, opts.TargetFilePath);
+                _writer.WriteFile(opts.FilePath, formatted, opts.TargetFilePath);
 
             }
             catch (CliException ex)
@@ -50,22 +50,6 @@ namespace Vmr.Cli.Commands
             {
                 Console.WriteLine(ex.Message);
             }
-        }
-
-        private void WriteFileUtf8(FileInfo file, string content, string? targetPath)
-        {
-            var filePath = targetPath is not null
-                ? targetPath
-                : Path.Combine(file.DirectoryName!, $"{Path.GetFileNameWithoutExtension(file.FullName)}.bin.vril");
-
-            var directoryPath = Path.GetDirectoryName(filePath)!;
-
-            if(!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
-
-            File.WriteAllText(filePath, content, Encoding.UTF8);
         }
     }
 }
