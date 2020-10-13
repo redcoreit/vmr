@@ -39,7 +39,7 @@ namespace Vmr.Cli.Commands
                 var program = codeBuilder.GetIlProgram();
                 var code = CodeFormatter.Format(program);
 
-                _writer.WriteFile(opts.FilePath, code, null);
+                _writer.WriteFile(opts.FilePath, code);
             }
             catch (CliException ex)
             {

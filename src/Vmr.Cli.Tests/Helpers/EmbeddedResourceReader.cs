@@ -32,10 +32,19 @@ namespace Vmr.Cli.Tests.Internal.Helpers
         public string GetFileText(string fileFqdn)
         {
             using var stream = GetFileStream(fileFqdn);
-
+            
             using var reader = new StreamReader(stream, Encoding.UTF8);
             return reader.ReadToEnd();
 
+        }
+
+        public byte[] GetFileBinaryConent(string fileFqdn)
+        {
+            using var stream = GetFileStream(fileFqdn);
+            using var ms = new MemoryStream();
+            stream.CopyTo(ms);
+            
+            return ms.ToArray();
         }
 
         public Stream GetFileStream(string fileFqdn)
@@ -48,7 +57,7 @@ namespace Vmr.Cli.Tests.Internal.Helpers
             return stream;
         }
 
-        internal IEnumerable<(string FileReference, string Content)> GetAllFileContent(string directoryFqdn, string? fileExtensionFilter = null)
+        internal IEnumerable<(string FileReference, string Content)> GetAllFileStringContent(string directoryFqdn, string? fileExtensionFilter = null)
         {
             var fileDirectory = $"{directoryFqdn}.";
 
@@ -61,6 +70,22 @@ namespace Vmr.Cli.Tests.Internal.Helpers
                     continue;
 
                 yield return (resurce, GetFileText(resurce));
+            }
+        }
+
+        internal IEnumerable<(string FileReference, byte[] Content)> GetAllFileBinaryContent(string directoryFqdn, string? fileExtensionFilter = null)
+        {
+            var fileDirectory = $"{directoryFqdn}.";
+
+            foreach (var resurce in _assembly.GetManifestResourceNames())
+            {
+                if (!resurce.StartsWith(fileDirectory))
+                    continue;
+
+                if (fileExtensionFilter is not null && !resurce.EndsWith($".{fileExtensionFilter}"))
+                    continue;
+
+                yield return (resurce, GetFileBinaryConent(resurce));
             }
         }
     }

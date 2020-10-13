@@ -1,4 +1,4 @@
-    ldc.i4 0
+﻿    ldc.i4 0
     stloc 0
 
 _loop:

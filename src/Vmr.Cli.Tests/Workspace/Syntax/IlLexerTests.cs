@@ -66,7 +66,7 @@ namespace Vmr.Cli.Tests.Internal.Workspace.Syntax
 
         public static IEnumerable<object[]> ReadTestFiles()
         {
-            foreach (var resource in EmbeddedResourceReader.Of<EmbeddedResourceReader>().GetAllFileContent("Vmr.Cli.Tests.Internal.Resources.IlLexerTests", "vril"))
+            foreach (var resource in EmbeddedResourceReader.Of<EmbeddedResourceReader>().GetAllFileStringContent("Vmr.Cli.Tests.Internal.Resources.IlLexerTests", "vril"))
             {
                 if (string.IsNullOrEmpty(resource.Content))
                     continue;

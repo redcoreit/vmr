@@ -39,7 +39,9 @@ namespace Vmr.Cli.Commands
                 var program = Disassembler.GetProgram(content);
                 var formatted = CodeFormatter.Format(program, new CodeFormatSettings(true, 2));
 
-                _writer.WriteFile(opts.FilePath, formatted, opts.TargetFilePath);
+                var path = GetTargetFilePath(opts.FilePath, opts.TargetFilePath);
+
+                _writer.WriteFile(path, formatted);
 
             }
             catch (CliException ex)
@@ -50,6 +52,16 @@ namespace Vmr.Cli.Commands
             {
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        private string GetTargetFilePath(string filePath, string? targetFilePath)
+        {
+            var file = new FileInfo(filePath);
+            var path = targetFilePath is not null
+                ? targetFilePath
+                : Path.Combine(file.DirectoryName!, $"{Path.GetFileNameWithoutExtension(file.FullName)}.dasm");
+
+            return path;
         }
     }
 }

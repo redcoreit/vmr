@@ -6,7 +6,7 @@
         {
             "label": "build all",
             "type": "shell",
-            "command": "cd ${workspaceRoot}; Get-ChildItem . -Filter *.vril | Foreach-Object { vmr asm $_.FullName; vmr dasm \".\\$($_.BaseName).bin\" --target \".\\dasm\\$($_.BaseName).bin.vril\" }",
+            "command": "cd ${workspaceRoot}; Get-ChildItem . -Filter *.vril | Foreach-Object { vmr asm $_.FullName; vmr dasm \".\\$($_.BaseName).bin\" --target \".\\dasm\\$($_.BaseName).dasm\" }",
             "presentation": {
                 "reveal": "always",
                 "revealProblems": "onProblem",
@@ -32,7 +32,7 @@
         {
             "label": "dasm",
             "type": "shell",
-            "command": "cd ${workspaceRoot}; vmr dasm .\\${fileBasenameNoExtension}.bin --target .\\dasm\\${fileBasenameNoExtension}.bin.vril",
+            "command": "cd ${workspaceRoot}; vmr dasm .\\${fileBasenameNoExtension}.bin --target .\\dasm\\${fileBasenameNoExtension}.dasm",
             "presentation": {
                 "reveal": "silent",
                 "revealProblems": "onProblem",
