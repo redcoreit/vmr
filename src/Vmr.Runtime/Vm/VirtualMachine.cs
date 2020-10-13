@@ -154,10 +154,7 @@ namespace Vmr.Runtime.Vm
 
         private void Ldc_i4(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
-            if (_pointer++ >= program.Length)
-                Throw.MissingInstructionArgument(_pointer);
-
-            var value = BinaryConvert.GetInt32(ref _pointer, program);
+            GetArg(program, out int value);
             _stack.Push(value);
 
             _pointer++;
@@ -165,10 +162,7 @@ namespace Vmr.Runtime.Vm
 
         private void Ldstr(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
-            if (_pointer++ >= program.Length)
-                Throw.MissingInstructionArgument(_pointer);
-
-            var value = BinaryConvert.GetString(ref _pointer, program);
+            GetArg(program, out string value);
             _stack.Push(value);
 
             _pointer++;
@@ -183,10 +177,7 @@ namespace Vmr.Runtime.Vm
 
         private void Br(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
-            if (_pointer++ >= program.Length)
-                Throw.MissingInstructionArgument(_pointer);
-
-            var target = BinaryConvert.GetInt32(ref _pointer, program);
+            GetArg(program, out int target);
 
             if (target >= program.Length)
             {
@@ -216,10 +207,7 @@ namespace Vmr.Runtime.Vm
 
         private void BrCondition(InstructionCode instruction, ReadOnlySpan<byte> program, bool expectedCondition)
         {
-            if (_pointer++ >= program.Length)
-                Throw.MissingInstructionArgument(_pointer);
-
-            var target = BinaryConvert.GetInt32(ref _pointer, program);
+            GetArg(program, out int target);
 
             if (target >= program.Length)
             {
@@ -245,10 +233,7 @@ namespace Vmr.Runtime.Vm
 
         private void Ldloc(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
-            if (_pointer++ >= program.Length)
-                Throw.MissingInstructionArgument(_pointer);
-
-            var index = BinaryConvert.GetInt32(ref _pointer, program);
+            GetArg(program, out int index);
 
             if (!_locals.TryGetValue(index, out var value))
             {
@@ -262,15 +247,28 @@ namespace Vmr.Runtime.Vm
 
         private void Stloc(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
-            if (_pointer++ >= program.Length)
-                Throw.MissingInstructionArgument(_pointer);
-
-            var index = BinaryConvert.GetInt32(ref _pointer, program);
+            GetArg(program, out int index);
 
             var value = _stack.Pop();
             _locals[index] = value;
 
             _pointer++;
+        }
+
+        private void GetArg(ReadOnlySpan<byte> program, out int value)
+        {
+            if (_pointer++ >= program.Length)
+                Throw.MissingInstructionArgument(_pointer);
+
+            value = BinaryConvert.GetInt32(ref _pointer, program);
+        }
+
+        private void GetArg(ReadOnlySpan<byte> program, out string value)
+        {
+            if (_pointer++ >= program.Length)
+                Throw.MissingInstructionArgument(_pointer);
+
+            value = BinaryConvert.GetString(ref _pointer, program);
         }
     }
 }
