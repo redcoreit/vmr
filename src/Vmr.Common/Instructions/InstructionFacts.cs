@@ -33,6 +33,8 @@ namespace Vmr.Common.Instructions
                 InstructionCode.Brtrue => 1,
                 InstructionCode.Ldloc => 1,
                 InstructionCode.Stloc => 1,
+                InstructionCode.Call => 1,
+                InstructionCode.Ret => 0,
                 _ => throw new ArgumentOutOfRangeException(nameof(instructionCode), instructionCode, null)
             };
 

@@ -249,12 +249,12 @@ namespace Vmr.Cli.Workspace.Syntax
                 ? SyntaxKind.DecimalToken
                 : SyntaxKind.Int32Token;
 
-            var text = SliceText(Start, Position - Start);
+            string text = SliceText(Start, Position - Start);
 
-            object value = Kind switch
+            var value = Kind switch
             {
-                SyntaxKind.DecimalToken => decimal.TryParse(text, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var num) ? num : null,
-                SyntaxKind.Int32Token => int.TryParse(text, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var num) ? num : null,
+                SyntaxKind.DecimalToken => decimal.TryParse(text, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var num) ? (object)num : null,
+                SyntaxKind.Int32Token => int.TryParse(text, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var num) ? (object)num : null,
                 _ => throw new ArgumentOutOfRangeException(nameof(Kind), Kind, null)
             };
 

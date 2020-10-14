@@ -21,5 +21,7 @@ namespace Vmr.Common.Instructions
         Brtrue = 0x3A,
         Ldloc = 0x8E,
         Stloc = 0x51,
+        Call = 0x28,
+        Ret = 0x2A,
     }
 }
