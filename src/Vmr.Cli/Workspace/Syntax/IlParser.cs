@@ -30,19 +30,39 @@ namespace Vmr.Cli.Workspace.Syntax
 
         private void ParsePrimary()
         {
-            if (Current.Kind == SyntaxKind.LabelDeclarationToken)
+            switch (Current.Kind)
             {
-                ParseLabel();
-                return;
+                case SyntaxKind.LabelDeclarationToken:
+                    {
+                        ParseLabel();
+                        break;
+                    }
+                case SyntaxKind.Attribute_Method:
+                    {
+                        ParseMethodDeclaration();
+                        break;
+                    }
+                default:
+                    {
+                        ParseInstruction();
+                        break;
+                    }
             }
-
-            ParseInstruction();
         }
 
         private void ParseLabel()
         {
             var label = ExpectToken(SyntaxKind.LabelDeclarationToken);
             _codeBuilder.Label(label.Value!.ToString()!);
+        }
+
+        private void ParseMethodDeclaration()
+        {
+            var attribute = ExpectToken(SyntaxKind.Attribute_Method);
+            var name = ExpectToken(SyntaxKind.LabelDeclarationToken);
+            var isEntrypoint = Current.Kind == SyntaxKind.Attribute_Entrypoint;
+           
+            _codeBuilder.Method(name.Text, 0, isEntrypoint);
         }
 
         private void ParseInstruction()
@@ -97,6 +117,16 @@ namespace Vmr.Cli.Workspace.Syntax
                 case SyntaxKind.OpCode_Stloc:
                     {
                         ParseStloc();
+                        break;
+                    }
+                case SyntaxKind.OpCode_Call:
+                    {
+                        ParseCall();
+                        break;
+                    }
+                case SyntaxKind.OpCode_Ret:
+                    {
+                        ParseRet();
                         break;
                     }
                 case SyntaxKind.OpCode_Nop:
@@ -157,7 +187,7 @@ namespace Vmr.Cli.Workspace.Syntax
         {
             var op = ExpectToken(SyntaxKind.OpCode_Brfalse);
             var arg = ExpectToken(SyntaxKind.LiteralToken);
-            _codeBuilder.Brfalse(arg.Value!.ToString()!);
+            _codeBuilder.Brfalse(arg.Text);
         }
 
         private void ParseBrtrue()
@@ -179,6 +209,19 @@ namespace Vmr.Cli.Workspace.Syntax
             var op = ExpectToken(SyntaxKind.OpCode_Stloc);
             var arg = ExpectToken(SyntaxKind.Int32Token);
             _codeBuilder.Stloc((int)arg.Value!);
+        }
+
+        private void ParseCall()
+        {
+            var op = ExpectToken(SyntaxKind.OpCode_Call);
+            var arg = ExpectToken(SyntaxKind.LiteralToken);
+            _codeBuilder.Call(arg.Text);
+        }
+
+        private void ParseRet()
+        {
+            var op = ExpectToken(SyntaxKind.OpCode_Ret);
+            _codeBuilder.Ret();
         }
     }
 }

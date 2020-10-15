@@ -26,5 +26,11 @@ namespace Vmr.Cli.Workspace.Syntax
         OpCode_Brtrue,
         OpCode_Ldloc,
         OpCode_Stloc,
+        OpCode_Call,
+        OpCode_Ret,
+        
+        // Attributes
+        Attribute_Method,
+        Attribute_Entrypoint,
     }
 }

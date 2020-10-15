@@ -65,8 +65,8 @@ namespace Vmr.Cli.Workspace.Syntax
                     }
                 default:
                     {
-                        if (char.IsLetter(Current) || Current == '_')
-                            ReadLiteralToken();
+                        if (char.IsLetter(Current) || Current == '_' || Current == '.')
+                            ReadComplexToken();
                         else
                         {
                             ReportBadCharacter(Position, Current);
@@ -158,7 +158,7 @@ namespace Vmr.Cli.Workspace.Syntax
             Value = builder.ToString();
         }
 
-        private void ReadLiteralToken()
+        private void ReadComplexToken()
         {
             do
             {
@@ -182,6 +182,10 @@ namespace Vmr.Cli.Workspace.Syntax
                 true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Ceq)) => SyntaxKind.OpCode_Ceq,
                 true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Ldloc)) => SyntaxKind.OpCode_Ldloc,
                 true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Stloc)) => SyntaxKind.OpCode_Stloc,
+                true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Call)) => SyntaxKind.OpCode_Call,
+                true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Ret)) => SyntaxKind.OpCode_Ret,
+                true when Match(SyntaxFacts.GetAttributeText(SyntaxKind.Attribute_Method)) => SyntaxKind.Attribute_Method,
+                true when Match(SyntaxFacts.GetAttributeText(SyntaxKind.Attribute_Entrypoint)) => SyntaxKind.Attribute_Entrypoint,
                 _ => SyntaxKind.LiteralToken,
             };
 

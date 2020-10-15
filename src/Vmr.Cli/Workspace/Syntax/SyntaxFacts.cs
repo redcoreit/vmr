@@ -21,12 +21,29 @@ namespace Vmr.Cli.Workspace.Syntax
                 SyntaxKind.OpCode_Brtrue => "brtrue",
                 SyntaxKind.OpCode_Ldloc => "ldloc",
                 SyntaxKind.OpCode_Stloc => "stloc",
+                SyntaxKind.OpCode_Call => "call",
+                SyntaxKind.OpCode_Ret => "ret",
+                SyntaxKind.Attribute_Entrypoint => ".entrypoint",
+                SyntaxKind.Attribute_Method => ".method",
                 _ => null, // Dynamic 
             };
 
         public static string GetInstructionText(SyntaxKind kind)
         {
             if (!IsInstruction(kind))
+                throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
+
+            var result = GetText(kind);
+
+            if (result is null)
+                throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
+
+            return result;
+        }
+
+        public static string GetAttributeText(SyntaxKind kind)
+        {
+            if (!IsAttribute(kind))
                 throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
 
             var result = GetText(kind);
@@ -51,6 +68,16 @@ namespace Vmr.Cli.Workspace.Syntax
                 SyntaxKind.OpCode_Brtrue => true,
                 SyntaxKind.OpCode_Ldloc => true,
                 SyntaxKind.OpCode_Stloc => true,
+                SyntaxKind.OpCode_Call => true,
+                SyntaxKind.OpCode_Ret => true,
+                _ => false,
+            };
+
+        public static bool IsAttribute(SyntaxKind kind)
+            => kind switch
+            {
+                SyntaxKind.Attribute_Entrypoint => true,
+                SyntaxKind.Attribute_Method => true,
                 _ => false,
             };
     }
