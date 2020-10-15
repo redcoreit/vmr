@@ -10,22 +10,22 @@ namespace Vmr.Common.Primitives
 {
     public sealed class IlProgram
     {
-        internal IlProgram(IReadOnlyList<IlObject> ilObjects, IReadOnlyCollection<int> labelTargetIlRefs)
-            : this(ilObjects, labelTargetIlRefs, new Dictionary<int, string>())
+        internal IlProgram(IReadOnlyList<IlObject> ilObjects, IReadOnlyCollection<IlAddress> labelTargets)
+            : this(ilObjects, labelTargets, new Dictionary<IlAddress, string>())
         {
         }
 
-        internal IlProgram(IReadOnlyList<IlObject> ilObjects, IReadOnlyCollection<int> labelTargetIlRefs, IReadOnlyDictionary<int, string> labelNames)
+        internal IlProgram(IReadOnlyList<IlObject> ilObjects, IReadOnlyCollection<IlAddress> labelTargets, IReadOnlyDictionary<IlAddress, string> labelNames)
         {
             IlObjects = ilObjects;
-            LabelTargetIlRefs = labelTargetIlRefs;
+            LabelTargets = labelTargets;
             LabelNames = labelNames;
         }
 
         public IReadOnlyList<IlObject> IlObjects { get; }
 
-        public IReadOnlyCollection<int> LabelTargetIlRefs { get; }
+        public IReadOnlyCollection<IlAddress> LabelTargets { get; }
 
-        public IReadOnlyDictionary<int, string> LabelNames { get; }
+        public IReadOnlyDictionary<IlAddress, string> LabelNames { get; }
     }
 }

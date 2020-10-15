@@ -13,15 +13,19 @@ namespace Vmr.Common.Disassemble
     public class Disassembler
     {
         private readonly List<IlObject> _ilObjects;
-        private readonly HashSet<int> _labelTargetIlRefs;
+        private readonly HashSet<IlAddress> _methodTargets;
+        private readonly HashSet<IlAddress> _labelTargets;
 
-        private int _pointer;
+        private int _segment;
+        private int _ilRef;
 
         private Disassembler()
         {
-            _pointer = 0;
+            _segment = 0;
+            _ilRef = 0;
             _ilObjects = new List<IlObject>();
-            _labelTargetIlRefs = new HashSet<int>();
+            _methodTargets = new HashSet<IlAddress>();
+            _labelTargets = new HashSet<IlAddress>();
         }
 
         public static IlProgram GetProgram(byte[] program)
@@ -33,17 +37,31 @@ namespace Vmr.Common.Disassemble
 
         private IlProgram GetProgram(ReadOnlySpan<byte> program)
         {
-            while (_pointer < program.Length)
+            while (_ilRef < program.Length)
             {
-                var instruction = GetInstruction(program[_pointer]);
+                var instruction = GetInstruction(program[_ilRef]);
+                HandleSegment(instruction);
 
-                _ilObjects.Add(new IlObject(_pointer, instruction));
-                _pointer++;
+                var address = GetIlAddress();
+
+                _ilObjects.Add(new IlObject(address, instruction));
+                _ilRef++;
 
                 ReadArguments(instruction, program);
             }
 
-            return new IlProgram(_ilObjects, _labelTargetIlRefs);
+            return new IlProgram(_ilObjects, _labelTargets);
+
+            void HandleSegment(InstructionCode instruction)
+            {
+                if(instruction != InstructionCode.Ret)
+                {
+                    return;
+                }
+
+                _segment = _ilRef;
+                _ilRef = 0;
+            }
         }
 
         private InstructionCode GetInstruction(byte current)
@@ -55,38 +73,40 @@ namespace Vmr.Common.Disassemble
             catch (InvalidOperationException ex)
             {
                 Debug.WriteLine(ex.Message);
-                throw new VmrException($"Not supported instruction. IlRef: {new IlRef(_pointer).ToString()} Code: {InstructionFacts.Format(current)}");
+                throw new VmrException($"Not supported instruction. IlRef: {new IlRef(_ilRef).ToString()} Code: {InstructionFacts.Format(current)}");
             }
         }
 
         private void ReadArguments(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
+            var address = GetIlAddress();
+
             switch (instruction)
             {
                 case InstructionCode.Ldstr:
                     {
-                        var arg = BinaryConvert.GetString(ref _pointer, program);
-                        _ilObjects.Add(new IlObject(_pointer, arg));
-                        _pointer++;
+                        var arg = BinaryConvert.GetString(ref _ilRef, program);
+                        _ilObjects.Add(new IlObject(address, arg));
+                        _ilRef++;
                         break;
                     }
                 case InstructionCode.Ldloc:
                 case InstructionCode.Stloc:
                 case InstructionCode.Ldc_i4:
                     {
-                        var arg = BinaryConvert.GetInt32(ref _pointer, program);
-                        _ilObjects.Add(new IlObject(_pointer, arg));
-                        _pointer++;
+                        var arg = BinaryConvert.GetInt32(ref _ilRef, program);
+                        _ilObjects.Add(new IlObject(address, arg));
+                        _ilRef++;
                         break;
                     }
                 case InstructionCode.Br:
                 case InstructionCode.Brfalse:
                 case InstructionCode.Brtrue:
                     {
-                        var arg = BinaryConvert.GetInt32(ref _pointer, program);
-                        _ilObjects.Add(new IlObject(_pointer, arg));
-                        _labelTargetIlRefs.Add(arg);
-                        _pointer++;
+                        var arg = BinaryConvert.GetInt32(ref _ilRef, program);
+                        _ilObjects.Add(new IlObject(address, arg));
+                        _labelTargets.Add(new IlAddress(_segment, arg)); // Cross segment jumps are not supported
+                        _ilRef++;
                         break;
                     }
                 case InstructionCode.Add:
@@ -97,8 +117,11 @@ namespace Vmr.Common.Disassemble
                         break;
                     }
                 default:
-                    throw new VmrException($"Not supported instruction. IlRef: {new IlRef(_pointer).ToString()} Code: {InstructionFacts.Format(instruction)}");
+                    throw new VmrException($"Not supported instruction. IlRef: {new IlRef(_ilRef).ToString()} Code: {InstructionFacts.Format(instruction)}");
             }
         }
+
+        private IlAddress GetIlAddress()
+            => new IlAddress(_segment, _ilRef);
     }
 }

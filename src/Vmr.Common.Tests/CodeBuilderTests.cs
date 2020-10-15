@@ -78,5 +78,56 @@ namespace Vmr.Common.Tests
             Assert.Subset(expected, actual);
             Assert.Superset(expected, actual);
         }
+
+        [Fact]
+        public void Method_call_load_two_numbers_then_add()
+        {
+            // Arrange
+            var expected = new object[] 
+            {
+                // unused method removed
+                InstructionCode.Ldc_i4,
+                2,
+                InstructionCode.Ret,
+                InstructionCode.Ldc_i4,
+                1,
+                InstructionCode.Call,
+                0, 
+                InstructionCode.Add,
+                InstructionCode.Ret,
+            };
+            var builder = GetBuilder();
+
+            // Act
+            var ilObjects = builder.GetIlProgram().IlObjects;
+            var actual = ilObjects.Select(m => m.Obj);
+
+            // Assert
+            Assert.True(Enumerable.SequenceEqual(expected, actual));
+
+            static CodeBuilder GetBuilder()
+            {
+                var builder = new CodeBuilder();
+
+                //one
+                builder.Method("one", 0, false);
+                builder.Ldc_i4(1);
+                builder.Ret();
+
+                //two
+                builder.Method("two", 0, false);
+                builder.Ldc_i4(2);
+                builder.Ret();
+
+                //main
+                builder.Method("main", 0, true);
+                builder.Ldc_i4(1);
+                builder.Call("two");
+                builder.Add();
+                builder.Ret();
+
+                return builder;
+            }
+        }
     }
 }

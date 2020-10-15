@@ -1,0 +1,11 @@
+1. call-ret instructions
+	.method 
+	.entrypoint
+	calli 0x29
+	ret
+	call platform::Call
+	.locals
+	
+2. dbg command
+3. memory model
+4. rpc calls

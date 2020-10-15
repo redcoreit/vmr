@@ -5,7 +5,7 @@ using System.Transactions;
 
 namespace Vmr.Common.Instructions
 {
-    public readonly ref struct IlRef
+    public readonly struct IlRef
     {
         private readonly bool _initialized;
         private readonly int _value;
@@ -19,12 +19,17 @@ namespace Vmr.Common.Instructions
 
         public int Value => _value;
 
-        public override bool Equals(object? obj) => false;
+        public override bool Equals(object? obj)
+            => obj is IlRef ilRef
+            && Equals(ilRef);
 
         public bool Equals(IlRef other)
-            => other._initialized == _initialized && other._value == _value;
+            => other._initialized == _initialized 
+            && other._value == _value
+            ;
 
-        public override int GetHashCode() => HashCode.Combine(_value);
+        public override int GetHashCode() 
+            => HashCode.Combine(_value);
 
         public static bool operator ==(IlRef left, IlRef right)
             => left.Equals(right);

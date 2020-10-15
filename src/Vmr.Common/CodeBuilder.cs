@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Vmr.Common.Assemble;
+using Vmr.Common.Exeptions;
 using Vmr.Common.Instructions;
 using Vmr.Common.Primitives;
 
@@ -14,17 +16,18 @@ namespace Vmr.Common
     public sealed class CodeBuilder
     {
         private readonly List<IlObject> _program;
-        private readonly LableInfoBuilder _lableInfoBuilder;
+        private readonly LabelTableBuilder _lableTableBuilder;
+        private readonly MethodTableBuilder _methodTableBuilder;
 
+        private int _segment;
         private int _ilRef;
 
         public CodeBuilder()
         {
             _program = new List<IlObject>();
-            _lableInfoBuilder = new LableInfoBuilder();
+            _lableTableBuilder = new LabelTableBuilder();
+            _methodTableBuilder = new MethodTableBuilder();
         }
-
-        public IlRef IlRef => _ilRef;
 
         public byte[] GetBinaryProgram()
         {
@@ -36,10 +39,11 @@ namespace Vmr.Common
 
         public IlProgram GetIlProgram()
         {
-            var labelInfo = _lableInfoBuilder.Build();
-            Linker.LinkLabels(_program, labelInfo);
+            var labelTable = _lableTableBuilder.Build();
+            var methodTable = _methodTableBuilder.Build();
+            Linker.Run(_program, methodTable, labelTable);
 
-            return new IlProgram(_program, labelInfo.GetTargetIlRefs(), labelInfo.GetLabelNames());
+            return new IlProgram(_program, labelTable.GetTargets(), labelTable.GetLabelNames());
         }
 
         public void Ldc_i4(int value)
@@ -76,7 +80,7 @@ namespace Vmr.Common
         public void Br(string label)
         {
             Add(InstructionCode.Br);
-            Add(0, label); // placeholder
+            AddLabelReference(label);
         }
 
         public void Ceq()
@@ -86,7 +90,8 @@ namespace Vmr.Common
 
         public void Label(string label)
         {
-            _lableInfoBuilder.AddTarget(label, _ilRef);
+            var address = GetIlAddress();
+            _lableTableBuilder.AddTarget(label, address);
         }
 
         public void Nop()
@@ -96,14 +101,14 @@ namespace Vmr.Common
 
         public void Brtrue(string label)
         {
-            Add(InstructionCode.Brtrue);            
-            Add(0, label); // placeholder            
+            Add(InstructionCode.Brtrue);
+            AddLabelReference(label);
         }
 
         public void Brfalse(string label)
         {
             Add(InstructionCode.Brfalse);
-            Add(0, label); // placeholder
+            AddLabelReference(label);
         }
 
         public void Ldloc(int index)
@@ -118,27 +123,74 @@ namespace Vmr.Common
             Add(index);
         }
 
+        public void Method(string name, int locals = 0, bool isEntryPoint = false)
+        {
+            if (_ilRef == 0 && _segment != 0)
+            {
+                throw new VmrException($"Empty method body detected. Name: '{name}'");
+            }
+
+            _segment += _ilRef;
+            _ilRef = 0;
+
+            var address = GetIlAddress();
+            _methodTableBuilder.AddTarget(name, address, locals, isEntryPoint);
+        }
+
+        public void Ret()
+        {
+            Add(InstructionCode.Ret);
+        }
+
+        public void Call(string name)
+        {
+            Add(InstructionCode.Call);
+            AddMethodReference(name);
+        }
+
         private void Add(InstructionCode instruction)
         {
-            _program.Add(new IlObject(_ilRef, instruction));
+            var address = GetIlAddress();
+
+            _program.Add(new IlObject(address, instruction));
             _ilRef += InstructionFacts.SizeOfOpCode;
         }
 
-        private void Add(int value, string? labelReference = null)
+        private void Add(int value)
         {
-            if(labelReference is object)
-            {
-                _lableInfoBuilder.AddReferenceIlRef(_ilRef, labelReference);
-            }
+            var address = GetIlAddress();
 
-            _program.Add(new IlObject(_ilRef, value));
+            _program.Add(new IlObject(address, value));
             _ilRef += sizeof(int);
         }
 
         private void Add(object obj, int sizeOfObj)
         {
-            _program.Add(new IlObject(_ilRef, obj));
+            var address = GetIlAddress();
+
+            _program.Add(new IlObject(address, obj));
             _ilRef += sizeOfObj;
         }
+
+        private void AddLabelReference(string name)
+        {
+            var address = GetIlAddress();
+            _lableTableBuilder.AddReference(address, name);
+
+            _program.Add(new IlObject(address, 0));
+            _ilRef += sizeof(int);
+        }
+
+        private void AddMethodReference(string name)
+        {
+            var address = GetIlAddress();
+            _methodTableBuilder.AddReference(address, name);
+
+            _program.Add(new IlObject(address, 0));
+            _ilRef += sizeof(int);
+        }
+
+        private IlAddress GetIlAddress()
+            => new IlAddress(_segment, _ilRef);
     }
 }

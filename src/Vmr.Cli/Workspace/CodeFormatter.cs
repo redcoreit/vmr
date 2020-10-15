@@ -56,7 +56,7 @@ namespace Vmr.Cli.Workspace
 
         private void FormatLabel(IlProgram program, CodeFormatSettings formatSettings, IlObject current)
         {
-            if (program.LabelTargetIlRefs.Contains(current.IlRef.Value))
+            if (program.LabelTargets.Contains(current.Address))
             {
                 _builder.AppendLine();
 
@@ -65,9 +65,9 @@ namespace Vmr.Cli.Workspace
                     return;
                 }
 
-                if (!program.LabelNames.TryGetValue(current.IlRef.Value, out var name))
+                if (!program.LabelNames.TryGetValue(current.Address, out var name))
                 {
-                    name = current.IlRef.ToString();
+                    name = current.Address.IlRef.ToString();
                 }
 
                 
@@ -83,7 +83,7 @@ namespace Vmr.Cli.Workspace
 
             if (formatSettings.UseIlRefPrefix)
             {
-                _builder.Append(current.IlRef.ToString());
+                _builder.Append(current.Address.IlRef.ToString());
                 _builder.Append(':');
             }
 
@@ -142,9 +142,11 @@ namespace Vmr.Cli.Workspace
             if (arg.Obj is not int num)
                 throw new ArgumentException($"Argument '{arg}' expected to be target il ref.");
 
-            if (!program.LabelNames.TryGetValue(num, out var name))
+            var address = new IlAddress(arg.Address.Segment.Value, num);
+
+            if (!program.LabelNames.TryGetValue(address, out var name))
             {
-                var targetIlRef = new IlRef(num);
+                var targetIlRef = address.IlRef;
                 name = targetIlRef.ToString();
             }
 
