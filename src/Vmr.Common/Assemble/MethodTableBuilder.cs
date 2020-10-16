@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using Vmr.Common.Exeptions;
-using Vmr.Common.Instructions;
+using Vmr.Common.Primitives;
 
 namespace Vmr.Common.Assemble
 {
-    internal sealed class MethodTableBuilder : TableBuilder<MethodTable, IlAddress>
+    internal sealed class MethodTableBuilder : TableBuilder<MethodTable>
     {
-        private IlAddress? _entrypointIlRef;
         private Dictionary<IlAddress, int> _locals;
 
         public MethodTableBuilder()
@@ -21,30 +20,13 @@ namespace Vmr.Common.Assemble
             base.AddReference(address, name);
         }
 
-        public void AddTarget(string name, IlAddress target, int locals, bool isEntryPoint)
+        public void AddTarget(string name, IlAddress target, int locals)
         {
-            if(isEntryPoint)
-            {
-                if(_entrypointIlRef.HasValue)
-                {
-                    throw new VmrException($"Entrypoint already specified.");
-                }
-
-                _entrypointIlRef = target;
-            }
-
             _locals.Add(target, locals);
             base.AddTarget(name, target);
         }
 
         public override MethodTable Build()
-        {
-            if (_entrypointIlRef is null)
-            {
-                throw new VmrException($"No entrypoint specified.");
-            }
-
-            return new MethodTable(References, Targets, _entrypointIlRef.Value, _locals);
-        }
+            => new MethodTable(References, Targets, _locals);
     }
 }

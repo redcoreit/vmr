@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Vmr.Common.Instructions;
+using Vmr.Common.Primitives;
 
 namespace Vmr.Common.Assemble
 {

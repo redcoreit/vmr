@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Vmr.Common.Instructions;
+using Vmr.Common.Linking;
 using Vmr.Common.Primitives;
 
 namespace Vmr.Common.Assemble
@@ -13,10 +15,16 @@ namespace Vmr.Common.Assemble
         {
             var binaryCode = new List<byte>();
 
-            foreach (var ilObj in program.IlObjects)
+            var entryPoint = BinaryConvert.GetBytes(program.EntryPoint.Value);
+            binaryCode.AddRange(entryPoint);
+
+            foreach (var ilMethod in program.IlMethods)
             {
-                var code = EmitObject(ilObj.Obj);
-                binaryCode.AddRange(code);
+                foreach (var ilObj in ilMethod.IlObjects)
+                {
+                    var code = EmitObject(ilObj.Obj);
+                    binaryCode.AddRange(code);
+                }
             }
 
             return binaryCode.ToArray();

@@ -30,33 +30,45 @@ namespace Vmr.Common
             return result;
         }
 
-        public static string GetString(ref int _pointer, ReadOnlySpan<byte> instructions)
+        public static byte[] GetBytes(uint value)
         {
-            if (instructions[_pointer] == InstructionFacts.Eos)
+            var result = BitConverter.GetBytes(value);
+
+            if (!BitConverter.IsLittleEndian)
+                Array.Reverse(result);
+
+            return result;
+        }
+
+        public static string GetString(ref int pointer, ReadOnlySpan<byte> instructions)
+        {
+            if (instructions[pointer] == InstructionFacts.Eos)
                 return string.Empty;
 
             var result = new List<byte>();
 
             do
             {
-                result.Add(instructions[_pointer]);
-            } while (_pointer++ < instructions.Length && instructions[_pointer] != InstructionFacts.Eos);
+                result.Add(instructions[pointer]);
+            } while (pointer++ < instructions.Length && instructions[pointer] != InstructionFacts.Eos);
 
-            if (instructions[_pointer] != InstructionFacts.Eos)
+            if (instructions[pointer] != InstructionFacts.Eos)
                 throw new InvalidOperationException("Missing string terminator.");
 
             return Encoding.UTF8.GetString(result.ToArray());
         }
 
-        public static int GetInt32(ref int _pointer, ReadOnlySpan<byte> instructions)
+        public static uint GetUInt32(ref int pointer, ReadOnlySpan<byte> instructions)
+            => (uint)GetInt32(ref pointer, instructions);
+
+        public static int GetInt32(ref int pointer, ReadOnlySpan<byte> instructions)
         {
             var binary = new byte[sizeof(int)];
-            binary[0] = instructions[_pointer];
-            // TODO (RH -): do-while
-            for (var i = 1; i < sizeof(int); i++)
+            
+            for (var i = 0; i < sizeof(int); i++)
             {
-                _pointer++;
-                binary[i] = instructions[_pointer];
+                binary[i] = instructions[pointer];
+                pointer++;
             }
 
             if (!BitConverter.IsLittleEndian)
@@ -64,6 +76,18 @@ namespace Vmr.Common
 
             var value = BitConverter.ToInt32(binary);
             return value;
+        }
+
+        public static InstructionCode GetInstructionCode(ref int pointer, ReadOnlySpan<byte> instructions)
+        {
+            var value = instructions[pointer];
+            var code = (InstructionCode)value;
+
+            if (!Enum.IsDefined(typeof(InstructionCode), code))
+                throw new InvalidOperationException("Not an instruction.");
+
+            pointer++;
+            return code;
         }
 
         public static InstructionCode GetInstructionCode(byte value)

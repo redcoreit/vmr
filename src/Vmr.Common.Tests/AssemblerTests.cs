@@ -80,5 +80,63 @@ namespace Vmr.Common.Tests
 
             Assert.Equal((byte)InstructionCode.Add, actual[10]);
         }
+
+        [Fact]
+        public void Method_call_load_two_numbers_then_add()
+        {
+            // Arrange
+            var builder = GetBuilder();
+            var pointer = 0;
+
+            // Act
+            _ = builder.GetIlProgram(); // Test reproducable property of CodeBuilder
+            var program = builder.GetBinaryProgram();
+
+            // Assert
+
+            // Entry Point
+            Assert.Equal(0, pointer);
+            Assert.Equal(6, BinaryConvert.GetInt32(ref pointer, program));
+
+            // two
+            var method_two = pointer;
+            Assert.Equal(4, pointer);
+            Assert.Equal(InstructionCode.Ldc_i4, BinaryConvert.GetInstructionCode(ref pointer, program));
+            Assert.Equal(2, BinaryConvert.GetInt32(ref pointer, program));
+            Assert.Equal(InstructionCode.Ret, BinaryConvert.GetInstructionCode(ref pointer, program));
+
+            // main
+            Assert.Equal(10, pointer);
+            Assert.Equal(InstructionCode.Ldc_i4, BinaryConvert.GetInstructionCode(ref pointer, program));
+            Assert.Equal(1, BinaryConvert.GetInt32(ref pointer, program));
+            Assert.Equal(InstructionCode.Call, BinaryConvert.GetInstructionCode(ref pointer, program));
+            Assert.Equal(method_two, BinaryConvert.GetInt32(ref pointer, program));
+            Assert.Equal(InstructionCode.Add, BinaryConvert.GetInstructionCode(ref pointer, program));
+            Assert.Equal(InstructionCode.Ret, BinaryConvert.GetInstructionCode(ref pointer, program));
+
+            static CodeBuilder GetBuilder()
+            {
+                var builder = new CodeBuilder();
+
+                //one
+                builder.Method("one", 0, false);
+                builder.Ldc_i4(1);
+                builder.Ret();
+
+                //two
+                builder.Method("two", 0, false);
+                builder.Ldc_i4(2);
+                builder.Ret();
+
+                //main
+                builder.Method("main", 0, true);
+                builder.Ldc_i4(1);
+                builder.Call("two");
+                builder.Add();
+                builder.Ret();
+
+                return builder;
+            }
+        }
     }
 }

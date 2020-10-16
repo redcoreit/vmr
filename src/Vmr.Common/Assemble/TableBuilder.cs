@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using Vmr.Common.Instructions;
+using Vmr.Common.Primitives;
 
 namespace Vmr.Common.Assemble
 {
-    internal abstract class TableBuilder<TResult, TAddress>
+    internal abstract class TableBuilder<TResult>
         where TResult : notnull
-        where TAddress : struct
     {
-        private readonly Dictionary<TAddress, string> _references;
-        private readonly Dictionary<string, TAddress> _targets;
+        private readonly Dictionary<IlAddress, string> _references;
+        private readonly Dictionary<string, IlAddress> _targets;
 
         public TableBuilder()
         {
-            _references = new Dictionary<TAddress, string>();
-            _targets = new Dictionary<string, TAddress>();
+            _references = new Dictionary<IlAddress, string>();
+            _targets = new Dictionary<string, IlAddress>();
         }
 
-        protected IReadOnlyDictionary<TAddress, string> References => _references;
+        protected IReadOnlyDictionary<IlAddress, string> References => _references;
 
-        protected IReadOnlyDictionary<string, TAddress> Targets => _targets;
+        protected IReadOnlyDictionary<string, IlAddress> Targets => _targets;
 
-        protected virtual void AddReference(TAddress reference, string name)
+        protected virtual void AddReference(IlAddress reference, string name)
         {
             if (_references.ContainsKey(reference))
                 throw new InvalidOperationException("Call site already exsists.");
@@ -29,7 +29,7 @@ namespace Vmr.Common.Assemble
             _references[reference] = name;
         }
 
-        protected virtual void AddTarget(string name, TAddress target)
+        protected virtual void AddTarget(string name, IlAddress target)
         {
             if (_targets.ContainsKey(name))
                 throw new InvalidOperationException($"Target '{name}' already exsists.");

@@ -20,7 +20,7 @@ namespace Vmr.Common.Tests
             builder.Label("start");
 
             // Act
-            var instructions = builder.GetIlProgram().IlObjects.Select(m => m.Obj).ToArray();
+            var instructions = builder.GetIlProgram().IlMethods.Single().IlObjects.Select(m => m.Obj).ToArray();
 
             // Assert
             Assert.Empty(instructions);
@@ -35,7 +35,7 @@ namespace Vmr.Common.Tests
             builder.Label("start");
 
             // Act
-            var instructions = builder.GetIlProgram().IlObjects.Select(m => m.Obj).ToArray();
+            var instructions = builder.GetIlProgram().IlMethods.Single().IlObjects.Select(m => m.Obj).ToArray();
 
             // Assert
             Assert.Equal(2, instructions.Length);
@@ -53,7 +53,7 @@ namespace Vmr.Common.Tests
             builder.Nop();
 
             // Act
-            var instructions = builder.GetIlProgram().IlObjects.Select(m => m.Obj).ToArray();
+            var instructions = builder.GetIlProgram().IlMethods.Single().IlObjects.Select(m => m.Obj).ToArray();
 
             // Assert
             Assert.Equal(3, instructions.Length);

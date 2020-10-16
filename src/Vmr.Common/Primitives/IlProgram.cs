@@ -4,25 +4,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Vmr.Common.Exeptions;
-using Vmr.Common.Instructions;
 
 namespace Vmr.Common.Primitives
 {
     public sealed class IlProgram
     {
-        internal IlProgram(IReadOnlyList<IlObject> ilObjects, IReadOnlyCollection<IlAddress> labelTargets)
-            : this(ilObjects, labelTargets, new Dictionary<IlAddress, string>())
+        internal IlProgram(IlAddress entryPoint, IReadOnlyList<IlMethod> ilMethods, IReadOnlyCollection<IlAddress> labelTargets)
+            : this(entryPoint, ilMethods, labelTargets, new Dictionary<IlAddress, string>())
         {
         }
 
-        internal IlProgram(IReadOnlyList<IlObject> ilObjects, IReadOnlyCollection<IlAddress> labelTargets, IReadOnlyDictionary<IlAddress, string> labelNames)
+        internal IlProgram(IlAddress entryPoint, IReadOnlyList<IlMethod> ilMethods, IReadOnlyCollection<IlAddress> labelTargets, IReadOnlyDictionary<IlAddress, string> labelNames)
         {
-            IlObjects = ilObjects;
+            EntryPoint = entryPoint;
+            IlMethods = ilMethods;
             LabelTargets = labelTargets;
             LabelNames = labelNames;
         }
 
-        public IReadOnlyList<IlObject> IlObjects { get; }
+        public IlAddress EntryPoint { get; }
+
+        public IReadOnlyList<IlMethod> IlMethods { get; }
 
         public IReadOnlyCollection<IlAddress> LabelTargets { get; }
 

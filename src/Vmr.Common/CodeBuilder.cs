@@ -1,6 +1,8 @@
 ﻿#pragma warning disable CA1707
+
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,24 +11,25 @@ using System.Threading.Tasks;
 using Vmr.Common.Assemble;
 using Vmr.Common.Exeptions;
 using Vmr.Common.Instructions;
+using Vmr.Common.Linking;
 using Vmr.Common.Primitives;
 
 namespace Vmr.Common
 {
     public sealed class CodeBuilder
     {
-        private readonly List<IlObject> _program;
-        private readonly LabelTableBuilder _lableTableBuilder;
-        private readonly MethodTableBuilder _methodTableBuilder;
+        private readonly HashSet<string> _methodNames;
+        private readonly Stack<Method> _methods;
+        private readonly List<ProgramNode> _nodes;
 
-        private int _segment;
-        private int _ilRef;
+        private Method? _entryPoint;
+        private int _methodOrder = 0;
 
         public CodeBuilder()
         {
-            _program = new List<IlObject>();
-            _lableTableBuilder = new LabelTableBuilder();
-            _methodTableBuilder = new MethodTableBuilder();
+            _methodNames = new HashSet<string>();
+            _methods = new Stack<Method>();
+            _nodes = new List<ProgramNode>();
         }
 
         public byte[] GetBinaryProgram()
@@ -39,11 +42,13 @@ namespace Vmr.Common
 
         public IlProgram GetIlProgram()
         {
-            var labelTable = _lableTableBuilder.Build();
-            var methodTable = _methodTableBuilder.Build();
-            Linker.Run(_program, methodTable, labelTable);
+            if (_entryPoint is null)
+            {
+                throw new VmrException("Entry point not found by code builder.");
+            }
 
-            return new IlProgram(_program, labelTable.GetTargets(), labelTable.GetLabelNames());
+            var linkedProgram = Linker.Run(_entryPoint, _methods.Reverse().ToArray());
+            return linkedProgram;
         }
 
         public void Ldc_i4(int value)
@@ -58,7 +63,7 @@ namespace Vmr.Common
 
             // TODO (RH perf): find an efficient way to determine UTF8 string size.
             var sizeofValue = BinaryConvert.GetBytes(value).Length;
-            Add(value, sizeofValue);
+            Add(value, (uint)sizeofValue);
         }
 
         public void Add()
@@ -69,12 +74,6 @@ namespace Vmr.Common
         public void Pop()
         {
             Add(InstructionCode.Pop);
-        }
-
-        public void Br(IlRef target)
-        {
-            Add(InstructionCode.Br);
-            Add(target.Value);
         }
 
         public void Br(string label)
@@ -88,10 +87,9 @@ namespace Vmr.Common
             Add(InstructionCode.Ceq);
         }
 
-        public void Label(string label)
+        public void Label(string name)
         {
-            var address = GetIlAddress();
-            _lableTableBuilder.AddTarget(label, address);
+            _nodes.Add(new LabelDeclaration(name));
         }
 
         public void Nop()
@@ -125,16 +123,18 @@ namespace Vmr.Common
 
         public void Method(string name, int locals = 0, bool isEntryPoint = false)
         {
-            if (_ilRef == 0 && _segment != 0)
+            if (!_methodNames.Add(name))
             {
-                throw new VmrException($"Empty method body detected. Name: '{name}'");
+                throw new VmrException($"Method '{name}' already exists.");
             }
 
-            _segment += _ilRef;
-            _ilRef = 0;
+            if (_methods.Count > 0)
+            {
+                EndMethod();
+            }
 
-            var address = GetIlAddress();
-            _methodTableBuilder.AddTarget(name, address, locals, isEntryPoint);
+            var method = new Method(_methodOrder++, Array.Empty<ProgramNode>(), name, locals, isEntryPoint);
+            _methods.Push(method);
         }
 
         public void Ret()
@@ -145,52 +145,47 @@ namespace Vmr.Common
         public void Call(string name)
         {
             Add(InstructionCode.Call);
-            AddMethodReference(name);
+            Add(name, sizeof(uint));
         }
 
         private void Add(InstructionCode instruction)
         {
-            var address = GetIlAddress();
-
-            _program.Add(new IlObject(address, instruction));
-            _ilRef += InstructionFacts.SizeOfOpCode;
+            _nodes.Add(new Instruction(instruction));
         }
 
         private void Add(int value)
         {
-            var address = GetIlAddress();
-
-            _program.Add(new IlObject(address, value));
-            _ilRef += sizeof(int);
+            _nodes.Add(new Argument(sizeof(int), value));
         }
 
-        private void Add(object obj, int sizeOfObj)
+        private void Add(object obj, uint sizeOfObj)
         {
-            var address = GetIlAddress();
-
-            _program.Add(new IlObject(address, obj));
-            _ilRef += sizeOfObj;
+            _nodes.Add(new Argument(sizeOfObj, obj));
         }
 
         private void AddLabelReference(string name)
         {
-            var address = GetIlAddress();
-            _lableTableBuilder.AddReference(address, name);
-
-            _program.Add(new IlObject(address, 0));
-            _ilRef += sizeof(int);
+            Add(name, sizeof(uint));
         }
 
-        private void AddMethodReference(string name)
+        private void EndMethod()
         {
-            var address = GetIlAddress();
-            _methodTableBuilder.AddReference(address, name);
+            var current = _methods.Pop();
 
-            _program.Add(new IlObject(address, 0));
-            _ilRef += sizeof(int);
+            var method = new Method(current.Order, _nodes, current.Name, current.Locals, current.IsEntryPoint);
+
+            if (current.IsEntryPoint)
+            {
+                if (_entryPoint is object)
+                {
+                    throw new VmrException($"Multiple entry point not supported.");
+                }
+
+                _entryPoint = method;
+            }
+
+            _methods.Push(method);
+            _nodes.Clear();
         }
-
-        private IlAddress GetIlAddress()
-            => new IlAddress(_segment, _ilRef);
     }
 }

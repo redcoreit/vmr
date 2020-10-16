@@ -20,7 +20,7 @@ namespace Vmr.Common.Tests
             builder.Ldc_i4(0x01);
 
             // Act
-            var actual = builder.GetIlProgram().IlObjects.Select(m => m.Obj).ToHashSet();
+            var actual = builder.GetIlProgram().IlMethods.Single().IlObjects.Select(m => m.Obj).ToHashSet();
 
             // Assert
             Assert.Subset(expected, actual);
@@ -36,7 +36,7 @@ namespace Vmr.Common.Tests
             builder.Ldstr("test test");
 
             // Act
-            var actual = builder.GetIlProgram().IlObjects.Select(m => m.Obj).ToHashSet();
+            var actual = builder.GetIlProgram().IlMethods.Single().IlObjects.Select(m => m.Obj).ToHashSet();
 
             // Assert
             Assert.Subset(expected, actual);
@@ -54,7 +54,7 @@ namespace Vmr.Common.Tests
             builder.Add();
 
             // Act
-            var actual = builder.GetIlProgram().IlObjects.Select(m => m.Obj).ToHashSet();
+            var actual = builder.GetIlProgram().IlMethods.Single().IlObjects.Select(m => m.Obj).ToHashSet();
 
             // Assert
             Assert.Subset(expected, actual);
@@ -72,7 +72,7 @@ namespace Vmr.Common.Tests
             builder.Ceq();
 
             // Act
-            var actual = builder.GetIlProgram().IlObjects.Select(m => m.Obj).ToHashSet();
+            var actual = builder.GetIlProgram().IlMethods.Single().IlObjects.Select(m => m.Obj).ToHashSet();
 
             // Assert
             Assert.Subset(expected, actual);
@@ -83,7 +83,7 @@ namespace Vmr.Common.Tests
         public void Method_call_load_two_numbers_then_add()
         {
             // Arrange
-            var expected = new object[] 
+            var expected = new object[]
             {
                 // unused method removed
                 InstructionCode.Ldc_i4,
@@ -92,17 +92,22 @@ namespace Vmr.Common.Tests
                 InstructionCode.Ldc_i4,
                 1,
                 InstructionCode.Call,
-                0, 
+                0,
                 InstructionCode.Add,
                 InstructionCode.Ret,
             };
             var builder = GetBuilder();
 
             // Act
-            var ilObjects = builder.GetIlProgram().IlObjects;
-            var actual = ilObjects.Select(m => m.Obj);
+            _ = builder.GetIlProgram(); // Test reproducable property of CodeBuilder
+
+            var program = builder.GetIlProgram();
+            var ilObjects = program.IlMethods.Single().IlObjects;
+            var actual = ilObjects.Select(m => m.Obj).ToList();
 
             // Assert
+            Assert.Equal((uint)6, program.EntryPoint.Value);
+            Assert.Equal((uint)4, ilObjects[0].Address.Value);
             Assert.True(Enumerable.SequenceEqual(expected, actual));
 
             static CodeBuilder GetBuilder()

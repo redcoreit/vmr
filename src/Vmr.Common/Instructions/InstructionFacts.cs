@@ -12,6 +12,7 @@ namespace Vmr.Common.Instructions
         public const byte Eos = (byte)'\0';
         public const int SizeOfEos = sizeof(char);
         public const int SizeOfOpCode = sizeof(InstructionCode);
+        public const int SizeProgramHeader = sizeof(int);
 
         public static string Format(InstructionCode instructionCode)
             => Format((int)instructionCode);
