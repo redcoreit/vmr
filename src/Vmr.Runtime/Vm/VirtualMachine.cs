@@ -17,19 +17,19 @@ namespace Vmr.Runtime.Vm
     public sealed class VirtualMachine
     {
         private readonly Dictionary<int, object> _locals;
-        private readonly Stack<object> _stack;
+        private readonly StackFrame<object> _stackFrame;
 
         private int _pointer = 0;
 
         public VirtualMachine()
         {
             _locals = new();
-            _stack = new();
+            _stackFrame = new();
         }
 
         public void Execute(byte[] program)
         {
-            _stack.Clear();
+            _stackFrame.Clear();
             var span = program.AsSpan();
 
             var entryPointAddress = BinaryConvert.GetInt32(ref _pointer, program);
@@ -42,7 +42,7 @@ namespace Vmr.Runtime.Vm
             }
         }
 
-        public Stack<object> GetStack() => new Stack<object>(_stack);
+        public Stack<object> GetStack() => _stackFrame.GetEvaluationStack();
 
         private InstructionCode GetInstruction(ReadOnlySpan<byte> program)
         {
@@ -53,7 +53,7 @@ namespace Vmr.Runtime.Vm
             catch (InvalidOperationException ex)
             {
                 Debug.WriteLine(ex.Message);
-                Throw.NotSupportedInstruction((int)_pointer, program[_pointer]);
+                Throw.NotSupportedInstruction(_pointer - InstructionFacts.SizeOfOpCode, program[_pointer]);
                 throw; // can't happen
             }
         }
@@ -116,9 +116,20 @@ namespace Vmr.Runtime.Vm
                         Stloc(instruction, program);
                         break;
                     }
+                case InstructionCode.Call:
+                    {
+                        Call(instruction, program);
+                        break;
+                    }
+
+                case InstructionCode.Ret:
+                    {
+                        Ret(instruction, program);
+                        break;
+                    }
                 default:
                     {
-                        Throw.NotSupportedInstruction((int)_pointer, (byte)instruction);
+                        Throw.NotSupportedInstruction(_pointer - InstructionFacts.SizeOfOpCode, (byte)instruction);
                         break;
                     }
             }
@@ -126,15 +137,15 @@ namespace Vmr.Runtime.Vm
 
         private void Add(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
-            if (_stack.Count == 0)
-                Throw.StackUnderflowException((int)_pointer);
+            if (_stackFrame.StackSize == 0)
+                Throw.StackUnderflowException(_pointer);
 
-            var op1 = _stack.Pop();
+            var op1 = _stackFrame.Pop();
 
-            if (_stack.Count == 0)
-                Throw.StackUnderflowException((int)_pointer);
+            if (_stackFrame.StackSize == 0)
+                Throw.StackUnderflowException(_pointer);
 
-            var op2 = _stack.Pop();
+            var op2 = _stackFrame.Pop();
 
             if (op1 is not int num1)
             {
@@ -149,14 +160,14 @@ namespace Vmr.Runtime.Vm
             }
 
             var result = num1 + num2;
-            _stack.Push(result);
+            _stackFrame.Push(result);
 
         }
 
         private void Ldc_i4(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
             GetArg(program, out int value);
-            _stack.Push(value);
+            _stackFrame.Push(value);
 
 
         }
@@ -164,13 +175,13 @@ namespace Vmr.Runtime.Vm
         private void Ldstr(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
             GetArg(program, out string value);
-            _stack.Push(value);
+            _stackFrame.Push(value);
 
         }
 
         private void Pop(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
-            _stack.Pop();
+            _stackFrame.Pop();
 
         }
 
@@ -180,7 +191,7 @@ namespace Vmr.Runtime.Vm
 
             if (target >= program.Length)
             {
-                Throw.InvalidInstructionArgument((int)_pointer);
+                Throw.InvalidInstructionArgument(_pointer);
                 return;
             }
 
@@ -189,12 +200,12 @@ namespace Vmr.Runtime.Vm
 
         private void Ceq(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
-            var op2 = _stack.Pop();
-            var op1 = _stack.Pop();
+            var op2 = _stackFrame.Pop();
+            var op1 = _stackFrame.Pop();
 
             var result = Equals(op1, op2);
 
-            _stack.Push(result ? 1 : 0);
+            _stackFrame.Push(result ? 1 : 0);
         }
 
         private void Brtrue(InstructionCode instruction, ReadOnlySpan<byte> program)
@@ -209,11 +220,11 @@ namespace Vmr.Runtime.Vm
 
             if (target >= program.Length)
             {
-                Throw.InvalidInstructionArgument((int)_pointer);
+                Throw.InvalidInstructionArgument(_pointer);
                 return;
             }
 
-            var obj = _stack.Pop();
+            var obj = _stackFrame.Pop();
             var isTrue = obj switch
             {
                 bool value => value,
@@ -224,7 +235,7 @@ namespace Vmr.Runtime.Vm
                 _ => throw new VmExecutionException($"Instructuin not supports object type '{obj.GetType()}'.")
             };
 
-            if(isTrue == expectedCondition)
+            if (isTrue == expectedCondition)
             {
                 _pointer = target;
             }
@@ -236,10 +247,10 @@ namespace Vmr.Runtime.Vm
 
             if (!_locals.TryGetValue(index, out var value))
             {
-                Throw.LocalVariableNotSet((int)_pointer);
+                Throw.LocalVariableNotSet(_pointer);
             }
 
-            _stack.Push(value);
+            _stackFrame.Push(value);
 
         }
 
@@ -247,15 +258,54 @@ namespace Vmr.Runtime.Vm
         {
             GetArg(program, out int index);
 
-            var value = _stack.Pop();
+            var value = _stackFrame.Pop();
             _locals[index] = value;
 
+        }
+
+        private void Call(InstructionCode instruction, ReadOnlySpan<byte> program)
+        {
+            GetArg(program, out int address);
+
+            if((uint)address >= (uint)program.Length)
+            {
+                throw new VmExecutionException($"Invalid method address '0x{address.ToString("X4")}'.");
+            }
+
+            _stackFrame.AddStack();
+            _stackFrame.Push(_pointer);
+            _pointer = address;
+        }
+
+        private void Ret(InstructionCode instruction, ReadOnlySpan<byte> program)
+        {
+            switch (_stackFrame.StackSize)
+            {
+                case 1:
+                    {
+                        var retAddress = (int)_stackFrame.Pop();
+                        _pointer = retAddress;
+                        _stackFrame.DropStack();
+                        break;
+                    }
+                case 2:
+                    {
+                        var retValue = _stackFrame.Pop();
+                        var retAddress = (int)_stackFrame.Pop();
+                        _pointer = retAddress;
+                        _stackFrame.DropStack();
+                        _stackFrame.Push(retValue);
+                        break;
+                    }
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(_stackFrame.StackSize), _stackFrame.StackSize, null);
+            }
         }
 
         private void GetArg(ReadOnlySpan<byte> program, out int value)
         {
             if (_pointer >= program.Length)
-                Throw.MissingInstructionArgument((int)_pointer);
+                Throw.MissingInstructionArgument(_pointer);
 
             value = BinaryConvert.GetInt32(ref _pointer, program);
         }
@@ -263,7 +313,7 @@ namespace Vmr.Runtime.Vm
         private void GetArg(ReadOnlySpan<byte> program, out string value)
         {
             if (_pointer >= program.Length)
-                Throw.MissingInstructionArgument((int)_pointer);
+                Throw.MissingInstructionArgument(_pointer);
 
             value = BinaryConvert.GetString(ref _pointer, program);
         }
