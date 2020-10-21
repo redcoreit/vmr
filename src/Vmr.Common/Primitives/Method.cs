@@ -18,7 +18,7 @@ namespace Vmr.Common.Primitives
                 : 0;
         }
 
-        public uint Size { get; }
+        public int Size { get; }
         
         public int Order { get; }
 

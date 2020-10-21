@@ -30,16 +30,6 @@ namespace Vmr.Common
             return result;
         }
 
-        public static byte[] GetBytes(uint value)
-        {
-            var result = BitConverter.GetBytes(value);
-
-            if (!BitConverter.IsLittleEndian)
-                Array.Reverse(result);
-
-            return result;
-        }
-
         public static string GetString(ref int pointer, ReadOnlySpan<byte> instructions)
         {
             if (instructions[pointer] == InstructionFacts.Eos)
@@ -57,9 +47,6 @@ namespace Vmr.Common
 
             return Encoding.UTF8.GetString(result.ToArray());
         }
-
-        public static uint GetUInt32(ref int pointer, ReadOnlySpan<byte> instructions)
-            => (uint)GetInt32(ref pointer, instructions);
 
         public static int GetInt32(ref int pointer, ReadOnlySpan<byte> instructions)
         {

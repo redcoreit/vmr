@@ -9,7 +9,7 @@ namespace Vmr.Common.Primitives
             InstructionCode = instructionCode;
         }
 
-        public override uint Size => InstructionFacts.SizeOfOpCode;
+        public override int Size => InstructionFacts.SizeOfOpCode;
 
         public InstructionCode InstructionCode { get; }
     }

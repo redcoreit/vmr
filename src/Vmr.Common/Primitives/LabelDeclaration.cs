@@ -7,7 +7,7 @@
             Name = name;
         }
 
-        public override uint Size => 0;
+        public override int Size => 0;
         
         public string Name { get; }
     }

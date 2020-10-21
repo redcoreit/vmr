@@ -2,6 +2,6 @@
 {
     internal abstract class ProgramNode
     {
-        public abstract uint Size { get; }
+        public abstract int Size { get; }
     }
 }

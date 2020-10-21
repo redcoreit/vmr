@@ -8,15 +8,15 @@ namespace Vmr.Common.Primitives
         : IEquatable<IlAddress?>
     {
         private readonly bool _initialized;
-        private readonly uint _address;
+        private readonly int _address;
 
-        public IlAddress(uint address)
+        public IlAddress(int address)
         {
             _initialized = true;
             _address = address;
         }
 
-        public uint Value => _address;
+        public int Value => _address;
 
         public override string ToString()
             => $"0x{Value.ToString("X4")}";
@@ -44,7 +44,7 @@ namespace Vmr.Common.Primitives
 
 
         // TODO (RH -): Do not allocate on explicit equality check with UInt value.
-        public static implicit operator IlAddress(uint value)
+        public static implicit operator IlAddress(int value)
             => new IlAddress(value);
     }
 }

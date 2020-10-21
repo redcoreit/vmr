@@ -50,7 +50,7 @@ namespace Vmr.Runtime.Vm
             catch (InvalidOperationException ex)
             {
                 Debug.WriteLine(ex.Message);
-                Throw.NotSupportedInstruction((uint)_pointer, current);
+                Throw.NotSupportedInstruction((int)_pointer, current);
                 throw; // can't happen
             }
         }
@@ -116,7 +116,7 @@ namespace Vmr.Runtime.Vm
                     }
                 default:
                     {
-                        Throw.NotSupportedInstruction((uint)_pointer, (byte)instruction);
+                        Throw.NotSupportedInstruction((int)_pointer, (byte)instruction);
                         break;
                     }
             }
@@ -125,12 +125,12 @@ namespace Vmr.Runtime.Vm
         private void Add(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
             if (_stack.Count == 0)
-                Throw.StackUnderflowException((uint)_pointer);
+                Throw.StackUnderflowException((int)_pointer);
 
             var op1 = _stack.Pop();
 
             if (_stack.Count == 0)
-                Throw.StackUnderflowException((uint)_pointer);
+                Throw.StackUnderflowException((int)_pointer);
 
             var op2 = _stack.Pop();
 
@@ -181,7 +181,7 @@ namespace Vmr.Runtime.Vm
 
             if (target >= program.Length)
             {
-                Throw.InvalidInstructionArgument((uint)_pointer);
+                Throw.InvalidInstructionArgument((int)_pointer);
                 return;
             }
 
@@ -211,7 +211,7 @@ namespace Vmr.Runtime.Vm
 
             if (target >= program.Length)
             {
-                Throw.InvalidInstructionArgument((uint)_pointer);
+                Throw.InvalidInstructionArgument((int)_pointer);
                 return;
             }
 
@@ -237,7 +237,7 @@ namespace Vmr.Runtime.Vm
 
             if (!_locals.TryGetValue(index, out var value))
             {
-                Throw.LocalVariableNotSet((uint)_pointer);
+                Throw.LocalVariableNotSet((int)_pointer);
             }
 
             _stack.Push(value);
@@ -258,7 +258,7 @@ namespace Vmr.Runtime.Vm
         private void GetArg(ReadOnlySpan<byte> program, out int value)
         {
             if (_pointer++ >= program.Length)
-                Throw.MissingInstructionArgument((uint)_pointer);
+                Throw.MissingInstructionArgument((int)_pointer);
 
             value = BinaryConvert.GetInt32(ref _pointer, program);
         }
@@ -266,7 +266,7 @@ namespace Vmr.Runtime.Vm
         private void GetArg(ReadOnlySpan<byte> program, out string value)
         {
             if (_pointer++ >= program.Length)
-                Throw.MissingInstructionArgument((uint)_pointer);
+                Throw.MissingInstructionArgument((int)_pointer);
 
             value = BinaryConvert.GetString(ref _pointer, program);
         }

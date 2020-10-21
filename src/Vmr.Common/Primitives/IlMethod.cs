@@ -6,7 +6,7 @@ namespace Vmr.Common.Primitives
 {
     public sealed class IlMethod : IEquatable<IlMethod?>
     {
-        public IlMethod(IlAddress address, uint size, IReadOnlyList<IlObject> ilObjects)
+        public IlMethod(IlAddress address, int size, IReadOnlyList<IlObject> ilObjects)
         {
             Address = address;
             Size = size;
@@ -16,7 +16,7 @@ namespace Vmr.Common.Primitives
         public IlAddress Address { get; }
 
         // TODO (RH -): remove
-        public uint Size { get; }
+        public int Size { get; }
 
         public IReadOnlyList<IlObject> IlObjects { get; }
 

@@ -46,7 +46,7 @@ namespace Vmr.Common.Linking
             return new IlProgram(_entryPoint, ilMethods, labelTable.GetTargets(), labelTable.GetLabelNames());
         }
 
-        private IReadOnlyList<IlMethod> LinkMethods(uint startAddress, CallTree callTree)
+        private IReadOnlyList<IlMethod> LinkMethods(int startAddress, CallTree callTree)
         {
             var result = new List<IlMethod>();
             var methods = callTree.Flatten().Select(m => m.Method).OrderBy(m => m.Order).ToList();
@@ -68,9 +68,9 @@ namespace Vmr.Common.Linking
 
             return result;
 
-            static IReadOnlyDictionary<string, uint> GetMethodAddressLookup(uint startAddress, IReadOnlyList<Method> methods)
+            static IReadOnlyDictionary<string, int> GetMethodAddressLookup(int startAddress, IReadOnlyList<Method> methods)
             {
-                var result = new Dictionary<string, uint>();
+                var result = new Dictionary<string, int>();
 
                 var methodAddress = startAddress;
                 foreach (var method in methods)
@@ -83,7 +83,7 @@ namespace Vmr.Common.Linking
             }
         }
 
-        private IReadOnlyList<IlObject> LinkNodes(IReadOnlyDictionary<string, uint> methodAddressLookup, uint startAddress, IReadOnlyList<ProgramNode> nodes)
+        private IReadOnlyList<IlObject> LinkNodes(IReadOnlyDictionary<string, int> methodAddressLookup, int startAddress, IReadOnlyList<ProgramNode> nodes)
         {
             var result = new List<IlObject>();
             var branchAddressLookup = GetInstructionAddressLookup(startAddress, nodes);
@@ -142,9 +142,9 @@ namespace Vmr.Common.Linking
 
             return result;
 
-            static IReadOnlyDictionary<string, uint> GetInstructionAddressLookup(uint startAddress, IReadOnlyList<ProgramNode> nodes)
+            static IReadOnlyDictionary<string, int> GetInstructionAddressLookup(int startAddress, IReadOnlyList<ProgramNode> nodes)
             {
-                var result = new Dictionary<string, uint>();
+                var result = new Dictionary<string, int>();
 
                 var address = startAddress;
                 foreach (var node in nodes)
@@ -162,10 +162,10 @@ namespace Vmr.Common.Linking
                 return result;
             }
 
-            static IlObject CreateInstruction(Instruction instruction, uint address)
+            static IlObject CreateInstruction(Instruction instruction, int address)
                 => new IlObject(new IlAddress(address), instruction.Size, instruction.InstructionCode);
 
-            static IlObject CreateArgument(Argument argument, uint address, object? valueOverride = null)
+            static IlObject CreateArgument(Argument argument, int address, object? valueOverride = null)
                 => new IlObject(new IlAddress(address), argument.Size, valueOverride ?? argument.Value);
         }
 

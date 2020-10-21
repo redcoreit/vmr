@@ -118,7 +118,7 @@ namespace Vmr.Common.Disassemble
                 case InstructionCode.Brfalse:
                 case InstructionCode.Brtrue:
                     {
-                        var arg = BinaryConvert.GetUInt32(ref _ilRef, program);
+                        var arg = BinaryConvert.GetInt32(ref _ilRef, program);
                         _ilObjects.Add(new IlObject(address, 0, arg));
                         _labelTargets.Add(new IlAddress(arg)); // Cross segment jumps are not supported
                         _ilRef++;
@@ -138,6 +138,6 @@ namespace Vmr.Common.Disassemble
         }
 
         private IlAddress GetIlAddress()
-            => new IlAddress((uint)_ilRef);
+            => new IlAddress(_ilRef);
     }
 }

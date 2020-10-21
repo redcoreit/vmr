@@ -67,7 +67,7 @@ namespace Vmr.Common
 
             // TODO (RH perf): find an efficient way to determine UTF8 string size.
             var sizeofValue = BinaryConvert.GetBytes(value).Length;
-            Add(value, (uint)sizeofValue);
+            Add(value, sizeofValue);
         }
 
         public void Add()
@@ -158,7 +158,7 @@ namespace Vmr.Common
         public void Call(string name)
         {
             Add(InstructionCode.Call);
-            Add(name, sizeof(uint));
+            Add(name, sizeof(int));
         }
 
         private void Add(InstructionCode instruction)
@@ -171,14 +171,14 @@ namespace Vmr.Common
             _nodes.Add(new Argument(sizeof(int), value));
         }
 
-        private void Add(object obj, uint sizeOfObj)
+        private void Add(object obj, int sizeOfObj)
         {
             _nodes.Add(new Argument(sizeOfObj, obj));
         }
 
         private void AddLabelReference(string name)
         {
-            Add(name, sizeof(uint));
+            Add(name, sizeof(int));
         }
 
         private void EndMethod()

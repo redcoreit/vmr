@@ -109,7 +109,7 @@ namespace Vmr.Common.Tests
 
             // Entry Point
             Assert.Equal(0, pointer);
-            Assert.Equal(10u, BinaryConvert.GetUInt32(ref pointer, program));
+            Assert.Equal(10, BinaryConvert.GetInt32(ref pointer, program));
 
             // two
             var method_two = pointer;

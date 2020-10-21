@@ -43,7 +43,7 @@ namespace Vmr.Common.Tests
             // Assert
             Assert.Equal(2, instructions.Length);
             Assert.Equal(InstructionCode.Br, instructions[0]);
-            Assert.Equal(9u, instructions[1]);
+            Assert.Equal(9, instructions[1]);
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace Vmr.Common.Tests
             // Assert
             Assert.Equal(3, instructions.Length);
             Assert.Equal(InstructionCode.Br, instructions[0]);
-            Assert.Equal(9u, instructions[1]);
+            Assert.Equal(9, instructions[1]);
             Assert.Equal(InstructionCode.Nop, instructions[2]);
         }
 

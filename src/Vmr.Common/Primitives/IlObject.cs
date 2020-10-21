@@ -8,7 +8,7 @@ namespace Vmr.Common.Primitives
 {
     public sealed class IlObject : IEquatable<IlObject?>
     {
-        internal IlObject(IlAddress address, uint size, object obj)
+        internal IlObject(IlAddress address, int size, object obj)
         {
             Address = address;
             Size = size;
@@ -18,7 +18,7 @@ namespace Vmr.Common.Primitives
         public IlAddress Address { get; }
 
         // TODO (RH -): remove
-        public uint Size { get; }
+        public int Size { get; }
 
         public object Obj { get; }
 

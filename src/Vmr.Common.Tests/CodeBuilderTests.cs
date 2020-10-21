@@ -96,7 +96,7 @@ namespace Vmr.Common.Tests
                 InstructionCode.Ldc_i4,
                 1,
                 InstructionCode.Call,
-                4u,
+                4,
                 InstructionCode.Add,
                 InstructionCode.Ret,
             };
@@ -111,10 +111,10 @@ namespace Vmr.Common.Tests
 
             // Assert
             Assert.Equal(2, program.IlMethods.Count);
-            Assert.Equal(4u, program.IlMethods[0].Address.Value);
-            Assert.Equal(10u, program.IlMethods[1].Address.Value);
-            Assert.Equal(10u, program.EntryPoint.Value);
-            Assert.Equal(4u, ilObjects[0].Address.Value);
+            Assert.Equal(4, program.IlMethods[0].Address.Value);
+            Assert.Equal(10, program.IlMethods[1].Address.Value);
+            Assert.Equal(10, program.EntryPoint.Value);
+            Assert.Equal(4, ilObjects[0].Address.Value);
             Assert.True(Enumerable.SequenceEqual(expected, actual));
 
             static CodeBuilder GetBuilder()
