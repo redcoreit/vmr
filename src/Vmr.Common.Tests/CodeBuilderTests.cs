@@ -17,6 +17,7 @@ namespace Vmr.Common.Tests
             // Arrange
             var expected = new object[] { InstructionCode.Ldc_i4, 0x01 }.ToHashSet();
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Ldc_i4(0x01);
 
             // Act
@@ -33,6 +34,7 @@ namespace Vmr.Common.Tests
             // Arrange
             var expected = new object[] { InstructionCode.Ldstr, "test test" }.ToHashSet();
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Ldstr("test test");
 
             // Act
@@ -49,6 +51,7 @@ namespace Vmr.Common.Tests
             // Arrange
             var expected = new object[] { InstructionCode.Ldc_i4, 0x01, InstructionCode.Ldc_i4, 2, InstructionCode.Add }.ToHashSet();
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Ldc_i4(0x01);
             builder.Ldc_i4(2);
             builder.Add();
@@ -67,6 +70,7 @@ namespace Vmr.Common.Tests
             // Arrange
             var expected = new object[] { InstructionCode.Ldc_i4, 0x01, InstructionCode.Ldc_i4, 2, InstructionCode.Ceq }.ToHashSet();
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Ldc_i4(0x01);
             builder.Ldc_i4(2);
             builder.Ceq();
@@ -92,7 +96,7 @@ namespace Vmr.Common.Tests
                 InstructionCode.Ldc_i4,
                 1,
                 InstructionCode.Call,
-                0,
+                4u,
                 InstructionCode.Add,
                 InstructionCode.Ret,
             };
@@ -102,12 +106,15 @@ namespace Vmr.Common.Tests
             _ = builder.GetIlProgram(); // Test reproducable property of CodeBuilder
 
             var program = builder.GetIlProgram();
-            var ilObjects = program.IlMethods.Single().IlObjects;
+            var ilObjects = program.IlMethods.SelectMany(m => m.IlObjects).ToArray();
             var actual = ilObjects.Select(m => m.Obj).ToList();
 
             // Assert
-            Assert.Equal((uint)6, program.EntryPoint.Value);
-            Assert.Equal((uint)4, ilObjects[0].Address.Value);
+            Assert.Equal(2, program.IlMethods.Count);
+            Assert.Equal(4u, program.IlMethods[0].Address.Value);
+            Assert.Equal(10u, program.IlMethods[1].Address.Value);
+            Assert.Equal(10u, program.EntryPoint.Value);
+            Assert.Equal(4u, ilObjects[0].Address.Value);
             Assert.True(Enumerable.SequenceEqual(expected, actual));
 
             static CodeBuilder GetBuilder()

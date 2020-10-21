@@ -19,6 +19,7 @@ namespace Vmr.Common
     public sealed class CodeBuilder
     {
         private readonly HashSet<string> _methodNames;
+        private readonly HashSet<string> _labelNames;
         private readonly Stack<Method> _methods;
         private readonly List<ProgramNode> _nodes;
 
@@ -28,6 +29,7 @@ namespace Vmr.Common
         public CodeBuilder()
         {
             _methodNames = new HashSet<string>();
+            _labelNames = new HashSet<string>();
             _methods = new Stack<Method>();
             _nodes = new List<ProgramNode>();
         }
@@ -42,6 +44,8 @@ namespace Vmr.Common
 
         public IlProgram GetIlProgram()
         {
+            EndMethod();
+
             if (_entryPoint is null)
             {
                 throw new VmrException("Entry point not found by code builder.");
@@ -89,6 +93,11 @@ namespace Vmr.Common
 
         public void Label(string name)
         {
+            if (!_labelNames.Add(name))
+            {
+                throw new VmrException($"Label '{name}' already exists in current method '{_methods.Peek().Name}' scope.");
+            }
+
             _nodes.Add(new LabelDeclaration(name));
         }
 
@@ -111,12 +120,16 @@ namespace Vmr.Common
 
         public void Ldloc(int index)
         {
+            CheckLocalsRange(index);
+
             Add(InstructionCode.Ldloc);
             Add(index);
         }
 
         public void Stloc(int index)
         {
+            CheckLocalsRange(index);
+
             Add(InstructionCode.Stloc);
             Add(index);
         }
@@ -170,9 +183,20 @@ namespace Vmr.Common
 
         private void EndMethod()
         {
-            var current = _methods.Pop();
+            if (_methods.Count == 0)
+            {
+                throw new VmrException($"Program must contain at least an entry point method.");
+            }
 
-            var method = new Method(current.Order, _nodes, current.Name, current.Locals, current.IsEntryPoint);
+            if (_nodes.Count == 0)
+            {
+                return;
+            }
+
+            CheckUndefinedLabels();
+
+            var current = _methods.Pop();
+            var method = new Method(current.Order, _nodes.ToArray(), current.Name, current.Locals, current.IsEntryPoint);
 
             if (current.IsEntryPoint)
             {
@@ -186,6 +210,31 @@ namespace Vmr.Common
 
             _methods.Push(method);
             _nodes.Clear();
+            _labelNames.Clear();
+        }
+
+        private void CheckLocalsRange(int index)
+        {
+            if ((uint)index >= (uint)_methods.Peek().Locals)
+            {
+                throw new VmrException($"Local variable index '{index}' is out of range.");
+            }
+        }
+
+        private void CheckUndefinedLabels()
+        {
+            for (int idx = 0; idx < _nodes.Count; idx++)
+            {
+                if (_nodes[idx] is Instruction inst && InstructionFacts.IsBranchingInstruction(inst.InstructionCode))
+                {
+                    var name = (string)((Argument)_nodes[++idx]).Value;
+
+                    if (!_labelNames.Contains(name))
+                    {
+                        throw new VmrException($"Label '{name}' not exists in current method '{_methods.Peek().Name}' scope.");
+                    }
+                }
+            }
         }
     }
 }

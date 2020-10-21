@@ -35,10 +35,10 @@ namespace Vmr.Common.Linking
         private IlProgram RunInternal(Method entryPoint, IReadOnlyList<Method> methods)
         {
             var callTree = CallTree.Create(entryPoint, methods);
-            var ilMethods = LinkMethods(0, callTree);
+            var ilMethods = LinkMethods(InstructionFacts.SizeProgramHeader, callTree);
             var labelTable = _labelTableBuilder.Build();
 
-            if(_entryPoint is null)
+            if (_entryPoint is null)
             {
                 throw new VmrException("Entry point not found by linker.");
             }
@@ -57,6 +57,12 @@ namespace Vmr.Common.Linking
                 var address = methodAddressLookup[method.Name];
                 var ilObjects = LinkNodes(methodAddressLookup, address, method.Nodes);
                 var ilMethod = new IlMethod(new IlAddress(address), method.Size, ilObjects);
+
+                if (method.IsEntryPoint)
+                {
+                    _entryPoint = ilMethod.Address;
+                }
+
                 result.Add(ilMethod);
             }
 
@@ -69,8 +75,8 @@ namespace Vmr.Common.Linking
                 var methodAddress = startAddress;
                 foreach (var method in methods)
                 {
-                    methodAddress += method.Size;
                     result.Add(method.Name, methodAddress);
+                    methodAddress += method.Size;
                 }
 
                 return result;
@@ -93,19 +99,8 @@ namespace Vmr.Common.Linking
             {
                 object? valueOverride = null;
 
-                if (node is Instruction inst)
-                {
-                    rewriteType = inst.InstructionCode == InstructionCode.Call
-                        ? (ArgRewriteType?)ArgRewriteType.CallTarget
-                        : InstructionFacts.IsBranchingInstruction(inst.InstructionCode)
-                        ? (ArgRewriteType?)ArgRewriteType.BranchTarget
-                        : null
-                        ;
-                }
-
                 if (rewriteType is object)
                 {
-                    rewriteType = null;
                     var name = (string)((Argument)node).Value;
 
                     valueOverride = rewriteType == ArgRewriteType.CallTarget
@@ -113,6 +108,18 @@ namespace Vmr.Common.Linking
                         : rewriteType == ArgRewriteType.BranchTarget
                         ? (object?)branchAddressLookup[name]
                         : throw new InvalidOperationException(nameof(rewriteType))
+                        ;
+
+                    rewriteType = null;
+                }
+
+                if (node is Instruction inst)
+                {
+                    rewriteType = inst.InstructionCode == InstructionCode.Call
+                        ? (ArgRewriteType?)ArgRewriteType.CallTarget
+                        : InstructionFacts.IsBranchingInstruction(inst.InstructionCode)
+                        ? (ArgRewriteType?)ArgRewriteType.BranchTarget
+                        : null
                         ;
                 }
 

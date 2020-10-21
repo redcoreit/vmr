@@ -38,6 +38,7 @@ namespace Vmr.Common.Assemble
                 InstructionCode instruction => BinaryConvert.GetBytes(instruction),
                 string text => BinaryConvert.GetBytes(text),
                 int value => BinaryConvert.GetBytes(value),
+                uint value => BinaryConvert.GetBytes(value),
                 _ => throw new ArgumentOutOfRangeException(nameof(obj), obj.GetType().Name, null)
             };
 

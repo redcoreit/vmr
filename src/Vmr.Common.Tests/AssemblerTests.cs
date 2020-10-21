@@ -16,15 +16,16 @@ namespace Vmr.Common.Tests
         {
             // Arrange
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Ldstr("");
 
             // Act
             var actual = builder.GetBinaryProgram();
 
             // Assert
-            Assert.Equal(2, actual.Length);
-            Assert.Equal((byte)InstructionCode.Ldstr, actual[0]);
-            Assert.Equal(InstructionFacts.Eos, actual[1]);
+            Assert.Equal(6, actual.Length);
+            Assert.Equal((byte)InstructionCode.Ldstr, actual[4]);
+            Assert.Equal(InstructionFacts.Eos, actual[5]);
         }
 
         [Fact]
@@ -33,17 +34,18 @@ namespace Vmr.Common.Tests
             // Arrange
             var expectedTextBytes = Encoding.UTF8.GetBytes("test test");
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Ldstr("test test");
 
             // Act
             var actual = builder.GetBinaryProgram();
 
             // Assert
-            Assert.Equal(2 + expectedTextBytes.Length, actual.Length);
-            Assert.Equal((byte)InstructionCode.Ldstr, actual[0]);
+            Assert.Equal(4 + 1 + expectedTextBytes.Length + 1, actual.Length);
+            Assert.Equal((byte)InstructionCode.Ldstr, actual[4]);
 
             // test test
-            var actualTextBytes = actual.ToArray().AsSpan(1..^1).ToArray();
+            var actualTextBytes = actual.ToArray().AsSpan(5..^1).ToArray();
             Assert.True(expectedTextBytes.SequenceEqual(actualTextBytes));
             Assert.Equal(InstructionFacts.Eos, actual.Last());
         }
@@ -53,6 +55,7 @@ namespace Vmr.Common.Tests
         {
             // Arrange
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Ldc_i4(0x01);
             builder.Ldc_i4(2);
             builder.Add();
@@ -61,24 +64,34 @@ namespace Vmr.Common.Tests
             var actual = builder.GetBinaryProgram();
 
             // Assert
-            Assert.Equal(11, actual.Length);
-            Assert.Equal((byte)InstructionCode.Ldc_i4, actual[0]);
+            Assert.Equal(15, actual.Length);
 
-            // 0x01
-            Assert.Equal((byte)1, actual[1]);
+            // header: entry point address
+            Assert.Equal((byte)4, actual[0]);
+            Assert.Equal((byte)0, actual[1]);
             Assert.Equal((byte)0, actual[2]);
             Assert.Equal((byte)0, actual[3]);
-            Assert.Equal((byte)0, actual[4]);
 
-            Assert.Equal((byte)InstructionCode.Ldc_i4, actual[5]);
+            // Ldc.i4
+            Assert.Equal((byte)InstructionCode.Ldc_i4, actual[4]);
 
-            // 2
-            Assert.Equal((byte)2, actual[6]);
+            // 0x01
+            Assert.Equal((byte)1, actual[5]);
+            Assert.Equal((byte)0, actual[6]);
             Assert.Equal((byte)0, actual[7]);
             Assert.Equal((byte)0, actual[8]);
-            Assert.Equal((byte)0, actual[9]);
 
-            Assert.Equal((byte)InstructionCode.Add, actual[10]);
+            // Ldc.i4
+            Assert.Equal((byte)InstructionCode.Ldc_i4, actual[9]);
+
+            // 2
+            Assert.Equal((byte)2, actual[10]);
+            Assert.Equal((byte)0, actual[11]);
+            Assert.Equal((byte)0, actual[12]);
+            Assert.Equal((byte)0, actual[13]);
+
+            // Add
+            Assert.Equal((byte)InstructionCode.Add, actual[14]);
         }
 
         [Fact]
@@ -96,7 +109,7 @@ namespace Vmr.Common.Tests
 
             // Entry Point
             Assert.Equal(0, pointer);
-            Assert.Equal(6, BinaryConvert.GetInt32(ref pointer, program));
+            Assert.Equal(10u, BinaryConvert.GetUInt32(ref pointer, program));
 
             // two
             var method_two = pointer;

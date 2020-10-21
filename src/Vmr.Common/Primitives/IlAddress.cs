@@ -4,7 +4,8 @@ using System.Text;
 
 namespace Vmr.Common.Primitives
 {
-    public sealed class IlAddress : IEquatable<IlAddress?>
+    public sealed class IlAddress 
+        : IEquatable<IlAddress?>
     {
         private readonly bool _initialized;
         private readonly uint _address;
@@ -41,6 +42,8 @@ namespace Vmr.Common.Primitives
         public static bool operator !=(IlAddress? left, IlAddress? right)
             => !(left == right);
 
+
+        // TODO (RH -): Do not allocate on explicit equality check with UInt value.
         public static implicit operator IlAddress(uint value)
             => new IlAddress(value);
     }
