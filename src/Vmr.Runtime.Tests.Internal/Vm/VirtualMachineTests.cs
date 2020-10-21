@@ -16,6 +16,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
         {
             // Assert
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Ldc_i4(1);
             builder.Pop();
             var instructions = builder.GetBinaryProgram();
@@ -34,6 +35,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
         public void Ldc_i4_load_number_from_arg()
         {
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Ldc_i4(1);
             var instructions = builder.GetBinaryProgram();
 
@@ -44,6 +46,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
         public void Ldstr_load_string_from_arg()
         {
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Ldstr("test");
             var instructions = builder.GetBinaryProgram();
 
@@ -54,6 +57,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
         public void Ldcstr_load_string_with_spaces_from_arg()
         {
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Ldstr("test test");
             var instructions = builder.GetBinaryProgram();
 
@@ -77,6 +81,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
         public void Br_branch_with_one_jump()
         {
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Br("start");
             builder.Pop();
             builder.Label("start");
@@ -90,6 +95,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
         public void Br_branch_with_two_jump()
         {
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Br("start");
             builder.Label("pop");
             builder.Pop();
@@ -111,6 +117,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
         public void Ceq_compare_two_numbers()
         {
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Ldc_i4(2);
             builder.Ldc_i4(2);
             builder.Ceq();
@@ -123,6 +130,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
         public void Brfalse_compare_and_write_equality()
         {
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Ldc_i4(0);
             builder.Ldc_i4(1);
             builder.Ceq();

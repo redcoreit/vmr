@@ -16,14 +16,16 @@ namespace Vmr.Runtime.Vm
 {
     public sealed class VirtualMachine
     {
-        private readonly Dictionary<int, object> _locals;
+        private readonly MethodState<Dictionary<int, object>> _methodState;
         private readonly StackFrame<object> _stackFrame;
 
+        private Dictionary<int, object> _locals;
         private int _pointer = 0;
 
         public VirtualMachine()
         {
             _locals = new();
+            _methodState = new();
             _stackFrame = new();
         }
 
@@ -267,11 +269,12 @@ namespace Vmr.Runtime.Vm
         {
             GetArg(program, out int address);
 
-            if((uint)address >= (uint)program.Length)
+            if ((uint)address >= (uint)program.Length)
             {
                 throw new VmExecutionException($"Invalid method address '0x{address.ToString("X4")}'.");
             }
 
+            _methodState.Save(_locals);
             _stackFrame.AddStack();
             _stackFrame.Push(_pointer);
             _pointer = address;
@@ -300,6 +303,8 @@ namespace Vmr.Runtime.Vm
                 default:
                     throw new ArgumentOutOfRangeException(nameof(_stackFrame.StackSize), _stackFrame.StackSize, null);
             }
+
+            _locals = _methodState.Restore();
         }
 
         private void GetArg(ReadOnlySpan<byte> program, out int value)
