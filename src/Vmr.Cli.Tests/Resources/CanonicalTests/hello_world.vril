@@ -1,1 +1,3 @@
-﻿    ldstr "Hello World"
+﻿.method main:
+    .entrypoint
+    ldstr "Hello World"

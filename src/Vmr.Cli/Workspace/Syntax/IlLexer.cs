@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using Vmr.Cli.Exceptions;
 using Vmr.Cli.Workspace.Syntax.Abstraction;
 
@@ -186,6 +187,7 @@ namespace Vmr.Cli.Workspace.Syntax
                 true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Ret)) => SyntaxKind.OpCode_Ret,
                 true when Match(SyntaxFacts.GetAttributeText(SyntaxKind.Attribute_Method)) => SyntaxKind.Attribute_Method,
                 true when Match(SyntaxFacts.GetAttributeText(SyntaxKind.Attribute_Entrypoint)) => SyntaxKind.Attribute_Entrypoint,
+                true when Match(SyntaxFacts.GetAttributeText(SyntaxKind.Attribute_Locals)) => SyntaxKind.Attribute_Locals,
                 _ => SyntaxKind.LiteralToken,
             };
 
@@ -270,11 +272,6 @@ namespace Vmr.Cli.Workspace.Syntax
 
         private void SkipWhitespaces()
         {
-            if (Position == 0 && Current == Encoding.UTF8.GetString(Encoding.UTF8.GetPreamble())[0])
-            {
-                MoveNext(3);
-            }
-
             // Vml lexer intentionally does not emits whitespace tokens.
             while (char.IsWhiteSpace(Current))
             {

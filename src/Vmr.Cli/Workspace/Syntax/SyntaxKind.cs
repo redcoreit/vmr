@@ -32,5 +32,6 @@ namespace Vmr.Cli.Workspace.Syntax
         // Attributes
         Attribute_Method,
         Attribute_Entrypoint,
+        Attribute_Locals,
     }
 }

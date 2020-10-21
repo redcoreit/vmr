@@ -32,25 +32,28 @@ namespace Vmr.Runtime.Vm
             _stack.Clear();
             var span = program.AsSpan();
 
+            var entryPointAddress = BinaryConvert.GetInt32(ref _pointer, program);
+            _pointer = entryPointAddress;
+
             while (_pointer < span.Length)
             {
-                var instruction = GetInstruction(span[_pointer]);
+                var instruction = GetInstruction(span);
                 DispatchInstruction(instruction, span);
             }
         }
 
         public Stack<object> GetStack() => new Stack<object>(_stack);
 
-        private InstructionCode GetInstruction(byte current)
+        private InstructionCode GetInstruction(ReadOnlySpan<byte> program)
         {
             try
             {
-                return BinaryConvert.GetInstructionCode(current);
+                return BinaryConvert.GetInstructionCode(ref _pointer, program);
             }
             catch (InvalidOperationException ex)
             {
                 Debug.WriteLine(ex.Message);
-                Throw.NotSupportedInstruction((int)_pointer, current);
+                Throw.NotSupportedInstruction((int)_pointer, program[_pointer]);
                 throw; // can't happen
             }
         }
@@ -101,7 +104,6 @@ namespace Vmr.Runtime.Vm
                     }
                 case InstructionCode.Nop:
                     {
-                        _pointer++;
                         break;
                     }
                 case InstructionCode.Ldloc:
@@ -149,7 +151,6 @@ namespace Vmr.Runtime.Vm
             var result = num1 + num2;
             _stack.Push(result);
 
-            _pointer++;
         }
 
         private void Ldc_i4(InstructionCode instruction, ReadOnlySpan<byte> program)
@@ -157,7 +158,7 @@ namespace Vmr.Runtime.Vm
             GetArg(program, out int value);
             _stack.Push(value);
 
-            _pointer++;
+
         }
 
         private void Ldstr(InstructionCode instruction, ReadOnlySpan<byte> program)
@@ -165,14 +166,12 @@ namespace Vmr.Runtime.Vm
             GetArg(program, out string value);
             _stack.Push(value);
 
-            _pointer++;
         }
 
         private void Pop(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
             _stack.Pop();
 
-            _pointer++;
         }
 
         private void Br(InstructionCode instruction, ReadOnlySpan<byte> program)
@@ -196,7 +195,6 @@ namespace Vmr.Runtime.Vm
             var result = Equals(op1, op2);
 
             _stack.Push(result ? 1 : 0);
-            _pointer++;
         }
 
         private void Brtrue(InstructionCode instruction, ReadOnlySpan<byte> program)
@@ -226,9 +224,10 @@ namespace Vmr.Runtime.Vm
                 _ => throw new VmExecutionException($"Instructuin not supports object type '{obj.GetType()}'.")
             };
 
-            _pointer = isTrue == expectedCondition
-                ? target
-                : (_pointer + 1);
+            if(isTrue == expectedCondition)
+            {
+                _pointer = target;
+            }
         }
 
         private void Ldloc(InstructionCode instruction, ReadOnlySpan<byte> program)
@@ -242,7 +241,6 @@ namespace Vmr.Runtime.Vm
 
             _stack.Push(value);
 
-            _pointer++;
         }
 
         private void Stloc(InstructionCode instruction, ReadOnlySpan<byte> program)
@@ -252,12 +250,11 @@ namespace Vmr.Runtime.Vm
             var value = _stack.Pop();
             _locals[index] = value;
 
-            _pointer++;
         }
 
         private void GetArg(ReadOnlySpan<byte> program, out int value)
         {
-            if (_pointer++ >= program.Length)
+            if (_pointer >= program.Length)
                 Throw.MissingInstructionArgument((int)_pointer);
 
             value = BinaryConvert.GetInt32(ref _pointer, program);
@@ -265,7 +262,7 @@ namespace Vmr.Runtime.Vm
 
         private void GetArg(ReadOnlySpan<byte> program, out string value)
         {
-            if (_pointer++ >= program.Length)
+            if (_pointer >= program.Length)
                 Throw.MissingInstructionArgument((int)_pointer);
 
             value = BinaryConvert.GetString(ref _pointer, program);

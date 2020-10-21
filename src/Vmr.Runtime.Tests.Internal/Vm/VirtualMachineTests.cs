@@ -64,6 +64,7 @@ namespace Vmr.Runtime.Tests.Internal.Vm
         public void Add_load_two_numbers_then_sum()
         {
             var builder = new CodeBuilder();
+            builder.Method("main", isEntryPoint: true);
             builder.Ldc_i4(1);
             builder.Ldc_i4(2);
             builder.Add();

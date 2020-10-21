@@ -1,4 +1,6 @@
-﻿    br start
+﻿.method main:
+    .entrypoint
+    br start
 
 remove:
     pop

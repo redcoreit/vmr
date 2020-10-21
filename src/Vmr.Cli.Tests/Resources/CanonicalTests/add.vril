@@ -1,3 +1,5 @@
-﻿    ldc.i4 1
+.method main:
+    .entrypoint
+    ldc.i4 1
     ldc.i4 2
     add

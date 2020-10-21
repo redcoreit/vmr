@@ -37,13 +37,17 @@ namespace Vmr.Common
 
             var result = new List<byte>();
 
-            do
+            while (pointer < instructions.Length)
             {
+                if (instructions[pointer] == InstructionFacts.Eos)
+                {
+                    pointer++;
+                    break;
+                }
+                
                 result.Add(instructions[pointer]);
-            } while (pointer++ < instructions.Length && instructions[pointer] != InstructionFacts.Eos);
-
-            if (instructions[pointer] != InstructionFacts.Eos)
-                throw new InvalidOperationException("Missing string terminator.");
+                pointer++;
+            }
 
             return Encoding.UTF8.GetString(result.ToArray());
         }
@@ -51,7 +55,7 @@ namespace Vmr.Common
         public static int GetInt32(ref int pointer, ReadOnlySpan<byte> instructions)
         {
             var binary = new byte[sizeof(int)];
-            
+
             for (var i = 0; i < sizeof(int); i++)
             {
                 binary[i] = instructions[pointer];

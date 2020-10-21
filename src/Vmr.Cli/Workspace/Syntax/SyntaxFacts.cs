@@ -25,6 +25,7 @@ namespace Vmr.Cli.Workspace.Syntax
                 SyntaxKind.OpCode_Ret => "ret",
                 SyntaxKind.Attribute_Entrypoint => ".entrypoint",
                 SyntaxKind.Attribute_Method => ".method",
+                SyntaxKind.Attribute_Locals => ".locals",
                 _ => null, // Dynamic 
             };
 
@@ -78,6 +79,7 @@ namespace Vmr.Cli.Workspace.Syntax
             {
                 SyntaxKind.Attribute_Entrypoint => true,
                 SyntaxKind.Attribute_Method => true,
+                SyntaxKind.Attribute_Locals => true,
                 _ => false,
             };
     }

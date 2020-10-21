@@ -31,18 +31,11 @@ namespace Vmr.Cli.IO
             return content;
         }
 
-        private static void ReadToMemory(FileInfo fileInfo, MemoryStream memoryStream)
-        {
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            using var stream = fileInfo.OpenRead();
-            stream.CopyTo(memoryStream);
-        }
-
         private static byte[] GetBinaryContent(FileInfo fileInfo)
         {
             using var ms = new MemoryStream();
-
-            ReadToMemory(fileInfo, ms);
+            using var stream = fileInfo.OpenRead();
+            stream.CopyTo(ms);
             var array = ms.ToArray();
 
             return array;
@@ -50,8 +43,10 @@ namespace Vmr.Cli.IO
 
         private static string GetTextContent(FileInfo fileInfo)
         {
-            var array = GetBinaryContent(fileInfo);
-            return Encoding.UTF8.GetString(array);
+            using var stream = fileInfo.OpenRead();
+            using var reader = new StreamReader(stream, new UTF8Encoding(false), true);
+
+            return reader.ReadToEnd();
         }
     }
 }

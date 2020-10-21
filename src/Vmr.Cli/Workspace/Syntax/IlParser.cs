@@ -61,8 +61,22 @@ namespace Vmr.Cli.Workspace.Syntax
             var attribute = ExpectToken(SyntaxKind.Attribute_Method);
             var name = ExpectToken(SyntaxKind.LabelDeclarationToken);
             var isEntrypoint = Current.Kind == SyntaxKind.Attribute_Entrypoint;
-           
-            _codeBuilder.Method(name.Text, 0, isEntrypoint);
+
+            if (isEntrypoint)
+            {
+                ReadAndMoveNext();
+            }
+
+            var locals = 0;
+
+            if (Current.Kind == SyntaxKind.Attribute_Locals)
+            {
+                ReadAndMoveNext();
+                var value = ExpectToken(SyntaxKind.Int32Token);
+                locals = (int)value.Value!;
+            }
+
+            _codeBuilder.Method(name.Value!.ToString()!, locals, isEntrypoint);
         }
 
         private void ParseInstruction()

@@ -1,4 +1,7 @@
-﻿    ldc.i4 0
+﻿.method main:
+    .entrypoint
+    .locals 1
+    ldc.i4 0
     stloc 0
 
 _loop:

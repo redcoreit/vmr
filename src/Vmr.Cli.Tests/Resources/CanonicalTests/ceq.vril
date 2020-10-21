@@ -1,3 +1,5 @@
-﻿    ldc.i4 100
+﻿.method main:
+    .entrypoint
+    ldc.i4 100
     ldc.i4 99
     ceq
