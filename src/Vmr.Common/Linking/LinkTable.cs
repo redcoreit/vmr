@@ -4,19 +4,17 @@ using System.Linq;
 using System.Text;
 using Vmr.Common.Primitives;
 
-namespace Vmr.Common.Assemble
+namespace Vmr.Common.Linking
 {
-    public sealed class MethodTable
+    public sealed class LinkTable
     {
         private readonly IReadOnlyDictionary<IlAddress, string> _references;
         private readonly IReadOnlyDictionary<string, IlAddress> _targets;
-        private readonly IReadOnlyDictionary<IlAddress, int> _locals;
 
-        internal MethodTable(IReadOnlyDictionary<IlAddress, string> references, IReadOnlyDictionary<string, IlAddress> targets, IReadOnlyDictionary<IlAddress, int> _locals)
+        internal LinkTable(IReadOnlyDictionary<IlAddress, string> references, IReadOnlyDictionary<string, IlAddress> targets)
         {
             _references = references;
             _targets = targets;
-            this._locals = _locals;
         }
 
         public IlAddress GetTarget(string name)

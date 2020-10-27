@@ -37,7 +37,7 @@ namespace Vmr.Cli.Commands
                 var parser = new IlParser(content);
                 var codeBuilder = parser.Parse();
                 var program = codeBuilder.GetIlProgram();
-                var code = CodeFormatter.Format(program);
+                var code = CodeFormatter.Format(program, new CodeFormatSettings() { InstructionIndentSize = 4});
 
                 _writer.WriteFile(opts.FilePath, code);
             }

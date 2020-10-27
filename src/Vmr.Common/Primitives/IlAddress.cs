@@ -6,6 +6,7 @@ namespace Vmr.Common.Primitives
 {
     public sealed class IlAddress 
         : IEquatable<IlAddress?>
+        , IComparable<IlAddress>
     {
         private readonly bool _initialized;
         private readonly int _address;
@@ -32,6 +33,9 @@ namespace Vmr.Common.Primitives
 
         public override int GetHashCode()
             => HashCode.Combine(_initialized, _address);
+
+        public int CompareTo(IlAddress other)
+            => _address.CompareTo(other._address);
 
         public static bool operator ==(IlAddress? left, IlAddress? right)
             => left is object && left.Equals(right)

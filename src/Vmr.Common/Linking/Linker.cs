@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
-using Vmr.Common.Assemble;
 using Vmr.Common.Exeptions;
 using Vmr.Common.Instructions;
 using Vmr.Common.Primitives;
@@ -13,13 +12,17 @@ namespace Vmr.Common.Linking
 {
     public sealed class Linker
     {
-        private readonly LabelTableBuilder _labelTableBuilder;
+        private readonly LinkTableBuilder _labelTableBuilder;
+        private readonly LinkTableBuilder _methodTableBuilder;
+        private readonly Dictionary<IlAddress, List<string>> _comments; // TODO (RH codereview): Find a better solution
 
         private IlAddress? _entryPoint;
 
         private Linker()
         {
-            _labelTableBuilder = new LabelTableBuilder();
+            _labelTableBuilder = new LinkTableBuilder();
+            _methodTableBuilder = new LinkTableBuilder();
+            _comments = new Dictionary<IlAddress, List<string>>();
         }
 
         internal static IlProgram Run(Method entryPoint, IReadOnlyList<Method> methods)
@@ -37,13 +40,14 @@ namespace Vmr.Common.Linking
             var callTree = CallTree.Create(entryPoint, methods);
             var ilMethods = LinkMethods(InstructionFacts.SizeProgramHeader, callTree);
             var labelTable = _labelTableBuilder.Build();
+            var methodTable = _methodTableBuilder.Build();
 
             if (_entryPoint is null)
             {
                 throw new VmrException("Entry point not found by linker.");
             }
 
-            return new IlProgram(_entryPoint, ilMethods, labelTable.GetTargets(), labelTable.GetLabelNames());
+            return new IlProgram(_entryPoint, ilMethods, labelTable.GetTargets(), labelTable.GetNames(), methodTable.GetNames(), _comments);
         }
 
         private IReadOnlyList<IlMethod> LinkMethods(int startAddress, CallTree callTree)
@@ -63,6 +67,7 @@ namespace Vmr.Common.Linking
                     _entryPoint = ilMethod.Address;
                 }
 
+                _methodTableBuilder.AddTarget(method.Name, ilMethod.Address);
                 result.Add(ilMethod);
             }
 
@@ -110,6 +115,11 @@ namespace Vmr.Common.Linking
                         : throw new InvalidOperationException(nameof(rewriteType))
                         ;
 
+                    if(rewriteType == ArgRewriteType.CallTarget)
+                    {
+                        _methodTableBuilder.AddReference(address, name);
+                    }
+
                     rewriteType = null;
                 }
 
@@ -126,6 +136,7 @@ namespace Vmr.Common.Linking
                 var ilObject = node switch
                 {
                     LabelDeclaration m => null,
+                    Comment m => HandleComment(m, address),
                     Instruction m => CreateInstruction(m, address),
                     Argument m => CreateArgument(m, address, valueOverride),
                     _ => throw new ArgumentOutOfRangeException(nameof(node), node, null)
@@ -167,6 +178,19 @@ namespace Vmr.Common.Linking
 
             static IlObject CreateArgument(Argument argument, int address, object? valueOverride = null)
                 => new IlObject(new IlAddress(address), argument.Size, valueOverride ?? argument.Value);
+
+            IlObject? HandleComment(Comment node, int address)
+            {
+                var key = new IlAddress(address);
+
+                if (!_comments.ContainsKey(key))
+                {
+                    _comments[key] = new List<string>();
+                }
+
+                _comments[key].Add(node.Text);
+                return null;
+            }
         }
 
         enum ArgRewriteType

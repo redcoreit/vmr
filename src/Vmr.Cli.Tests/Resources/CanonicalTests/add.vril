@@ -1,4 +1,4 @@
-.method main:
+﻿.method main:
     .entrypoint
     ldc.i4 1
     ldc.i4 2

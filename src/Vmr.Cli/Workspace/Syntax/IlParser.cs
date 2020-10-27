@@ -42,6 +42,11 @@ namespace Vmr.Cli.Workspace.Syntax
                         ParseMethodDeclaration();
                         break;
                     }
+                case SyntaxKind.CommentToken:
+                    {
+                        ParseComment();
+                        break;
+                    }
                 default:
                     {
                         ParseInstruction();
@@ -77,6 +82,12 @@ namespace Vmr.Cli.Workspace.Syntax
             }
 
             _codeBuilder.Method(name.Value!.ToString()!, locals, isEntrypoint);
+        }
+
+        private void ParseComment()
+        {
+            var comment = ExpectToken(SyntaxKind.CommentToken);
+            _codeBuilder.Comment(comment.Value!.ToString()!);
         }
 
         private void ParseInstruction()

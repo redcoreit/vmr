@@ -3,25 +3,24 @@ using System.Collections.Generic;
 using Vmr.Common.Instructions;
 using Vmr.Common.Primitives;
 
-namespace Vmr.Common.Assemble
+namespace Vmr.Common.Linking
 {
-    internal abstract class TableBuilder<TResult>
-        where TResult : notnull
+    internal sealed class LinkTableBuilder
     {
         private readonly Dictionary<IlAddress, string> _references;
         private readonly Dictionary<string, IlAddress> _targets;
 
-        public TableBuilder()
+        public LinkTableBuilder()
         {
             _references = new Dictionary<IlAddress, string>();
             _targets = new Dictionary<string, IlAddress>();
         }
 
-        protected IReadOnlyDictionary<IlAddress, string> References => _references;
+        public IReadOnlyDictionary<IlAddress, string> References => _references;
 
-        protected IReadOnlyDictionary<string, IlAddress> Targets => _targets;
+        public IReadOnlyDictionary<string, IlAddress> Targets => _targets;
 
-        protected virtual void AddReference(IlAddress reference, string name)
+        public void AddReference(IlAddress reference, string name)
         {
             if (_references.ContainsKey(reference))
                 throw new InvalidOperationException("Call site already exsists.");
@@ -29,7 +28,7 @@ namespace Vmr.Common.Assemble
             _references[reference] = name;
         }
 
-        protected virtual void AddTarget(string name, IlAddress target)
+        public void AddTarget(string name, IlAddress target)
         {
             if (_targets.ContainsKey(name))
                 throw new InvalidOperationException($"Target '{name}' already exsists.");
@@ -37,6 +36,7 @@ namespace Vmr.Common.Assemble
             _targets[name] = target;
         }
 
-        public abstract TResult Build();
+        public LinkTable Build()
+            => new LinkTable(References, Targets);
     }
 }

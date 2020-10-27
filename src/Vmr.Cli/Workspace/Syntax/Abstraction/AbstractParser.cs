@@ -23,8 +23,6 @@ namespace Vmr.Cli.Workspace.Syntax.Abstraction
                 {
                     case SyntaxKind.BadToken:
                         return false;
-                    case SyntaxKind.CommentToken:
-                        return false;
 
                 }
 

@@ -37,7 +37,7 @@ namespace Vmr.Cli.Commands
             {
                 var content = _reader.ReadBinaryContent(opts.FilePath);
                 var program = Disassembler.GetProgram(content);
-                var formatted = CodeFormatter.Format(program, new CodeFormatSettings(true, 2));
+                var formatted = CodeFormatter.Format(program, new CodeFormatSettings(true));
 
                 var path = GetTargetFilePath(opts.FilePath, opts.TargetFilePath);
 

@@ -161,6 +161,11 @@ namespace Vmr.Common
             Add(name, sizeof(int));
         }
 
+        public void Comment(string text)
+        {
+            _nodes.Add(new Comment(text));
+        }
+
         private void Add(InstructionCode instruction)
         {
             _nodes.Add(new Instruction(instruction));
@@ -189,6 +194,11 @@ namespace Vmr.Common
             }
 
             if (_nodes.Count == 0)
+            {
+                return;
+            }
+
+            if (_nodes.All(m => m is Comment))
             {
                 return;
             }

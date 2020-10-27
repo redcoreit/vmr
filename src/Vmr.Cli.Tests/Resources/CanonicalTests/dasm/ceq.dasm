@@ -1,3 +1,5 @@
-﻿IL_0000:  ldc.i4 100
-IL_0005:  ldc.i4 99
-IL_000A:  ceq
+﻿.method m0:
+    .entrypoint
+    IL_00:  ldc.i4 100
+    IL_05:  ldc.i4 99
+    IL_0A:  ceq

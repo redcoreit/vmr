@@ -9,17 +9,26 @@ namespace Vmr.Common.Primitives
 {
     public sealed class IlProgram
     {
-        internal IlProgram(IlAddress entryPoint, IReadOnlyList<IlMethod> ilMethods, IReadOnlyCollection<IlAddress> labelTargets)
-            : this(entryPoint, ilMethods, labelTargets, new Dictionary<IlAddress, string>())
+        internal IlProgram(IlAddress entryPoint,
+                           IReadOnlyList<IlMethod> ilMethods,
+                           IReadOnlyCollection<IlAddress> labelTargets)
+            : this(entryPoint, ilMethods, labelTargets, new Dictionary<IlAddress, string>(), new Dictionary<IlAddress, string>(), new Dictionary<IlAddress, List<string>>())
         {
         }
 
-        internal IlProgram(IlAddress entryPoint, IReadOnlyList<IlMethod> ilMethods, IReadOnlyCollection<IlAddress> labelTargets, IReadOnlyDictionary<IlAddress, string> labelNames)
+        internal IlProgram(IlAddress entryPoint,
+                           IReadOnlyList<IlMethod> ilMethods,
+                           IReadOnlyCollection<IlAddress> labelTargets,
+                           IReadOnlyDictionary<IlAddress, string> labelNames,
+                           IReadOnlyDictionary<IlAddress, string> methodNames,
+                           IReadOnlyDictionary<IlAddress, List<string>> comments)
         {
             EntryPoint = entryPoint;
             IlMethods = ilMethods;
             LabelTargets = labelTargets;
             LabelNames = labelNames;
+            MethodNames = methodNames;
+            Comments = comments;
         }
 
         public IlAddress EntryPoint { get; }
@@ -29,5 +38,9 @@ namespace Vmr.Common.Primitives
         public IReadOnlyCollection<IlAddress> LabelTargets { get; }
 
         public IReadOnlyDictionary<IlAddress, string> LabelNames { get; }
+        
+        public IReadOnlyDictionary<IlAddress, string> MethodNames { get; }
+        
+        public IReadOnlyDictionary<IlAddress, List<string>> Comments { get; }
     }
 }

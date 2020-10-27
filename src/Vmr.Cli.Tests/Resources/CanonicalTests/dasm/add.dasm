@@ -1,3 +1,5 @@
-﻿IL_0000:  ldc.i4 1
-IL_0005:  ldc.i4 2
-IL_000A:  add
+﻿.method m0:
+    .entrypoint
+    IL_00:  ldc.i4 1
+    IL_05:  ldc.i4 2
+    IL_0A:  add

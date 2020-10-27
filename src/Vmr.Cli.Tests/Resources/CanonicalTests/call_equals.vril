@@ -1,4 +1,4 @@
-.method _equals:
+﻿.method _equals:
     ldstr "Equals"
     ret
 
@@ -8,6 +8,8 @@
 
 .method _start:
     .entrypoint
+    //    .params 0
+    //    .locals 0 // can be ommited
     ldc.i4 0
     ldc.i4 1
     ceq
@@ -22,35 +24,3 @@ _equals:
 
 _end:
     nop
-
-
-//.method _equals:
-//    .params 0
-//    .locals 0 // can be ommited
-//    ldstr "Equals"
-//    ret
-//
-//.method _not_equals:
-//    .params 0
-//    .locals 0
-//    ldstr "Not equals"
-//    ret
-//
-//.method _start:
-//    .entrypoint
-//    .params 0
-//    .locals 0
-//    ldc.i4 0
-//    ldc.i4 1
-//    ceq
-//    brtrue _equals
-//
-//_not_equals:
-//    call _not_equals
-//    br _end
-//
-//_equals:
-//    call _equals
-//
-//_end:
-//    nop

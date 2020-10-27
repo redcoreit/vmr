@@ -1,10 +1,20 @@
-﻿
-IL_0000:  nop
-IL_0001:  ldc.i4 0
-IL_0006:  ldc.i4 1
-IL_000B:  ceq
-IL_000C:  brtrue IL_0000
-IL_0011:  call 0
-IL_0016:  br IL_0000
-IL_001B:  call 0
-IL_0020:  nop
+﻿.method m0:
+    IL_00:  ldstr "Equals"
+    IL_08:  ret
+
+.method m1:
+    IL_00:  ldstr "Not equals"
+    IL_0C:  ret
+
+.method m2:
+    .entrypoint
+    IL_00:  ldc.i4 0
+    IL_05:  ldc.i4 1
+    IL_0A:  ceq
+    IL_0B:  brtrue IL_1A
+    IL_10:  call m8
+    IL_15:  br IL_1F
+
+    IL_1A:  call m12
+
+    IL_1F:  nop
