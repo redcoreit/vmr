@@ -185,9 +185,11 @@ namespace Vmr.Cli.Workspace.Syntax
                 true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Stloc)) => SyntaxKind.OpCode_Stloc,
                 true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Call)) => SyntaxKind.OpCode_Call,
                 true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Ret)) => SyntaxKind.OpCode_Ret,
+                true when Match(SyntaxFacts.GetInstructionText(SyntaxKind.OpCode_Ldarg)) => SyntaxKind.OpCode_Ldarg,
                 true when Match(SyntaxFacts.GetAttributeText(SyntaxKind.Attribute_Method)) => SyntaxKind.Attribute_Method,
                 true when Match(SyntaxFacts.GetAttributeText(SyntaxKind.Attribute_Entrypoint)) => SyntaxKind.Attribute_Entrypoint,
                 true when Match(SyntaxFacts.GetAttributeText(SyntaxKind.Attribute_Locals)) => SyntaxKind.Attribute_Locals,
+                true when Match(SyntaxFacts.GetAttributeText(SyntaxKind.Attribute_Args)) => SyntaxKind.Attribute_Args,
                 _ => SyntaxKind.LiteralToken,
             };
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Vmr.Cli.Exceptions;
@@ -65,23 +66,36 @@ namespace Vmr.Cli.Workspace.Syntax
         {
             var attribute = ExpectToken(SyntaxKind.Attribute_Method);
             var name = ExpectToken(SyntaxKind.LabelDeclarationToken);
-            var isEntrypoint = Current.Kind == SyntaxKind.Attribute_Entrypoint;
 
-            if (isEntrypoint)
+            Span<int> args = stackalloc int[] { 0, 0, 0 };
+
+            while (SyntaxFacts.IsAttribute(Current.Kind))
             {
-                ReadAndMoveNext();
+                var token = ReadAndMoveNext();
+
+                switch (token.Kind)
+                {
+                    case SyntaxKind.Attribute_Locals:
+                        {
+                            args[0] = ((int?)ExpectToken(SyntaxKind.Int32Token)?.Value).GetValueOrDefault();
+                            break;
+                        }
+                    case SyntaxKind.Attribute_Args:
+                        {
+                            args[1] = ((int?)ExpectToken(SyntaxKind.Int32Token)?.Value).GetValueOrDefault();
+                            break;
+                        }
+                    case SyntaxKind.Attribute_Entrypoint:
+                        {
+                            args[2] = 1;
+                            break;
+                        }
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(token.Kind), token.Kind, null);
+                }
             }
 
-            var locals = 0;
-
-            if (Current.Kind == SyntaxKind.Attribute_Locals)
-            {
-                ReadAndMoveNext();
-                var value = ExpectToken(SyntaxKind.Int32Token);
-                locals = (int)value.Value!;
-            }
-
-            _codeBuilder.Method(name.Value!.ToString()!, locals, isEntrypoint);
+            _codeBuilder.Method(name.Value!.ToString()!, args[0], args[1], args[2] == 1);
         }
 
         private void ParseComment()
@@ -152,6 +166,11 @@ namespace Vmr.Cli.Workspace.Syntax
                 case SyntaxKind.OpCode_Ret:
                     {
                         ParseRet();
+                        break;
+                    }
+                case SyntaxKind.OpCode_Ldarg:
+                    {
+                        ParseLdarg();
                         break;
                     }
                 case SyntaxKind.OpCode_Nop:
@@ -247,6 +266,13 @@ namespace Vmr.Cli.Workspace.Syntax
         {
             var op = ExpectToken(SyntaxKind.OpCode_Ret);
             _codeBuilder.Ret();
+        }
+
+        private void ParseLdarg()
+        {
+            var op = ExpectToken(SyntaxKind.OpCode_Ldarg);
+            var arg = ExpectToken(SyntaxKind.Int32Token);
+            _codeBuilder.Ldarg((int)arg.Value!);
         }
     }
 }

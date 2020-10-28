@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Vmr.Cli.Helpers;
 
 namespace Vmr.Cli.Workspace.Syntax.Abstraction
 {
@@ -46,16 +47,19 @@ namespace Vmr.Cli.Workspace.Syntax.Abstraction
         }
 
         protected SyntaxToken ExpectToken(params SyntaxKind[] kinds)
+            => ExpectToken(kinds);
+
+        protected SyntaxToken ExpectToken(ReadOnlySpan<SyntaxKind> kinds)
         {
-            if (!kinds.Any())
+            if (kinds.IsEmpty)
                 throw new InvalidOperationException("At least one parameter should be specified.");
 
             if (kinds.Contains(Current.Kind))
                 return ReadAndMoveNext();
 
-            var primeTokenKind = kinds.First();
+            var primeTokenKind = kinds[0];
 
-            ReportUnexpectedToken(Current.Span, Current.Kind, kinds.First());
+            ReportUnexpectedToken(Current.Span, Current.Kind, primeTokenKind);
             var fakeToken = new SyntaxToken(primeTokenKind, TextSpan.FromBounds(_position, 0));
             ReadAndMoveNext();
 
@@ -79,6 +83,6 @@ namespace Vmr.Cli.Workspace.Syntax.Abstraction
         }
 
         private void ReportUnexpectedToken(TextSpan span, SyntaxKind actual, SyntaxKind expected)
-            => Console.Write($"Token '{expected}' expected but '{actual}' found.");
+            => Console.WriteLine($"Token '{expected}' expected but '{actual}' found at {span.ToString()}.");
     }
 }

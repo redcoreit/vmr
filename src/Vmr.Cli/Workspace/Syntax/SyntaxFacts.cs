@@ -23,9 +23,11 @@ namespace Vmr.Cli.Workspace.Syntax
                 SyntaxKind.OpCode_Stloc => "stloc",
                 SyntaxKind.OpCode_Call => "call",
                 SyntaxKind.OpCode_Ret => "ret",
+                SyntaxKind.OpCode_Ldarg => "ldarg",
                 SyntaxKind.Attribute_Entrypoint => ".entrypoint",
                 SyntaxKind.Attribute_Method => ".method",
                 SyntaxKind.Attribute_Locals => ".locals",
+                SyntaxKind.Attribute_Args => ".args",
                 _ => null, // Dynamic 
             };
 
@@ -71,6 +73,7 @@ namespace Vmr.Cli.Workspace.Syntax
                 SyntaxKind.OpCode_Stloc => true,
                 SyntaxKind.OpCode_Call => true,
                 SyntaxKind.OpCode_Ret => true,
+                SyntaxKind.OpCode_Ldarg => true,
                 _ => false,
             };
 
@@ -80,6 +83,7 @@ namespace Vmr.Cli.Workspace.Syntax
                 SyntaxKind.Attribute_Entrypoint => true,
                 SyntaxKind.Attribute_Method => true,
                 SyntaxKind.Attribute_Locals => true,
+                SyntaxKind.Attribute_Args => true,
                 _ => false,
             };
     }

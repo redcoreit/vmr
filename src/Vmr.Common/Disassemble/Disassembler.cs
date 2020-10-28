@@ -95,6 +95,7 @@ namespace Vmr.Common.Disassemble
                 case InstructionCode.Ldloc:
                 case InstructionCode.Stloc:
                 case InstructionCode.Ldc_i4:
+                case InstructionCode.Ldarg:
                     {
                         var arg = BinaryConvert.GetInt32(ref _pointer, program);
                         return new IlObject(address, 0, arg);

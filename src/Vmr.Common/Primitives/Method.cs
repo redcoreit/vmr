@@ -5,12 +5,13 @@ namespace Vmr.Common.Primitives
 {
     internal class Method
     {
-        public Method(int order, ProgramNode[] nodes, string name, int locals, bool isEntryPoint)
+        public Method(int order, ProgramNode[] nodes, string name, int locals, int args, bool isEntryPoint)
         {
             Order = order;
             Nodes = nodes;
             Name = name;
             Locals = locals;
+            Args = args;
             IsEntryPoint = isEntryPoint;
 
             Size = nodes.Any()
@@ -19,7 +20,7 @@ namespace Vmr.Common.Primitives
         }
 
         public int Size { get; }
-        
+
         public int Order { get; }
 
         public IReadOnlyList<ProgramNode> Nodes { get; }
@@ -27,7 +28,9 @@ namespace Vmr.Common.Primitives
         public string Name { get; }
 
         public int Locals { get; }
-
+        
+        public int Args { get; }
+        
         public bool IsEntryPoint { get; }
     }
 }

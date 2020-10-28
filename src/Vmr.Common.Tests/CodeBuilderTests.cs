@@ -122,17 +122,17 @@ namespace Vmr.Common.Tests
                 var builder = new CodeBuilder();
 
                 //one
-                builder.Method("one", 0, false);
+                builder.Method("one");
                 builder.Ldc_i4(1);
                 builder.Ret();
 
                 //two
-                builder.Method("two", 0, false);
+                builder.Method("two");
                 builder.Ldc_i4(2);
                 builder.Ret();
 
                 //main
-                builder.Method("main", 0, true);
+                builder.Method("main", isEntryPoint: true);
                 builder.Ldc_i4(1);
                 builder.Call("two");
                 builder.Add();

@@ -168,13 +168,13 @@ namespace Vmr.Runtime.Vm
 
         private void Ldc_i4(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
-            GetArg(program, out int value);
+            GetOpCodeArg(program, out int value);
             _stackFrame.Push(value);
         }
 
         private void Ldstr(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
-            GetArg(program, out string value);
+            GetOpCodeArg(program, out string value);
             _stackFrame.Push(value);
         }
 
@@ -186,7 +186,7 @@ namespace Vmr.Runtime.Vm
 
         private void Br(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
-            GetArg(program, out int target);
+            GetOpCodeArg(program, out int target);
 
             if (target >= program.Length)
             {
@@ -215,7 +215,7 @@ namespace Vmr.Runtime.Vm
 
         private void BrCondition(InstructionCode instruction, ReadOnlySpan<byte> program, bool expectedCondition)
         {
-            GetArg(program, out int target);
+            GetOpCodeArg(program, out int target);
 
             if (target >= program.Length)
             {
@@ -242,7 +242,7 @@ namespace Vmr.Runtime.Vm
 
         private void Ldloc(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
-            GetArg(program, out int index);
+            GetOpCodeArg(program, out int index);
 
             if (!_locals.TryGetValue(index, out var value))
             {
@@ -254,7 +254,7 @@ namespace Vmr.Runtime.Vm
 
         private void Stloc(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
-            GetArg(program, out int index);
+            GetOpCodeArg(program, out int index);
 
             var value = _stackFrame.Pop();
             _locals[index] = value;
@@ -262,7 +262,7 @@ namespace Vmr.Runtime.Vm
 
         private void Call(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
-            GetArg(program, out int address);
+            GetOpCodeArg(program, out int address);
 
             if ((uint)address >= (uint)program.Length)
             {
@@ -302,7 +302,7 @@ namespace Vmr.Runtime.Vm
             _locals = _methodState.Restore();
         }
 
-        private void GetArg(ReadOnlySpan<byte> program, out int value)
+        private void GetOpCodeArg(ReadOnlySpan<byte> program, out int value)
         {
             if (_pointer >= program.Length)
                 Throw.MissingInstructionArgument(_pointer);
@@ -310,7 +310,7 @@ namespace Vmr.Runtime.Vm
             value = BinaryConvert.GetInt32(ref _pointer, program);
         }
 
-        private void GetArg(ReadOnlySpan<byte> program, out string value)
+        private void GetOpCodeArg(ReadOnlySpan<byte> program, out string value)
         {
             if (_pointer >= program.Length)
                 Throw.MissingInstructionArgument(_pointer);

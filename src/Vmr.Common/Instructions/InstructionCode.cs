@@ -23,5 +23,6 @@ namespace Vmr.Common.Instructions
         Stloc = 0x51,
         Call = 0x28,
         Ret = 0x2A,
+        Ldarg = 0xFE,
     }
 }

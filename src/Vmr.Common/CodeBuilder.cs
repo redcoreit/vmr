@@ -58,38 +58,38 @@ namespace Vmr.Common
 
         public void Ldc_i4(int value)
         {
-            Add(InstructionCode.Ldc_i4);
-            Add(value);
+            AddNode(InstructionCode.Ldc_i4);
+            AddNode(value);
         }
 
         public void Ldstr(string value)
         {
-            Add(InstructionCode.Ldstr);
+            AddNode(InstructionCode.Ldstr);
 
             // TODO (RH perf): find an efficient way to determine UTF8 string size.
             var sizeofValue = BinaryConvert.GetBytes(value).Length;
-            Add(value, sizeofValue);
+            AddNode(value, sizeofValue);
         }
 
         public void Add()
         {
-            Add(InstructionCode.Add);
+            AddNode(InstructionCode.Add);
         }
 
         public void Pop()
         {
-            Add(InstructionCode.Pop);
+            AddNode(InstructionCode.Pop);
         }
 
         public void Br(string label)
         {
-            Add(InstructionCode.Br);
+            AddNode(InstructionCode.Br);
             AddLabelReference(label);
         }
 
         public void Ceq()
         {
-            Add(InstructionCode.Ceq);
+            AddNode(InstructionCode.Ceq);
         }
 
         public void Label(string name)
@@ -104,18 +104,18 @@ namespace Vmr.Common
 
         public void Nop()
         {
-            Add(InstructionCode.Nop);
+            AddNode(InstructionCode.Nop);
         }
 
         public void Brtrue(string label)
         {
-            Add(InstructionCode.Brtrue);
+            AddNode(InstructionCode.Brtrue);
             AddLabelReference(label);
         }
 
         public void Brfalse(string label)
         {
-            Add(InstructionCode.Brfalse);
+            AddNode(InstructionCode.Brfalse);
             AddLabelReference(label);
         }
 
@@ -123,19 +123,27 @@ namespace Vmr.Common
         {
             CheckLocalsRange(index);
 
-            Add(InstructionCode.Ldloc);
-            Add(index);
+            AddNode(InstructionCode.Ldloc);
+            AddNode(index);
+        }
+
+        public void Ldarg(int index)
+        {
+            CheckArgsRange(index);
+
+            AddNode(InstructionCode.Ldarg);
+            AddNode(index);
         }
 
         public void Stloc(int index)
         {
             CheckLocalsRange(index);
 
-            Add(InstructionCode.Stloc);
-            Add(index);
+            AddNode(InstructionCode.Stloc);
+            AddNode(index);
         }
 
-        public void Method(string name, int locals = 0, bool isEntryPoint = false)
+        public void Method(string name, int locals = 0, int args = 0, bool isEntryPoint = false)
         {
             if (!_methodNames.Add(name))
             {
@@ -147,19 +155,19 @@ namespace Vmr.Common
                 EndMethod();
             }
 
-            var method = new Method(_methodOrder++, Array.Empty<ProgramNode>(), name, locals, isEntryPoint);
+            var method = new Method(_methodOrder++, Array.Empty<ProgramNode>(), name, locals, args, isEntryPoint);
             _methods.Push(method);
         }
 
         public void Ret()
         {
-            Add(InstructionCode.Ret);
+            AddNode(InstructionCode.Ret);
         }
 
         public void Call(string name)
         {
-            Add(InstructionCode.Call);
-            Add(name, sizeof(int));
+            AddNode(InstructionCode.Call);
+            AddNode(name, sizeof(int));
         }
 
         public void Comment(string text)
@@ -167,24 +175,24 @@ namespace Vmr.Common
             _nodes.Add(new Comment(text));
         }
 
-        private void Add(InstructionCode instruction)
+        private void AddNode(InstructionCode instruction)
         {
             _nodes.Add(new Instruction(instruction));
         }
 
-        private void Add(int value)
+        private void AddNode(int value)
         {
             _nodes.Add(new Argument(sizeof(int), value));
         }
 
-        private void Add(object obj, int sizeOfObj)
+        private void AddNode(object obj, int sizeOfObj)
         {
             _nodes.Add(new Argument(sizeOfObj, obj));
         }
 
         private void AddLabelReference(string name)
         {
-            Add(name, sizeof(int));
+            AddNode(name, sizeof(int));
         }
 
         private void EndMethod()
@@ -207,7 +215,7 @@ namespace Vmr.Common
             CheckUndefinedLabels();
 
             var current = _methods.Pop();
-            var method = new Method(current.Order, _nodes.ToArray(), current.Name, current.Locals, current.IsEntryPoint);
+            var method = new Method(current.Order, _nodes.ToArray(), current.Name, current.Locals, current.Args, current.IsEntryPoint);
 
             if (current.IsEntryPoint)
             {
@@ -229,6 +237,14 @@ namespace Vmr.Common
             if ((uint)index >= (uint)_methods.Peek().Locals)
             {
                 throw new VmrException($"Local variable index '{index}' is out of range.");
+            }
+        }
+
+        private void CheckArgsRange(int index)
+        {
+            if ((uint)index >= (uint)_methods.Peek().Args)
+            {
+                throw new VmrException($"Method argument index '{index}' is out of range.");
             }
         }
 

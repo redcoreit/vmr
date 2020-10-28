@@ -28,10 +28,12 @@ namespace Vmr.Cli.Workspace.Syntax
         OpCode_Stloc,
         OpCode_Call,
         OpCode_Ret,
-        
+        OpCode_Ldarg,
+
         // Attributes
         Attribute_Method,
         Attribute_Entrypoint,
         Attribute_Locals,
+        Attribute_Args,
     }
 }

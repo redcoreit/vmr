@@ -1,0 +1,22 @@
+﻿.method _inc:
+    .args 1
+    ldarg 0
+    ldc.i4 1
+    ret
+
+.method _start:
+    .entrypoint
+    .locals 2
+    ldc.i4 10
+    stloc 0
+    ldc.i4 0
+    stloc 1
+    
+_loop:
+    ldloc 1
+    call _inc
+    stloc 1
+    ldloc 1
+    ldloc 0
+    ceq
+    brfalse _loop
