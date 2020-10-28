@@ -54,51 +54,42 @@ namespace Vmr.Common.Linking
         {
             var result = new List<IlMethod>();
             var methods = callTree.Flatten().Select(m => m.Method).OrderBy(m => m.Order).ToList();
-            var methodAddressLookup = GetMethodAddressLookup(startAddress, methods);
+            GetMethodAddressLookup(_methodTableBuilder, startAddress, methods);
 
             foreach (var method in methods)
             {
-                var address = methodAddressLookup[method.Name];
-                var ilObjects = LinkNodes(methodAddressLookup, address, method.Nodes);
-                var ilMethod = new IlMethod(new IlAddress(address), method.Size, ilObjects);
+                var address = _methodTableBuilder.Targets[method.Name];
+                var ilObjects = LinkNodes(address.Value, method.Nodes);
+                var ilMethod = new IlMethod(address, method.Size, ilObjects);
 
                 if (method.IsEntryPoint)
                 {
                     _entryPoint = ilMethod.Address;
                 }
 
-                _methodTableBuilder.AddTarget(method.Name, ilMethod.Address);
                 result.Add(ilMethod);
             }
 
             return result;
 
-            static IReadOnlyDictionary<string, int> GetMethodAddressLookup(int startAddress, IReadOnlyList<Method> methods)
+            static void GetMethodAddressLookup(LinkTableBuilder methodTableBuilder, int startAddress, IReadOnlyList<Method> methods)
             {
-                var result = new Dictionary<string, int>();
-
                 var methodAddress = startAddress;
                 foreach (var method in methods)
                 {
-                    result.Add(method.Name, methodAddress);
+                    methodTableBuilder.AddTarget(method.Name, methodAddress);
                     methodAddress += method.Size;
                 }
-
-                return result;
             }
         }
 
-        private IReadOnlyList<IlObject> LinkNodes(IReadOnlyDictionary<string, int> methodAddressLookup, int startAddress, IReadOnlyList<ProgramNode> nodes)
+        private IReadOnlyList<IlObject> LinkNodes(int startAddress, IReadOnlyList<ProgramNode> nodes)
         {
+            GetInstructionAddressLookup(_labelTableBuilder, startAddress, nodes);
+
             var result = new List<IlObject>();
-            var branchAddressLookup = GetInstructionAddressLookup(startAddress, nodes);
             var address = startAddress;
             ArgRewriteType? rewriteType = null;
-
-            foreach (var item in branchAddressLookup)
-            {
-                _labelTableBuilder.AddTarget(item.Key, new IlAddress(item.Value));
-            }
 
             foreach (var node in nodes)
             {
@@ -109,13 +100,13 @@ namespace Vmr.Common.Linking
                     var name = (string)((Argument)node).Value;
 
                     valueOverride = rewriteType == ArgRewriteType.CallTarget
-                        ? (object?)methodAddressLookup[name]
+                        ? (object?)_methodTableBuilder.Targets[name].Value
                         : rewriteType == ArgRewriteType.BranchTarget
-                        ? (object?)branchAddressLookup[name]
+                        ? (object?)_labelTableBuilder.Targets[name].Value
                         : throw new InvalidOperationException(nameof(rewriteType))
                         ;
 
-                    if(rewriteType == ArgRewriteType.CallTarget)
+                    if (rewriteType == ArgRewriteType.CallTarget)
                     {
                         _methodTableBuilder.AddReference(address, name);
                     }
@@ -153,24 +144,20 @@ namespace Vmr.Common.Linking
 
             return result;
 
-            static IReadOnlyDictionary<string, int> GetInstructionAddressLookup(int startAddress, IReadOnlyList<ProgramNode> nodes)
+            static void GetInstructionAddressLookup(LinkTableBuilder labelTableBuilder, int startAddress, IReadOnlyList<ProgramNode> nodes)
             {
-                var result = new Dictionary<string, int>();
-
                 var address = startAddress;
                 foreach (var node in nodes)
                 {
                     if (node is LabelDeclaration label)
                     {
-                        result.Add(label.Name, address);
+                        labelTableBuilder.AddTarget(label.Name, address);
                     }
                     else
                     {
                         address += node.Size;
                     }
                 }
-
-                return result;
             }
 
             static IlObject CreateInstruction(Instruction instruction, int address)
