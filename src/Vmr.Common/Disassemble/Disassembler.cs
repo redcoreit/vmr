@@ -15,7 +15,6 @@ namespace Vmr.Common.Disassemble
 {
     public class Disassembler
     {
-        private readonly List<IlObject> _ilObjects;
         private readonly HashSet<IlAddress> _methodTargets;
         private readonly HashSet<IlAddress> _labelTargets;
 
@@ -24,7 +23,6 @@ namespace Vmr.Common.Disassemble
 
         private Disassembler()
         {
-            _ilObjects = new List<IlObject>();
             _methodTargets = new HashSet<IlAddress>();
             _labelTargets = new HashSet<IlAddress>();
         }
@@ -38,6 +36,7 @@ namespace Vmr.Common.Disassemble
 
         private IlProgram GetProgram(ReadOnlySpan<byte> program)
         {
+            var ilObjects = new List<IlObject>();
             var entryPointValue = BinaryConvert.GetInt32(ref _pointer, program);
             _entryPoint = new IlAddress(entryPointValue);
 
@@ -46,10 +45,16 @@ namespace Vmr.Common.Disassemble
             while (_pointer < program.Length)
             {
                 var address = _pointer;
+                
                 var instruction = GetInstruction(program);
-                _ilObjects.Add(new IlObject(address, 0, instruction));
+                ilObjects.Add(new IlObject(address, 0, instruction));
 
-                ReadArguments(instruction, program);
+                var arg = ReadArguments(instruction, program);
+                
+                if(arg is object)
+                {
+                    ilObjects.Add(arg);
+                }
             }
 
             if (_entryPoint is null)
@@ -57,7 +62,7 @@ namespace Vmr.Common.Disassemble
                 throw new VmrException($"Entrypoint not found.");
             }
 
-            var ilMethods = ReconstructMethods(_ilObjects, program.Length);
+            var ilMethods = ReconstructMethods(ilObjects, program.Length);
 
             return new IlProgram(_entryPoint, ilMethods, _labelTargets);
         }
@@ -76,7 +81,7 @@ namespace Vmr.Common.Disassemble
             }
         }
 
-        private void ReadArguments(InstructionCode instruction, ReadOnlySpan<byte> program)
+        private IlObject? ReadArguments(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
             var address = new IlAddress(_pointer);
 
@@ -85,32 +90,28 @@ namespace Vmr.Common.Disassemble
                 case InstructionCode.Ldstr:
                     {
                         var arg = BinaryConvert.GetString(ref _pointer, program);
-                        _ilObjects.Add(new IlObject(address, 0, arg));
-                        break;
+                        return new IlObject(address, 0, arg);
                     }
                 case InstructionCode.Ldloc:
                 case InstructionCode.Stloc:
                 case InstructionCode.Ldc_i4:
                     {
                         var arg = BinaryConvert.GetInt32(ref _pointer, program);
-                        _ilObjects.Add(new IlObject(address, 0, arg));
-                        break;
+                        return new IlObject(address, 0, arg);
                     }
                 case InstructionCode.Call:
                     {
                         var arg = BinaryConvert.GetInt32(ref _pointer, program);
-                        _ilObjects.Add(new IlObject(address, 0, arg));
                         _methodTargets.Add(new IlAddress(arg));
-                        break;
+                        return new IlObject(address, 0, arg);
                     }
                 case InstructionCode.Br:
                 case InstructionCode.Brfalse:
                 case InstructionCode.Brtrue:
                     {
                         var arg = BinaryConvert.GetInt32(ref _pointer, program);
-                        _ilObjects.Add(new IlObject(address, 0, arg));
                         _labelTargets.Add(new IlAddress(arg));
-                        break;
+                        return new IlObject(address, 0, arg);
                     }
                 case InstructionCode.Ret:
                 case InstructionCode.Add:
@@ -118,12 +119,12 @@ namespace Vmr.Common.Disassemble
                 case InstructionCode.Pop:
                 case InstructionCode.Nop:
                     {
-                        break;
+                        return null;
                     }
                 default:
                     {
                         Throw.NotSupportedInstruction(_pointer, program[_pointer - 1]);
-                        break;
+                        return null;
                     }
             }
         }
@@ -147,7 +148,6 @@ namespace Vmr.Common.Disassemble
                 var next = idx + 1 < methodAddresses.Length
                     ? methodAddresses[idx + 1].Value
                     : programEnd;
-
 
                 var ilObjects = new List<IlObject>();
 
