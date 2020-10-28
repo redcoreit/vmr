@@ -28,7 +28,7 @@ namespace Vmr.Cli.Commands
 
         protected override string Name => "Disassemble";
 
-        internal static int Run(DisassembleOptions opts, IFileReader reader, IFileWriter writer, IConfiguration config) 
+        internal static int Run(DisassembleOptions opts, IFileReader reader, IFileWriter writer, IConfiguration config)
             => new DisassembleCommand(reader, writer).Execute(opts, config);
 
         protected override void ExecuteInternal(DisassembleOptions opts, IConfiguration config)
@@ -37,7 +37,7 @@ namespace Vmr.Cli.Commands
             {
                 var content = _reader.ReadBinaryContent(opts.FilePath);
                 var program = Disassembler.GetProgram(content);
-                var formatted = CodeFormatter.Format(program, new CodeFormatSettings(true));
+                var formatted = CodeFormatter.Format(program, new CodeFormatSettings() { UseIlRefPrefix = true });
 
                 var path = GetTargetFilePath(opts.FilePath, opts.TargetFilePath);
 

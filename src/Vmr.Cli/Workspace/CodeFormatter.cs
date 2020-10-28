@@ -17,8 +17,6 @@ using Vmr.Common.ObjectModel;
 
 namespace Vmr.Cli.Workspace
 {
-    internal record CodeFormatSettings(bool UseIlRefPrefix = false, int InstructionIndentSize = 2, int LineIndentSize = 4);
-
     internal class CodeFormatter
     {
         private static readonly CodeFormatSettings DefaultFormatSettings;
@@ -118,7 +116,7 @@ namespace Vmr.Cli.Workspace
                 var instruction = (InstructionCode)current.Obj;
 
                 FormatComment(current.Address, program, formatSettings);
-                FormatLabel(method, program.LabelNames, program.LabelTargets, formatSettings, current);
+                FormatLabel(method, program, formatSettings, current);
                 FormatInstruction(method, current, instruction, formatSettings);
                 idx++;
 
@@ -141,9 +139,9 @@ namespace Vmr.Cli.Workspace
             }
         }
 
-        private void FormatLabel(IlMethod method, IReadOnlyDictionary<IlAddress, string> labelNames, IReadOnlyCollection<IlAddress> labelTargets, CodeFormatSettings formatSettings, IlObject current)
+        private void FormatLabel(IlMethod method, IlProgram program, CodeFormatSettings formatSettings, IlObject current)
         {
-            if (labelTargets.Contains(current.Address))
+            if (program.LabelTargets.Contains(current.Address))
             {
                 _builder.AppendLine();
 
@@ -154,7 +152,7 @@ namespace Vmr.Cli.Workspace
 
                 var ilRef = current.Address.Value - method.Address.Value;
 
-                if (!labelNames.TryGetValue(current.Address, out var name))
+                if (!program.LabelNames.TryGetValue(current.Address, out var name))
                 {
                     name = ilRef.ToIlRef();
                 }

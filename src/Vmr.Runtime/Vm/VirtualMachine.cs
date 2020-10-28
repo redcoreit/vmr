@@ -170,15 +170,12 @@ namespace Vmr.Runtime.Vm
         {
             GetArg(program, out int value);
             _stackFrame.Push(value);
-
-
         }
 
         private void Ldstr(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
             GetArg(program, out string value);
             _stackFrame.Push(value);
-
         }
 
         private void Pop(InstructionCode instruction, ReadOnlySpan<byte> program)
@@ -253,7 +250,6 @@ namespace Vmr.Runtime.Vm
             }
 
             _stackFrame.Push(value);
-
         }
 
         private void Stloc(InstructionCode instruction, ReadOnlySpan<byte> program)
@@ -262,7 +258,6 @@ namespace Vmr.Runtime.Vm
 
             var value = _stackFrame.Pop();
             _locals[index] = value;
-
         }
 
         private void Call(InstructionCode instruction, ReadOnlySpan<byte> program)
