@@ -13,7 +13,7 @@ using Vmr.Cli.Workspace.Syntax;
 using Vmr.Common;
 using Vmr.Common.Instructions;
 using Vmr.Common.Linking;
-using Vmr.Common.Primitives;
+using Vmr.Common.ObjectModel;
 
 namespace Vmr.Cli.Workspace
 {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Vmr.Common.Primitives
+namespace Vmr.Common.ObjectModel
 {
     public sealed class IlObject : IEquatable<IlObject?>
     {

@@ -12,6 +12,7 @@ using Vmr.Common.Assemble;
 using Vmr.Common.Exeptions;
 using Vmr.Common.Instructions;
 using Vmr.Common.Linking;
+using Vmr.Common.ObjectModel;
 using Vmr.Common.Primitives;
 
 namespace Vmr.Common

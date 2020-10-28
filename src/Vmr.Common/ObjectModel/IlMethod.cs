@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Vmr.Common.Primitives
+namespace Vmr.Common.ObjectModel
 {
     public sealed class IlMethod : IEquatable<IlMethod?>
     {
@@ -37,7 +37,7 @@ namespace Vmr.Common.Primitives
             || left is null && right is null
             ;
 
-        public static bool operator !=(IlMethod? left, IlMethod? right) 
+        public static bool operator !=(IlMethod? left, IlMethod? right)
             => !(left == right);
     }
 }

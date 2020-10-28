@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Vmr.Common.Exeptions;
 
-namespace Vmr.Common.Primitives
+namespace Vmr.Common.ObjectModel
 {
     public sealed class IlProgram
     {
@@ -38,9 +38,9 @@ namespace Vmr.Common.Primitives
         public IReadOnlyCollection<IlAddress> LabelTargets { get; }
 
         public IReadOnlyDictionary<IlAddress, string> LabelNames { get; }
-        
+
         public IReadOnlyDictionary<IlAddress, string> MethodNames { get; }
-        
+
         public IReadOnlyDictionary<IlAddress, List<string>> Comments { get; }
     }
 }

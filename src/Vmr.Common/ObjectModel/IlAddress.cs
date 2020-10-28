@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Vmr.Common.Primitives
+namespace Vmr.Common.ObjectModel
 {
-    public sealed class IlAddress 
+    public sealed class IlAddress
         : IEquatable<IlAddress?>
         , IComparable<IlAddress>
     {

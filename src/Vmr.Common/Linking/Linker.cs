@@ -6,6 +6,7 @@ using System.Reflection.Emit;
 using System.Text;
 using Vmr.Common.Exeptions;
 using Vmr.Common.Instructions;
+using Vmr.Common.ObjectModel;
 using Vmr.Common.Primitives;
 
 namespace Vmr.Common.Linking

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Vmr.Common.Instructions;
 using Vmr.Common.Linking;
-using Vmr.Common.Primitives;
+using Vmr.Common.ObjectModel;
 
 namespace Vmr.Common.Assemble
 {
