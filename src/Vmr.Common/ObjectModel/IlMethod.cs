@@ -6,17 +6,16 @@ namespace Vmr.Common.ObjectModel
 {
     public sealed class IlMethod : IEquatable<IlMethod?>
     {
-        public IlMethod(IlAddress address, int size, IReadOnlyList<IlObject> ilObjects)
+        public IlMethod(IlAddress address, byte args, IReadOnlyList<IlObject> ilObjects)
         {
             Address = address;
-            Size = size;
+            Args = args;
             IlObjects = ilObjects;
         }
 
         public IlAddress Address { get; }
 
-        // TODO (RH -): remove
-        public int Size { get; }
+        public byte Args { get; }
 
         public IReadOnlyList<IlObject> IlObjects { get; }
 
@@ -26,10 +25,10 @@ namespace Vmr.Common.ObjectModel
         public bool Equals(IlMethod? other)
             => other != null
             && EqualityComparer<IlAddress>.Default.Equals(Address, other.Address)
-            && Size == other.Size;
+            && Args == other.Args;
 
         public override int GetHashCode()
-            => HashCode.Combine(Address, Size);
+            => HashCode.Combine(Address, Args);
 
         public static bool operator ==(IlMethod? left, IlMethod? right)
             => left is object && left.Equals(right)

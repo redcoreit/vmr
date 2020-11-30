@@ -10,22 +10,27 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Vmr.Common;
 using Vmr.Common.Instructions;
+using Vmr.Common.ObjectModel;
 using Vmr.Runtime.Exceptions;
 
 namespace Vmr.Runtime.Vm
 {
     public sealed class VirtualMachine
     {
-        private readonly MethodState<Dictionary<int, object>> _methodState;
+        private readonly MethodState<Dictionary<int, object>> _localsState;
+        private readonly MethodState<Dictionary<int, object>> _argsState;
         private readonly StackFrame<object> _stackFrame;
 
         private Dictionary<int, object> _locals;
+        private Dictionary<int, object> _args;
         private int _pointer = 0;
 
         public VirtualMachine()
         {
             _locals = new();
-            _methodState = new();
+            _args = new();
+            _localsState = new();
+            _argsState = new();
             _stackFrame = new();
         }
 
@@ -35,7 +40,7 @@ namespace Vmr.Runtime.Vm
             var span = program.AsSpan();
 
             var entryPointAddress = BinaryConvert.GetInt32(ref _pointer, program);
-            _pointer = entryPointAddress;
+            _pointer = entryPointAddress + InstructionFacts.SizeOfMethodHeader;
 
             while (_pointer < span.Length)
             {
@@ -55,7 +60,7 @@ namespace Vmr.Runtime.Vm
             catch (InvalidOperationException ex)
             {
                 Debug.WriteLine(ex.Message);
-                Throw.NotSupportedInstruction(_pointer - InstructionFacts.SizeOfOpCode, program[_pointer]);
+                Throw.NotSupportedInstruction(_pointer, program[_pointer]);
                 throw; // can't happen
             }
         }
@@ -129,9 +134,14 @@ namespace Vmr.Runtime.Vm
                         Ret(instruction, program);
                         break;
                     }
+                case InstructionCode.Ldarg:
+                    {
+                        Ldarg(instruction, program);
+                        break;
+                    }
                 default:
                     {
-                        Throw.NotSupportedInstruction(_pointer - InstructionFacts.SizeOfOpCode, (byte)instruction);
+                        Throw.NotSupportedInstruction(_pointer, (byte)instruction);
                         break;
                     }
             }
@@ -252,6 +262,18 @@ namespace Vmr.Runtime.Vm
             _stackFrame.Push(value);
         }
 
+        private void Ldarg(InstructionCode instruction, ReadOnlySpan<byte> program)
+        {
+            GetOpCodeArg(program, out int index);
+
+            if (!_args.TryGetValue(index, out var value))
+            {
+                Throw.LocalVariableNotSet(_pointer);
+            }
+
+            _stackFrame.Push(value);
+        }
+
         private void Stloc(InstructionCode instruction, ReadOnlySpan<byte> program)
         {
             GetOpCodeArg(program, out int index);
@@ -269,10 +291,21 @@ namespace Vmr.Runtime.Vm
                 throw new VmExecutionException($"Invalid method address '0x{address.ToString("X4")}'.");
             }
 
-            _methodState.Save(_locals);
+            _localsState.Save(_locals);
+            _locals = new();
+
+            _argsState.Save(_args);
+            _args = new();
+
+            for (int idx = 0; idx < program[address]; idx++)
+            {
+                _args.Add(program[address] - idx - 1, _stackFrame.Pop());
+            }
+
             _stackFrame.AddStack();
             _stackFrame.Push(_pointer);
-            _pointer = address;
+
+            _pointer = address + InstructionFacts.SizeOfMethodHeader;
         }
 
         private void Ret(InstructionCode instruction, ReadOnlySpan<byte> program)
@@ -296,10 +329,14 @@ namespace Vmr.Runtime.Vm
                         break;
                     }
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(_stackFrame.StackSize), _stackFrame.StackSize, null);
+                    {
+                        Throw.InvalidStackSize(new IlAddress(_pointer), _stackFrame.StackSize);
+                        break;
+                    }
             }
 
-            _locals = _methodState.Restore();
+            _args = _argsState.Restore();
+            _locals = _localsState.Restore();
         }
 
         private void GetOpCodeArg(ReadOnlySpan<byte> program, out int value)

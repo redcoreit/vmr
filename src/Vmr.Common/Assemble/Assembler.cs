@@ -20,6 +20,8 @@ namespace Vmr.Common.Assemble
 
             foreach (var ilMethod in program.IlMethods)
             {
+                binaryCode.Add(ilMethod.Args);
+
                 foreach (var ilObj in ilMethod.IlObjects)
                 {
                     var code = EmitObject(ilObj.Obj);

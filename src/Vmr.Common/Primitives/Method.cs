@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
+using Vmr.Common.Instructions;
+
 namespace Vmr.Common.Primitives
 {
     internal class Method
     {
-        public Method(int order, ProgramNode[] nodes, string name, int locals, int args, bool isEntryPoint)
+        public Method(int order, ProgramNode[] nodes, string name, int locals, byte args, bool isEntryPoint)
         {
             Order = order;
             Nodes = nodes;
@@ -15,7 +17,7 @@ namespace Vmr.Common.Primitives
             IsEntryPoint = isEntryPoint;
 
             Size = nodes.Any()
-                ? nodes.Select(m => m.Size).Aggregate((acc, curr) => acc + curr)
+                ? InstructionFacts.SizeOfMethodHeader + nodes.Select(m => m.Size).Aggregate((acc, curr) => acc + curr)
                 : 0;
         }
 
@@ -29,7 +31,7 @@ namespace Vmr.Common.Primitives
 
         public int Locals { get; }
         
-        public int Args { get; }
+        public byte Args { get; }
         
         public bool IsEntryPoint { get; }
     }

@@ -143,7 +143,7 @@ namespace Vmr.Common
             AddNode(index);
         }
 
-        public void Method(string name, int locals = 0, int args = 0, bool isEntryPoint = false)
+        public void Method(string name, int locals = 0, byte args = 0, bool isEntryPoint = false)
         {
             if (!_methodNames.Add(name))
             {

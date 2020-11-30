@@ -15,7 +15,7 @@ namespace Vmr.Common.Linking
     {
         private readonly LinkTableBuilder _labelTableBuilder;
         private readonly LinkTableBuilder _methodTableBuilder;
-        private readonly Dictionary<IlAddress, List<string>> _comments; // TODO (RH codereview): Find a better solution
+        private readonly Dictionary<IlAddress, List<string>> _comments; // TODO (RH review): Find a better solution
 
         private IlAddress? _entryPoint;
 
@@ -40,6 +40,7 @@ namespace Vmr.Common.Linking
         {
             var callTree = CallTree.Create(entryPoint, methods);
             var ilMethods = LinkMethods(InstructionFacts.SizeProgramHeader, callTree);
+            
             var labelTable = _labelTableBuilder.Build();
             var methodTable = _methodTableBuilder.Build();
 
@@ -60,8 +61,9 @@ namespace Vmr.Common.Linking
             foreach (var method in methods)
             {
                 var address = _methodTableBuilder.Targets[method.Name];
-                var ilObjects = LinkNodes(address.Value, method.Nodes);
-                var ilMethod = new IlMethod(address, method.Size, ilObjects);
+                var methdoBodyAddress = address.Value + InstructionFacts.SizeOfMethodHeader;
+                var ilObjects = LinkNodes(methdoBodyAddress, method.Nodes);
+                var ilMethod = new IlMethod(address, method.Args, ilObjects);
 
                 if (method.IsEntryPoint)
                 {

@@ -10,6 +10,7 @@ namespace Vmr.Common.Instructions
     public static class InstructionFacts
     {
         public const byte Eos = (byte)'\0';
+        public const int SizeOfMethodHeader = sizeof(byte);
         public const int SizeOfEos = sizeof(char);
         public const int SizeOfOpCode = sizeof(InstructionCode);
         public const int SizeProgramHeader = sizeof(int);

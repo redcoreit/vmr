@@ -95,7 +95,7 @@ namespace Vmr.Cli.Workspace.Syntax
                 }
             }
 
-            _codeBuilder.Method(name.Value!.ToString()!, args[0], args[1], args[2] == 1);
+            _codeBuilder.Method(name.Value!.ToString()!, args[0], (byte)args[1], args[2] == 1);
         }
 
         private void ParseComment()

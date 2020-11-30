@@ -2,6 +2,7 @@
     .args 1
     ldarg 0
     ldc.i4 1
+    add
     ret
 
 .method _start:
@@ -20,3 +21,4 @@ _loop:
     ldloc 0
     ceq
     brfalse _loop
+    ldloc 1

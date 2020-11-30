@@ -13,15 +13,15 @@ namespace Vmr.Runtime.Exceptions
     {
         [DoesNotReturn]
         public static void InvalidInstructionArgument(IlAddress ilAddress)
-            => throw new VmExecutionException($"Invalid instruction argument. IlRef: {ilAddress.ToString()}");
+            => throw new VmExecutionException($"Invalid instruction argument. Address: {ilAddress.ToString()}");
 
         [DoesNotReturn]
         public static void MissingInstructionArgument(IlAddress ilAddress)
-            => throw new VmExecutionException($"Required instruction argument missing. IlRef: {ilAddress.ToString()}");
+            => throw new VmExecutionException($"Required instruction argument missing. Address: {ilAddress.ToString()}");
 
         [DoesNotReturn]
         public static void NotSupportedInstruction(IlAddress ilAddress, byte code)
-            => throw new VmExecutionException($"Not supported instruction. IlRef: {ilAddress.ToString()} Code: {InstructionFacts.Format(code)}");
+            => throw new VmExecutionException($"Not supported instruction. Address: {ilAddress.ToString()} Code: {InstructionFacts.Format(code)}");
 
         [DoesNotReturn]
         internal static void OperationNotSupported(InstructionCode instructionCode)
@@ -33,10 +33,20 @@ namespace Vmr.Runtime.Exceptions
 
         [DoesNotReturn]
         public static void StackUnderflowException(IlAddress ilAddress)
-            => throw new VmExecutionException($"Stack underflow exception. IlRef: {ilAddress.ToString()}");
+            => throw new VmExecutionException($"Stack underflow exception. Address: {ilAddress.ToString()}");
         
         [DoesNotReturn]
         public static void LocalVariableNotSet(IlAddress ilAddress)
-            => throw new VmExecutionException($"Local variable not set. IlRef: {ilAddress.ToString()}");
+            => throw new VmExecutionException($"Local variable not set. Address: {ilAddress.ToString()}");
+
+        [DoesNotReturn]
+        public static void ArgumentNotFound(IlAddress ilAddress)
+            => throw new VmExecutionException($"Argument not found. Address: {ilAddress.ToString()}");
+
+
+        [DoesNotReturn]
+        public static void InvalidStackSize(IlAddress ilAddress, int size)
+            => throw new VmExecutionException($"Return failed because of invalid stack size '{size}'. Address: {ilAddress.ToString()}");
+
     }
 }
