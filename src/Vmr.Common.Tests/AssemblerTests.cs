@@ -23,9 +23,10 @@ namespace Vmr.Common.Tests
             var actual = builder.GetBinaryProgram();
 
             // Assert
-            Assert.Equal(6, actual.Length);
-            Assert.Equal((byte)InstructionCode.Ldstr, actual[4]);
-            Assert.Equal(InstructionFacts.Eos, actual[5]);
+            Assert.Equal(7, actual.Length);
+            Assert.Equal((byte)0, actual[4]);
+            Assert.Equal((byte)InstructionCode.Ldstr, actual[5]);
+            Assert.Equal(InstructionFacts.Eos, actual[6]);
         }
 
         [Fact]
@@ -41,11 +42,18 @@ namespace Vmr.Common.Tests
             var actual = builder.GetBinaryProgram();
 
             // Assert
-            Assert.Equal(4 + 1 + expectedTextBytes.Length + 1, actual.Length);
-            Assert.Equal((byte)InstructionCode.Ldstr, actual[4]);
+            var expectedLength = InstructionFacts.SizeProgramHeader
+                + InstructionFacts.SizeOfMethodHeader
+                + InstructionFacts.SizeOfOpCode
+                + expectedTextBytes.Length
+                + InstructionFacts.SizeOfOpCode
+                ;
+
+            Assert.Equal(expectedLength, actual.Length);
+            Assert.Equal((byte)InstructionCode.Ldstr, actual[5]);
 
             // test test
-            var actualTextBytes = actual.ToArray().AsSpan(5..^1).ToArray();
+            var actualTextBytes = actual.ToArray().AsSpan(6..^1).ToArray();
             Assert.True(expectedTextBytes.SequenceEqual(actualTextBytes));
             Assert.Equal(InstructionFacts.Eos, actual.Last());
         }
@@ -64,7 +72,7 @@ namespace Vmr.Common.Tests
             var actual = builder.GetBinaryProgram();
 
             // Assert
-            Assert.Equal(15, actual.Length);
+            Assert.Equal(16, actual.Length);
 
             // header: entry point address
             Assert.Equal((byte)4, actual[0]);
@@ -72,26 +80,29 @@ namespace Vmr.Common.Tests
             Assert.Equal((byte)0, actual[2]);
             Assert.Equal((byte)0, actual[3]);
 
+            // .args 0
+            Assert.Equal((byte)0, actual[4]);
+
             // Ldc.i4
-            Assert.Equal((byte)InstructionCode.Ldc_i4, actual[4]);
+            Assert.Equal((byte)InstructionCode.Ldc_i4, actual[5]);
 
             // 0x01
-            Assert.Equal((byte)1, actual[5]);
-            Assert.Equal((byte)0, actual[6]);
+            Assert.Equal((byte)1, actual[6]);
             Assert.Equal((byte)0, actual[7]);
             Assert.Equal((byte)0, actual[8]);
+            Assert.Equal((byte)0, actual[9]);
 
             // Ldc.i4
-            Assert.Equal((byte)InstructionCode.Ldc_i4, actual[9]);
+            Assert.Equal((byte)InstructionCode.Ldc_i4, actual[10]);
 
             // 2
-            Assert.Equal((byte)2, actual[10]);
-            Assert.Equal((byte)0, actual[11]);
+            Assert.Equal((byte)2, actual[11]);
             Assert.Equal((byte)0, actual[12]);
             Assert.Equal((byte)0, actual[13]);
+            Assert.Equal((byte)0, actual[14]);
 
             // Add
-            Assert.Equal((byte)InstructionCode.Add, actual[14]);
+            Assert.Equal((byte)InstructionCode.Add, actual[15]);
         }
 
         [Fact]
@@ -109,17 +120,17 @@ namespace Vmr.Common.Tests
 
             // Entry Point
             Assert.Equal(0, pointer);
-            Assert.Equal(10, BinaryConvert.GetInt32(ref pointer, program));
+            Assert.Equal(11, BinaryConvert.GetInt32(ref pointer, program));
 
             // two
             var method_two = pointer;
-            Assert.Equal(4, pointer);
+            Assert.Equal(5, ++pointer);
             Assert.Equal(InstructionCode.Ldc_i4, BinaryConvert.GetInstructionCode(ref pointer, program));
             Assert.Equal(2, BinaryConvert.GetInt32(ref pointer, program));
             Assert.Equal(InstructionCode.Ret, BinaryConvert.GetInstructionCode(ref pointer, program));
 
             // main
-            Assert.Equal(10, pointer);
+            Assert.Equal(12, ++pointer);
             Assert.Equal(InstructionCode.Ldc_i4, BinaryConvert.GetInstructionCode(ref pointer, program));
             Assert.Equal(1, BinaryConvert.GetInt32(ref pointer, program));
             Assert.Equal(InstructionCode.Call, BinaryConvert.GetInstructionCode(ref pointer, program));

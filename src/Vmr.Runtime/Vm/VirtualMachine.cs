@@ -302,6 +302,8 @@ namespace Vmr.Runtime.Vm
                 _args.Add(program[address] - idx - 1, _stackFrame.Pop());
             }
 
+            // TODO (RH vNext): Use method table instead of arg count.
+
             _stackFrame.AddStack();
             _stackFrame.Push(_pointer);
 

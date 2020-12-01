@@ -112,9 +112,9 @@ namespace Vmr.Common.Tests
             // Assert
             Assert.Equal(2, program.IlMethods.Count);
             Assert.Equal(4, program.IlMethods[0].Address.Value);
-            Assert.Equal(10, program.IlMethods[1].Address.Value);
-            Assert.Equal(10, program.EntryPoint.Value);
-            Assert.Equal(4, ilObjects[0].Address.Value);
+            Assert.Equal(11, program.IlMethods[1].Address.Value);
+            Assert.Equal(11, program.EntryPoint.Value);
+            Assert.Equal(5, ilObjects[0].Address.Value);
             Assert.True(Enumerable.SequenceEqual(expected, actual));
 
             static CodeBuilder GetBuilder()
