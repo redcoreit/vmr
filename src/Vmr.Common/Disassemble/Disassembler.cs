@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Transactions;
+
 using Vmr.Common;
 using Vmr.Common.Exeptions;
 using Vmr.Common.Helpers;
@@ -15,15 +16,10 @@ namespace Vmr.Common.Disassemble
 {
     public class Disassembler
     {
-        private readonly HashSet<IlAddress> _methodTargets;
         private readonly HashSet<IlAddress> _labelTargets;
-
-        private int _pointer;
-        private IlAddress? _entryPoint;
 
         private Disassembler()
         {
-            _methodTargets = new HashSet<IlAddress>();
             _labelTargets = new HashSet<IlAddress>();
         }
 
@@ -36,81 +32,107 @@ namespace Vmr.Common.Disassemble
 
         private IlProgram GetProgram(ReadOnlySpan<byte> program)
         {
-            var ilObjects = new List<IlObject>();
-            var entryPointValue = BinaryConvert.GetInt32(ref _pointer, program);
-            _entryPoint = new IlAddress(entryPointValue);
+            var pointer = 0;
+            var ilMethods = new List<IlMethod>();
+            var methodNames = new Dictionary<IlAddress, string>();
 
-            _methodTargets.Add(_entryPoint);
+            var entryPointValue = BinaryConvert.GetInt32(ref pointer, program);
 
-            while (_pointer < program.Length)
+            var callTargets = new Stack<int>();
+            callTargets.Push(entryPointValue);
+            var visitedTargets = new HashSet<int> { entryPointValue };
+
+            while (callTargets.Count > 0)
             {
-                var address = _pointer;
-                
-                var instruction = GetInstruction(program);
-                ilObjects.Add(new IlObject(address, 0, instruction));
+                var ilObjects = new List<IlObject>();
 
-                var arg = ReadArguments(instruction, program);
-                
-                if(arg is object)
+                pointer = callTargets.Pop();
+                var argCount = program[pointer];
+
+                var method = new IlMethod(pointer, argCount, ilObjects);
+                ilMethods.Add(method);
+                methodNames.Add(method.Address, $"m{ilMethods.Count}");
+
+                pointer += InstructionFacts.SizeOfMethodHeader;
+
+                while (pointer < program.Length)
                 {
+                    var instructionAddress = pointer;
+                    var instruction = GetInstruction(program, ref pointer);
+                    ilObjects.Add(new IlObject(instructionAddress, 0, instruction));
+
+                    var arg = ReadArguments(instruction, program, ref pointer);
+
+                    if (instruction == InstructionCode.Ret)
+                    {
+                        break;
+                    }
+
+                    if (arg is null)
+                    {
+                        continue;
+                    }
+
                     ilObjects.Add(arg);
+
+                    if (instruction != InstructionCode.Call)
+                    {
+                        continue;
+                    }
+
+                    var callTarget = (int)arg.Obj;
+
+                    if (!visitedTargets.Add(callTarget))
+                    {
+                        continue;
+                    }
+
+                    callTargets.Push(callTarget);
                 }
             }
 
-            if (_entryPoint is null)
-            {
-                throw new VmrException($"Entrypoint not found.");
-            }
-
-            var ilMethods = ReconstructMethods(ilObjects, program.Length);
-
-            return new IlProgram(_entryPoint, ilMethods, _labelTargets);
+            return new IlProgram(entryPointValue, ilMethods.OrderBy(m => m.Address).ToArray(), methodNames, _labelTargets);
         }
 
-        private InstructionCode GetInstruction(ReadOnlySpan<byte> program)
+        private InstructionCode GetInstruction(ReadOnlySpan<byte> program, ref int pointer)
         {
             try
             {
-                return BinaryConvert.GetInstructionCode(ref _pointer, program);
+                return BinaryConvert.GetInstructionCode(ref pointer, program);
             }
             catch (InvalidOperationException ex)
             {
                 Debug.WriteLine(ex.Message);
-                Throw.NotSupportedInstruction(_pointer, program[_pointer - 1]);
+                Throw.NotSupportedInstruction(pointer, program[pointer]);
                 throw;
             }
         }
 
-        private IlObject? ReadArguments(InstructionCode instruction, ReadOnlySpan<byte> program)
+        private IlObject? ReadArguments(InstructionCode instruction, ReadOnlySpan<byte> program, ref int pointer)
         {
-            var address = new IlAddress(_pointer);
+            var address = new IlAddress(pointer);
 
             switch (instruction)
             {
                 case InstructionCode.Ldstr:
                     {
-                        var arg = BinaryConvert.GetString(ref _pointer, program);
+                        var arg = BinaryConvert.GetString(ref pointer, program);
                         return new IlObject(address, 0, arg);
                     }
                 case InstructionCode.Ldloc:
                 case InstructionCode.Stloc:
                 case InstructionCode.Ldc_i4:
                 case InstructionCode.Ldarg:
-                    {
-                        var arg = BinaryConvert.GetInt32(ref _pointer, program);
-                        return new IlObject(address, 0, arg);
-                    }
                 case InstructionCode.Call:
                     {
-                        var arg = BinaryConvert.GetInt32(ref _pointer, program);
-                        _methodTargets.Add(new IlAddress(arg));
+                        var arg = BinaryConvert.GetInt32(ref pointer, program);
                         return new IlObject(address, 0, arg);
                     }
                 case InstructionCode.Br:
                 case InstructionCode.Brfalse:
                 case InstructionCode.Brtrue:
                     {
-                        var arg = BinaryConvert.GetInt32(ref _pointer, program);
+                        var arg = BinaryConvert.GetInt32(ref pointer, program);
                         _labelTargets.Add(new IlAddress(arg));
                         return new IlObject(address, 0, arg);
                     }
@@ -124,48 +146,10 @@ namespace Vmr.Common.Disassemble
                     }
                 default:
                     {
-                        Throw.NotSupportedInstruction(_pointer, program[_pointer - 1]);
+                        Throw.NotSupportedInstruction(pointer, program[pointer - 1]);
                         return null;
                     }
             }
-        }
-
-        private IReadOnlyList<IlMethod> ReconstructMethods(IReadOnlyList<IlObject> _ilObjects, int programEnd)
-        {
-            var methodAddresses = _methodTargets.OrderBy(m => m.Value).ToArray().AsReadOnlySpan();
-            var orderedIlObjects = _ilObjects.OrderBy(m => m.Address).ToArray().AsReadOnlySpan();
-
-            var enumerator = orderedIlObjects.GetEnumerator();
-            var result = new List<IlMethod>();
-
-            if (!enumerator.MoveNext())
-            {
-                throw new VmrException("Empty program detected.");
-            }
-
-            for (int idx = 0; idx < methodAddresses.Length; idx++)
-            {
-                var current = methodAddresses[idx].Value;
-                var next = idx + 1 < methodAddresses.Length
-                    ? methodAddresses[idx + 1].Value
-                    : programEnd;
-
-                var ilObjects = new List<IlObject>();
-
-                while (enumerator.Current.Address.Value < next)
-                {
-                    ilObjects.Add(enumerator.Current);
-
-                    if (!enumerator.MoveNext())
-                    {
-                        break;
-                    }
-                }
-
-                result.Add(new IlMethod(current, 0, ilObjects));
-            }
-
-            return result;
         }
     }
 }

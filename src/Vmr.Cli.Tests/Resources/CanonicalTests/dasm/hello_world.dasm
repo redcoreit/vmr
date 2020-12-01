@@ -1,3 +1,3 @@
-﻿.method m0:
+﻿.method m1:
     .entrypoint
-    IL_00:  ldstr "Hello World"
+    IL_0000:  ldstr "Hello World"

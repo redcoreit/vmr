@@ -11,8 +11,9 @@ namespace Vmr.Common.ObjectModel
     {
         internal IlProgram(IlAddress entryPoint,
                            IReadOnlyList<IlMethod> ilMethods,
+                           IReadOnlyDictionary<IlAddress, string> methodNames,
                            IReadOnlyCollection<IlAddress> labelTargets)
-            : this(entryPoint, ilMethods, labelTargets, new Dictionary<IlAddress, string>(), new Dictionary<IlAddress, string>(), new Dictionary<IlAddress, List<string>>())
+            : this(entryPoint, ilMethods, labelTargets, new Dictionary<IlAddress, string>(), methodNames, new Dictionary<IlAddress, List<string>>())
         {
         }
 

@@ -47,7 +47,7 @@ namespace Vmr.Common.ObjectModel
             => !(left == right);
 
 
-        // TODO (RH -): Do not allocate on explicit equality check with UInt value.
+        // TODO (RH -): Do not allocate on explicit equality check with int value.
         public static implicit operator IlAddress(int value)
             => new IlAddress(value);
     }

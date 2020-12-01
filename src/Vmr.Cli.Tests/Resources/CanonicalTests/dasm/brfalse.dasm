@@ -1,12 +1,12 @@
-﻿.method m0:
+﻿.method m1:
     .entrypoint
-    IL_00:  ldc.i4 0
-    IL_05:  ldc.i4 1
-    IL_0A:  ceq
-    IL_0B:  brfalse IL_1D
-    IL_10:  ldstr "Equals"
-    IL_18:  br IL_29
+    IL_0000:  ldc.i4 0
+    IL_0005:  ldc.i4 1
+    IL_000A:  ceq
+    IL_000B:  brfalse IL_001D
+    IL_0010:  ldstr "Equals"
+    IL_0018:  br IL_0029
 
-    IL_1D:  ldstr "Not equals"
+    IL_001D:  ldstr "Not equals"
 
-    IL_29:  nop
+    IL_0029:  nop

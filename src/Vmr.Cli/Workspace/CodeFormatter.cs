@@ -51,7 +51,7 @@ namespace Vmr.Cli.Workspace
                 }
 
                 var method = (IlMethod)program.IlMethods[idx];
-                var methodName = GetMethodName(idx, method.Address, program.MethodNames);
+                var methodName = program.MethodNames[method.Address];
 
                 _builder.Append(SyntaxFacts.GetAttributeText(SyntaxKind.Attribute_Method));
                 _builder.Append(' ');
@@ -64,9 +64,17 @@ namespace Vmr.Cli.Workspace
                     _builder.AppendLine(SyntaxFacts.GetAttributeText(SyntaxKind.Attribute_Entrypoint));
                 }
 
+                if(method.Args != 0)
+                {
+                    _builder.Append(' ', formatSettings.LineIndentSize);
+                    _builder.Append(SyntaxFacts.GetAttributeText(SyntaxKind.Attribute_Args));
+                    _builder.Append(' ');
+                    _builder.AppendLine(method.Args.ToString());
+                }
+
                 var locals = GetLocalsSize(method.IlObjects);
 
-                if (locals != 0)
+                if(locals != 0)
                 {
                     _builder.Append(' ', formatSettings.LineIndentSize);
                     _builder.Append(SyntaxFacts.GetAttributeText(SyntaxKind.Attribute_Locals));
@@ -150,11 +158,11 @@ namespace Vmr.Cli.Workspace
                     return;
                 }
 
-                var ilRef = current.Address.Value - method.Address.Value;
+                var relativeAddress = current.Address.Value - method.Address.Value;
 
                 if (!program.LabelNames.TryGetValue(current.Address, out var name))
                 {
-                    name = ilRef.ToIlRef();
+                    name = relativeAddress.ToIlRef();
                 }
 
                 _builder.Append(name);
@@ -166,19 +174,19 @@ namespace Vmr.Cli.Workspace
         private void FormatInstruction(IlMethod method, IlObject current, InstructionCode instruction, CodeFormatSettings formatSettings)
         {
             var instructionText = GetInstructionText(instruction);
-            var ilRef = current.Address.Value - method.Address.Value;
+            var relativeAddress = current.Address.Value - method.Address.Value;
 
             if (formatSettings.UseIlRefPrefix)
             {
                 _builder.Append(' ', formatSettings.LineIndentSize);
-                _builder.Append(ilRef.ToIlRef());
+                _builder.Append(relativeAddress.ToIlRef());
                 _builder.Append(':');
             }
 
             _builder.Append(' ', formatSettings.InstructionIndentSize);
             _builder.Append(instructionText);
 
-            ilRef += InstructionFacts.SizeOfOpCode;
+            relativeAddress += InstructionFacts.SizeOfOpCode;
         }
 
         private static string GetInstructionText(InstructionCode instruction)
@@ -202,7 +210,7 @@ namespace Vmr.Cli.Workspace
                 var argText = InstructionFacts.IsBranchingInstruction(instruction)
                     ? GetTargetIlRefText(method, program.LabelNames, arg)
                     : instruction == InstructionCode.Call
-                    ? GetMethodName(idx, (int)arg.Obj, program.MethodNames)
+                    ? program.MethodNames[(int)arg.Obj]
                     : GetArgumentText(arg);
 
                 var argSize = GetArgumentSize(arg);
@@ -239,8 +247,8 @@ namespace Vmr.Cli.Workspace
 
             if (!labelNames.TryGetValue(address, out var name))
             {
-                var ilRef = address.Value - method.Address.Value;
-                name = ilRef.ToIlRef();
+                var relativeAddress = address.Value - method.Address.Value;
+                name = relativeAddress.ToIlRef();
             }
 
             return name;
@@ -258,16 +266,6 @@ namespace Vmr.Cli.Workspace
             };
 
             return size;
-        }
-        
-        static string GetMethodName(int idx, IlAddress methodAddress, IReadOnlyDictionary<IlAddress, string> names)
-        {
-            if (!names.TryGetValue(methodAddress, out var name))
-            {
-                name = $"m{idx}";
-            }
-
-            return name;
         }
     }
 }

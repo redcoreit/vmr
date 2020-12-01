@@ -1,18 +1,18 @@
-﻿.method m0:
+﻿.method m1:
     .entrypoint
     .locals 1
-    IL_00:  ldc.i4 0
-    IL_05:  stloc 0
+    IL_0000:  ldc.i4 0
+    IL_0005:  stloc 0
 
-    IL_0A:  ldstr "Looped"
-    IL_12:  ldloc 0
-    IL_17:  ldc.i4 9
-    IL_1C:  ceq
-    IL_1D:  brtrue IL_37
-    IL_22:  ldloc 0
-    IL_27:  ldc.i4 1
-    IL_2C:  add
-    IL_2D:  stloc 0
-    IL_32:  br IL_0A
+    IL_000A:  ldstr "Looped"
+    IL_0012:  ldloc 0
+    IL_0017:  ldc.i4 9
+    IL_001C:  ceq
+    IL_001D:  brtrue IL_0037
+    IL_0022:  ldloc 0
+    IL_0027:  ldc.i4 1
+    IL_002C:  add
+    IL_002D:  stloc 0
+    IL_0032:  br IL_000A
 
-    IL_37:  nop
+    IL_0037:  nop
